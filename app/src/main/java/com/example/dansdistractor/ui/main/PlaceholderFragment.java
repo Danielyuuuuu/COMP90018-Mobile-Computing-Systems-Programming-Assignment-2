@@ -44,6 +44,7 @@ public class PlaceholderFragment extends Fragment {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
+
     }
 
     @Override
@@ -55,11 +56,14 @@ public class PlaceholderFragment extends Fragment {
         View root = binding.getRoot();
 
         final TextView textView = binding.couponsLabel;
+        final ImageView imageView = binding.couponsImage;
         pageViewModel.getmCoupon().observe(getViewLifecycleOwner(), new Observer<Coupon>() {
             @Override
             public void onChanged(Coupon coupon) {
 
                 textView.setText(coupon.getCouponName() + " " + coupon.getCouponImage());
+
+                imageView.setImageResource(coupon.getCouponImage());
             }
         });
 //        pageViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {

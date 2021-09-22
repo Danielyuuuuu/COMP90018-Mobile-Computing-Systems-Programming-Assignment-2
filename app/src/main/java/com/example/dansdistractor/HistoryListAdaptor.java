@@ -37,7 +37,7 @@ public class HistoryListAdaptor extends ArrayAdapter<Coupon> {
         }
     }
 
-    private int resourceId;
+    private final int resourceId;
     public HistoryListAdaptor(@NonNull Context context, int resource, List<Coupon> coupons) {
         super(context, resource, coupons);
         resourceId = resource;

@@ -7,7 +7,7 @@
     tools:context=".HistoryActivity">
 
     <ListView
-        android:id="@+id/history_list_view"
+        android:id="@+id/history_list_view_bak"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

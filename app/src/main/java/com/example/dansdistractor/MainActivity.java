@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         button.setOnClickListener(view ->
         {
-            Log.d("History", "History Activity");
-            Intent intent = new Intent(this, HistoryActivity.class);
+            Log.d("History", "History Activity 2");
+            Intent intent = new Intent(this, HistoryActivity2.class);
             startActivity(intent);
 
         });
