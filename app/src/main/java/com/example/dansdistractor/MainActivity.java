@@ -23,12 +23,13 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     public static final int DEFAULT_UPDATE_INTERVAL = 30;
     public static final int FAST_UPDATE_INTERVAL = 5;
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
+    private Button btn_login;
     MyApplication myApplication;
     List<Location> savedLocations;
 
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_map = findViewById(R.id.btn_map);
+        btn_login = (Button) findViewById(R.id.btn_login);
 
         myApplication = (MyApplication)getApplicationContext();
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         // Request to access location permission from the user
         requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
 
+        //set onclick function to each of the button
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent i = new Intent(MainActivity.this, MapsActivity.class);
                 startActivity(i);
+            }
+        });
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Login.class));
             }
         });
     }
