@@ -129,6 +129,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                                         progressBar.setVisibility(View.GONE);
 
                                         //redirect to profile
+                                        startActivity(new Intent(Register.this, ProfileActivity.class));
 
                                     }else{
                                         Toast.makeText(Register.this, "Failed to register! Please try again!", Toast.LENGTH_LONG).show();
