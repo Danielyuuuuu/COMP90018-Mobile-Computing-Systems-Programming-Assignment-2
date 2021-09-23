@@ -11,19 +11,28 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
+    MyApplication myApplication;
     List<Location> savedLocations;
+    List<LatLng> targetLocations;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        MyApplication myApplication = (MyApplication)getApplicationContext();
+        myApplication = (MyApplication)getApplicationContext();
         savedLocations = myApplication.getMyLocations();
     }
 
@@ -87,5 +96,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        myApplication.setTargetLocations(getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(savedLocations.get(savedLocations.size() - 1).getLatitude(), savedLocations.get(savedLocations.size() - 1).getLongitude()), 5000));
+        for(LatLng latLng: myApplication.getTargetLocations()){
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title("Lat: " + latLng.latitude + "; Lon: " + latLng.longitude);
+            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        }
+    }
+
+    public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
+
+        List<LatLng> randomPoints = new ArrayList<>();
+        Location myLocation = new Location("");
+        myLocation.setLatitude(point.latitude);
+        myLocation.setLongitude(point.longitude);
+
+        //This is to generate random points
+        for(int i = 0; i<numOfPoints; i++) {
+            double x0 = point.latitude;
+            double y0 = point.longitude;
+
+            Random random = new Random();
+
+            // Convert radius from meters to degrees
+            double radiusInDegrees = radius / 111000f;
+
+            double u = random.nextDouble();
+            double v = random.nextDouble();
+            double w = radiusInDegrees * Math.sqrt(u);
+            double t = 2 * Math.PI * v;
+            double x = w * Math.cos(t);
+            double y = w * Math.sin(t);
+
+            // Adjust the x-coordinate for the shrinking of the east-west distances
+            double new_x = x / Math.cos(y0);
+
+            double foundLatitude = new_x + x0;
+            double foundLongitude = y + y0;
+            LatLng randomLatLng = new LatLng(foundLatitude, foundLongitude);
+            randomPoints.add(randomLatLng);
+            Location l1 = new Location("");
+            l1.setLatitude(randomLatLng.latitude);
+            l1.setLongitude(randomLatLng.longitude);
+        }
+        return randomPoints;
     }
 }
