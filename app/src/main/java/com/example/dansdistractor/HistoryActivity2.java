@@ -1,9 +1,8 @@
 package com.example.dansdistractor;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
-import butterknife.*;
 import com.google.android.material.tabs.TabLayout;
 
 public class HistoryActivity2 extends AppCompatActivity {
@@ -22,7 +21,6 @@ public class HistoryActivity2 extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setText("Fitness"));
         tabLayout.addTab(tabLayout.newTab().setText("Coupons"));
-//        tabLayout.addTab(tabLayout.newTab().setText("NBA"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final MyAdapter adapter = new MyAdapter(this,getSupportFragmentManager(),

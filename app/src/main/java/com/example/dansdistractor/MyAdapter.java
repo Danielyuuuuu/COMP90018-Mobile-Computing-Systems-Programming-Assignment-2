@@ -3,7 +3,6 @@ package com.example.dansdistractor;/**
  */
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -28,18 +27,17 @@ public class MyAdapter extends FragmentPagerAdapter {
     public  MyAdapter(FragmentManager fm){
         super(fm);
     }
+
+    @NotNull
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                Football footballFragment = new Football();
-                return footballFragment;
+                return new Football();
             case 1:
-                Cricket cricketFragment = new Cricket();
-                return cricketFragment;
+                return new Cricket();
             case 2:
-                NBA nbaFragment = new NBA();
-                return nbaFragment;
+                return new NBA();
             default:
                 return null;
         }
