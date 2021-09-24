@@ -11,9 +11,9 @@ import java.util.List;
 public class MyApplication extends Application {
     private static MyApplication singleton;
 
-    private List<Location> myLocations;
+    private List<Location> myLocations = null;
 
-    private List<LatLng> targetLocations;
+    private List<LatLng> targetLocations = null;
 
     public List<LatLng> getTargetLocations() {
         return targetLocations;
@@ -39,5 +39,6 @@ public class MyApplication extends Application {
         super.onCreate();
         singleton = this;
         myLocations = new ArrayList<>();
+        targetLocations = new ArrayList<>();
     }
 }

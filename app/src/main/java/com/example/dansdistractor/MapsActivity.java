@@ -1,12 +1,23 @@
 package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,14 +27,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
+    public static final int DEFAULT_UPDATE_INTERVAL = 10;
+    public static final int FAST_UPDATE_INTERVAL = 3;
+    private static final int PERMISSION_FINE_LOCATION = 10;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -32,6 +50,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<Location> savedLocations;
     List<LatLng> targetLocations;
 
+    // Location request is a config file for all settings related to FusedLocationProviderClient
+    LocationRequest locationRequest;
+
+    LocationCallback locationCallBack;
+
+    // Google's API for location services. The majority of the app functions using this class.
+    FusedLocationProviderClient fusedLocationProviderClient;
+
+    // Current location
+    Location currentLocation;
 
 
     @Override
@@ -47,7 +75,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         myApplication = (MyApplication)getApplicationContext();
-        savedLocations = myApplication.getMyLocations();
+
+        // Set all properties of LocationRequest
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(1000 * FAST_UPDATE_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
+
+        // Request to access location permission from the user
+        requestLocationPermission();
     }
 
     /**
@@ -62,48 +100,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        updateGPS(true);
 
         LatLng lastLocationPlaced = new LatLng(-34, 151);
-
-        for(Location location: savedLocations){
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
-            mMap.addMarker(markerOptions);
-            lastLocationPlaced = latLng;
-        }
-
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLocationPlaced, 12));
-
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                // lets count the number of times that pin is clicked
-                Integer clicks = (Integer) marker.getTag();
-                if(clicks == null){
-                    clicks = 0;
-                }
-                clicks++;
-                marker.setTag(clicks);
-                Toast.makeText(MapsActivity.this, "Marker " + marker.getTitle() + " was clicked " + marker.getTag(), Toast.LENGTH_SHORT).show();
-
-                return false;
-            }
-        });
-
-        myApplication.setTargetLocations(getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(savedLocations.get(savedLocations.size() - 1).getLatitude(), savedLocations.get(savedLocations.size() - 1).getLongitude()), 5000));
-        for(LatLng latLng: myApplication.getTargetLocations()){
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title("Lat: " + latLng.latitude + "; Lon: " + latLng.longitude);
-            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        }
+        savedLocations = myApplication.getMyLocations();
     }
 
     public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
@@ -142,5 +142,89 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             l1.setLongitude(randomLatLng.longitude);
         }
         return randomPoints;
+    }
+
+    private void updateGPS(boolean startExercising){
+        // Get permissions from the user to track GPS
+        // Get the current location from the fused client
+        // Update the UI - i.e. set all properties in their associated text view items
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            // User provided the permission
+            Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+            locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // We got permission. Put the values of location. XXX into the UI components.
+//                    updateUIValues(location);
+                    currentLocation = location;
+                    savedLocations = myApplication.getMyLocations();
+                    savedLocations.add(currentLocation);
+                    Toast.makeText(MapsActivity.this, "Update location", Toast.LENGTH_SHORT).show();
+
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
+                    mMap.addMarker(markerOptions);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+
+                    if (startExercising){
+                        targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                        for(LatLng targetLocation: targetLocations){
+                            markerOptions = new MarkerOptions();
+                            markerOptions.position(targetLocation);
+                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
+                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        }
+                    }
+
+                }
+            });
+
+            locationTask.addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MapsActivity.this, "Update location failure", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else{
+            // Permission not granted yet
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
+
+    private void requestLocationPermission(){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        else{
+            // Permission not granted yet
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode){
+            case PERMISSION_FINE_LOCATION:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    updateGPS(false);
+                }
+                else{
+                    Toast.makeText(this, "This app requires to grant location permission to be able to work", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
     }
 }
