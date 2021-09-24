@@ -7,9 +7,8 @@ public class UserSchema {
     public UserSchema(){
     }
 
-    public UserSchema(String name, String age, String email) {
+    public UserSchema(String name, String email) {
         this.name = name;
-        this.age = age;
         this.email = email;
     }
 }

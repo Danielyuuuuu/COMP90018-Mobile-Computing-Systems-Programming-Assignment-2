@@ -63,7 +63,7 @@
         android:textStyle="bold"
         android:foregroundTint="#FFF"
         android:hint="Password"
-        android:inputType="textPersonName"
+        android:inputType="textPassword"
         android:padding="8dp"
         android:textColor="#37474F"
         android:textSize="17dp"

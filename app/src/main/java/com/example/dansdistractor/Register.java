@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,8 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Register extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView banner, register;
-    private EditText name, age, email, password;
+    private TextView register;
+    private ImageView logo;
+    private EditText name, email, password;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
 
@@ -32,14 +34,13 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
 
         mAuth = FirebaseAuth.getInstance();
 
-        banner = (TextView) findViewById(R.id.banner);
-        banner.setOnClickListener(this);
+        logo = (ImageView) findViewById(R.id.logo);
+        logo.setOnClickListener(this);
 
         register = (TextView) findViewById(R.id.register);
         register.setOnClickListener(this);
 
         name = (EditText) findViewById(R.id.name);
-        age = (EditText) findViewById(R.id.age);
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 
@@ -49,7 +50,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.banner:
+            case R.id.logo:
                 startActivity(new Intent(this, MainActivity.class));
                 break;
             case R.id.register:
@@ -63,7 +64,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         //get all the input value form register form
         String emailInput = email.getText().toString().trim();
         String passwordInput = password.getText().toString().trim();
-        String ageInput = age.getText().toString().trim();
         String nameInput = name.getText().toString().trim();
 
         //equal to true when the register form contains error(s)
@@ -90,12 +90,6 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
             incompleteForm = true;
         }
 
-        if (ageInput.isEmpty()) {
-            age.setError("Age is required!");
-            age.requestFocus();
-            incompleteForm = true;
-        }
-
         if (nameInput.isEmpty()) {
             name.setError("Full name is required!");
             name.requestFocus();
@@ -117,7 +111,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            UserSchema user = new UserSchema(nameInput, ageInput, emailInput);
+                            UserSchema user = new UserSchema(nameInput, emailInput);
 
                             FirebaseDatabase.getInstance().getReference("Users")
                                     .child(mAuth.getCurrentUser().getUid())
