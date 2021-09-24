@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.widget.ListView;
+
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 /**
  *
@@ -26,15 +24,21 @@ public class Football extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_football, container, false);
-        TextView textView = rootView.findViewById(R.id.football_text);
-        textView.setText("HELLO Fitness");
-        return rootView;
+        View view = inflater.inflate(R.layout.fragment_list_history, container, false);
+        ListView listView = view.findViewById(R.id.history_list_view_bak);
+
+        FitnessListAdaptor adaptor = new FitnessListAdaptor(requireActivity(), R.layout.fitness_list, Fitness.getFitness());
+        listView.setAdapter(adaptor);
+
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//                Fitness fitness = (Fitness) adapterView.getItemAtPosition(i);
+//                Toast.makeText(getContext(), fitness.getFitnessCategory(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+        return view;
     }
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        MyAdapter adapter = new MyAdapter(getChildFragmentManager());
-//        ViewPager viewPager = view.findViewById(R.id.viewPager);
-//        viewPager.setAdapter(adapter);
-//    }
+
 }

@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-import androidx.annotation.Nullable;
+
 import androidx.fragment.app.Fragment;
 
 /**
@@ -24,10 +22,6 @@ public class Cricket extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,13 +34,13 @@ public class Cricket extends Fragment {
         System.out.println(listView);
         listView.setAdapter(adaptor);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Coupon coupon = (Coupon) adapterView.getItemAtPosition(i);
-                Toast.makeText(getContext(), coupon.getCouponName(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Coupon coupon = (Coupon) adapterView.getItemAtPosition(i);
+//                Toast.makeText(getContext(), coupon.getCouponName(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
         return view;
     }
 
