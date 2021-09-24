@@ -21,11 +21,13 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int DEFAULT_UPDATE_INTERVAL = 30;
-    public static final int FAST_UPDATE_INTERVAL = 5;
+    public static final int DEFAULT_UPDATE_INTERVAL = 10;
+    public static final int FAST_UPDATE_INTERVAL = 3;
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
@@ -59,8 +61,15 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(1000 * FAST_UPDATE_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         // Request to access location permission from the user
-        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+        requestLocationPermission();
 
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +80,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+    }
+
+    private void requestLocationPermission(){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        else{
+            // Permission not granted yet
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
     }
 
 
@@ -78,11 +100,12 @@ public class MainActivity extends AppCompatActivity {
         // Get permissions from the user to track GPS
         // Get the current location from the fused client
         // Update the UI - i.e. set all properties in their associated text view items
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             // User provided the permission
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+            locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     // We got permission. Put the values of location. XXX into the UI components.
@@ -90,6 +113,14 @@ public class MainActivity extends AppCompatActivity {
                     currentLocation = location;
                     savedLocations = myApplication.getMyLocations();
                     savedLocations.add(currentLocation);
+                    Toast.makeText(MainActivity.this, "Update location", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            locationTask.addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, "Update location failure", Toast.LENGTH_SHORT).show();
                 }
             });
         }
