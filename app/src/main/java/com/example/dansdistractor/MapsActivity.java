@@ -33,14 +33,15 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
-    public static final int DEFAULT_UPDATE_INTERVAL = 10;
-    public static final int FAST_UPDATE_INTERVAL = 3;
+    public static final int DEFAULT_UPDATE_INTERVAL = 5;
+    public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     private GoogleMap mMap;
@@ -61,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Current location
     Location currentLocation;
 
+    Marker currentLocationMarker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        myApplication = (MyApplication)getApplicationContext();
+        myApplication = (MyApplication) getApplicationContext();
 
         // Set all properties of LocationRequest
         locationRequest = new LocationRequest();
@@ -102,8 +104,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         updateGPS(true);
 
-        LatLng lastLocationPlaced = new LatLng(-34, 151);
-        savedLocations = myApplication.getMyLocations();
+        // Event that is triggered whenever the update interval is met
+        locationCallBack = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                Toast.makeText(MapsActivity.this, "Automatically update location", Toast.LENGTH_SHORT).show();
+                currentLocationMarker.remove();
+                LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(currentLatLng);
+                markerOptions.title("Lat: " + currentLatLng.latitude + "; Lon: " + currentLatLng.longitude);
+                currentLocationMarker = mMap.addMarker(markerOptions);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
+        }
+
     }
 
     public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
@@ -167,8 +187,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
                     markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
-                    mMap.addMarker(markerOptions);
+                    currentLocationMarker = mMap.addMarker(markerOptions);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+
+
+
 
                     if (startExercising){
                         targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
