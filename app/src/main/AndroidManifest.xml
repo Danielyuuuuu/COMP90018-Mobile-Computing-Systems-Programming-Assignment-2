@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DansDistractor">
         <activity
+            android:name=".ForgetPassword"
+            android:exported="true" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="true" />
         <activity
