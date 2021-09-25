@@ -104,7 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        updateGPS(true);
+        updateGPS(myApplication.getSessionStarted());
 
         // Event that is triggered whenever the update interval is met
         locationCallBack = new LocationCallback() {
@@ -166,7 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return randomPoints;
     }
 
-    private void updateGPS(boolean startExercising){
+    private void updateGPS(Boolean sessionStarted){
         // Get permissions from the user to track GPS
         // Get the current location from the fused client
         // Update the UI - i.e. set all properties in their associated text view items
@@ -193,10 +193,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
 
-
-
-                    if (startExercising){
+                    if (!sessionStarted){
+                        myApplication.startSession();
                         targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                        myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
@@ -205,6 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
 
+                    myApplication.getMyLocations().add(currentLocation);
                 }
             });
 
@@ -264,6 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                myApplication.endSession();
                 finish();
             }
         });
