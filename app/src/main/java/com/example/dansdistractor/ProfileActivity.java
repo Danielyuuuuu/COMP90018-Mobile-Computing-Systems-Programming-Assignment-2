@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button logout;
+    private RelativeLayout logout;
     private FirebaseUser user;
     private DatabaseReference reference;
     private String userID;
@@ -30,7 +31,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        logout = (Button) findViewById(R.id.logout);
+        logout = (RelativeLayout) findViewById(R.id.logout);
         logout.setOnClickListener(this);
 
 
@@ -38,9 +39,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
-        final TextView name = (TextView) findViewById(R.id.name);
-        final TextView email = (TextView) findViewById(R.id.email);
-        final TextView age = (TextView) findViewById(R.id.age);
+        final TextView username = (TextView) findViewById(R.id.username);
+        final TextView useremail = (TextView) findViewById(R.id.useremail);
+        final TextView userpoints = (TextView) findViewById(R.id.userpoints);
+        final TextView usertotaldistance = (TextView) findViewById(R.id.usertotaldistance);
+        final TextView usertotalpins = (TextView) findViewById(R.id.usertotalpins);
+
 
         reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -50,9 +54,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (userProfile != null) {
                     String nameUserProfile = userProfile.name;
                     String emailUserProfile = userProfile.email;
+                    int userpointsUserProfile = userProfile.points;
+                    int usertotaldistanceUserProfile = userProfile.totaldistance;
+                    int usertotalpinsUserProfile = userProfile.usertotalpins;
 
-                    name.setText(nameUserProfile);
-                    email.setText(emailUserProfile);
+
+                    username.setText(nameUserProfile);
+                    useremail.setText(emailUserProfile);
+                    userpoints.setText(String.valueOf(userpointsUserProfile));
+                    usertotaldistance.setText(String.valueOf(usertotaldistanceUserProfile));
+                    usertotalpins.setText(String.valueOf(usertotalpinsUserProfile));
                 }
             }
 
