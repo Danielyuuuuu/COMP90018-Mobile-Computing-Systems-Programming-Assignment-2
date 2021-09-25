@@ -60,10 +60,12 @@ public class MainActivity extends AppCompatActivity {
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // When the user has paused a workout session, resume it
                 if (myApplication.getSessionStarted()){
                     Intent i = new Intent(MainActivity.this, MapsActivity.class);
                     startActivity(i);
                 }
+                // Create a brand new workout session
                 else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setCancelable(false);
