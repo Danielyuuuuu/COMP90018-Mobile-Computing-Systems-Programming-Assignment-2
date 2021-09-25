@@ -2,79 +2,47 @@ package com.example.dansdistractor;
 
 import android.os.Bundle;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-
-import com.example.dansdistractor.ui.main.SectionsPagerAdapter;
-import com.example.dansdistractor.databinding.ActivityHistoryBinding;
-
-import java.util.ArrayList;
+import com.google.android.material.tabs.TabLayout;
 
 public class HistoryActivity extends AppCompatActivity {
 
-    private ActivityHistoryBinding binding;
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
-    // Click listener for choosing different navigation tabs
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case 1:{
-                    Fragment couponLayout = HistoryFragment.newInstance(HistoryFragment.LIST);
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.view_pager, couponLayout)
-                            .addToBackStack(null)
-                            .commit();
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_history);
 
-        binding = ActivityHistoryBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = binding.viewPager;
-        viewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = binding.tabs;
-        tabs.setupWithViewPager(viewPager);
-        tabs.setTabMode(TabLayout.MODE_SCROLLABLE);
-        FloatingActionButton fab = binding.fab;
+        tabLayout.addTab(tabLayout.newTab().setText("Fitness Summary"));
+        tabLayout.addTab(tabLayout.newTab().setText("Vouchers"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        final TabAdapter adapter = new TabAdapter(this, getSupportFragmentManager(),
+                tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar
-                    .make(view, "", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null)
-                    .show();
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-
-
     }
-
-
 }

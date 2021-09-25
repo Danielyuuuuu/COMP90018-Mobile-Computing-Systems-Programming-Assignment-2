@@ -15,37 +15,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
- * @ClassName: Football
+ * @ClassName: FitnessTab
  * @Description: //TODO
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 7:00 下午
  */
-public class Football extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    public Football() {
+    public FitnessTab() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.fragment_list_history, container, false);
-//        ListView listView = view.findViewById(R.id.history_list_view_bak);
-//
-//        FitnessListAdaptor adaptor = new FitnessListAdaptor(requireActivity(), R.layout.fitness_list, Fitness.getFitness());
-//        listView.setAdapter(adaptor);
-
-        View view = inflater.inflate(R.layout.fitness_recycle, container, false);
+        View view = inflater.inflate(R.layout.history_recycler, container, false);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        FitnessRecycleAdaptor adapter = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_list);
+        FitnessRecycleAdaptor adaptor = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_card);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
-
+        recyclerView.setAdapter(adaptor);
 
         return view;
     }

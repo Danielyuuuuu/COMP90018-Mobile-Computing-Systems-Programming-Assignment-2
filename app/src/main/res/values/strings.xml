@@ -2,7 +2,7 @@
     <string name="app_name">Dan’s Distractor</string>
     <string name="title_activity_history">HistoryActivity</string>
     <string name="fitness">Fitness History</string>
-    <string name="coupons">Coupons</string>
+    <string name="vouchers">Coupons</string>
     <string name="cricket_fragment">Cricket Fragment</string>
     <string name="football_fragment">Football Fragment</string>
     <string name="nba_fragment">NBA Fragment</string>

@@ -1,16 +1,11 @@
 package com.example.dansdistractor;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     //    private Button button;
@@ -25,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(view ->
         {
             Log.d("History", "History Activity 2");
-            Intent intent = new Intent(this, HistoryActivity2.class);
+            Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
 
         });

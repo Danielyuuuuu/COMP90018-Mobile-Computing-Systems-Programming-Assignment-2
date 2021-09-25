@@ -3,28 +3,30 @@ package com.example.dansdistractor;/**
  */
 
 import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
 import org.jetbrains.annotations.NotNull;
 
 /**
- *
- * @ClassName: MyAdapter
- * @Description:    //TODO
+ * @ClassName: TabAdapter
+ * @Description: //TODO
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 6:58 下午
  */
-public class MyAdapter extends FragmentPagerAdapter {
+public class TabAdapter extends FragmentPagerAdapter {
     Context context;
     int totalTabs;
-    public MyAdapter(Context c, FragmentManager fm, int totalTabs) {
+
+    public TabAdapter(Context c, FragmentManager fm, int totalTabs) {
         super(fm);
         context = c;
         this.totalTabs = totalTabs;
     }
 
-    public  MyAdapter(FragmentManager fm){
+    public TabAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -33,17 +35,15 @@ public class MyAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new Football();
+                return new FitnessTab();
             case 1:
-                return new Cricket();
-            case 2:
-                return new NBA();
+                return new VoucherTab();
             default:
                 return null;
         }
     }
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 }

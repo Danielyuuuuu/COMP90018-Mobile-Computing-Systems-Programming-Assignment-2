@@ -1,6 +1,4 @@
-package com.example.dansdistractor;/**
- * Created by wongchihaul on 2021/9/24
- */
+package com.example.dansdistractor;
 
 import java.util.ArrayList;
 
@@ -12,18 +10,23 @@ import java.util.ArrayList;
  */
 public class Fitness {
     //icons of fitness summary
-    private int fitnessIcon;
+    private int icon;
     //categories of fitness summary, displayed next to icons
-    private String fitnessCategory;
+    private String category;
     //the volume of fitness, e.g. 34 KM, 19342 steps
-    private long fitnessNumber;
+    private long number;
+    //
 
+    public Fitness() {
+
+    }
 
     public Fitness(int _fitnessIcon, String _fitnessCategory, long _fitnessNumber) {
-        fitnessIcon = _fitnessIcon;
-        fitnessCategory = _fitnessCategory;
-        fitnessNumber = _fitnessNumber;
+        icon = _fitnessIcon;
+        category = _fitnessCategory;
+        number = _fitnessNumber;
     }
+
 
     public static ArrayList<Fitness> getFitness() {
         ArrayList<Fitness> fitnessList = new ArrayList<>();
@@ -33,27 +36,43 @@ public class Fitness {
         return fitnessList;
     }
 
-    public int getFitnessIcon() {
-        return fitnessIcon;
+    public int getIcon() {
+        return icon;
     }
 
-    public void setFitnessIcon(int fitnessIcon) {
-        this.fitnessIcon = fitnessIcon;
+    public String getCategory() {
+        return category;
     }
 
-    public String getFitnessCategory() {
-        return fitnessCategory;
+    public long getNumber() {
+        return number;
     }
 
-    public void setFitnessCategory(String fitnessCategory) {
-        this.fitnessCategory = fitnessCategory;
-    }
+    public static final class FitnessBuilder {
+        private Fitness fitness;
 
-    public long getFitnessNumber() {
-        return fitnessNumber;
-    }
+        private FitnessBuilder() {
+            fitness = new Fitness();
+        }
 
-    public void setFitnessNumber(long fitnessNumber) {
-        this.fitnessNumber = fitnessNumber;
+
+        public FitnessBuilder withIcon(int icon) {
+            fitness.icon = icon;
+            return this;
+        }
+
+        public FitnessBuilder withCategory(String category) {
+            fitness.category = category;
+            return this;
+        }
+
+        public FitnessBuilder withNumber(long number) {
+            fitness.number = number;
+            return this;
+        }
+
+        public Fitness build() {
+            return fitness;
+        }
     }
 }
