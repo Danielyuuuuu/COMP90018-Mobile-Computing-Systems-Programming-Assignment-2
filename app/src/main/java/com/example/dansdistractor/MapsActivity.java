@@ -13,6 +13,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,6 +67,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Marker currentLocationMarker = null;
 
+    Button btn_pause;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Request to access location permission from the user
         requestLocationPermission();
+
+        btn_pause = findViewById(R.id.btn_pause);
+
+        btn_pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(myApplication.getSessionPaused()){
+                    if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
+                    }
+                    btn_pause.setText("Pause");
+                    myApplication.setSessionPaused(false);
+                }
+                else{
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                    btn_pause.setText("Resume");
+                    myApplication.setSessionPaused(true);
+                }
+            }
+        });
+
     }
 
     /**
@@ -125,7 +149,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
         }
-
     }
 
     public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {

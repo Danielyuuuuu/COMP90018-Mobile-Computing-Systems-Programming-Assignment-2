@@ -16,8 +16,17 @@ public class MyApplication extends Application {
     private List<LatLng> targetLocations = null;
 
     private Boolean sessionStarted = false;
+    private Boolean sessionPaused = false;
 
-    protected boolean getSessionStarted(){
+    protected Boolean getSessionPaused(){
+        return sessionPaused;
+    }
+
+    protected void setSessionPaused(Boolean sessionPaused){
+        this.sessionPaused = sessionPaused;
+    }
+
+    protected Boolean getSessionStarted(){
         return sessionStarted;
     }
 
