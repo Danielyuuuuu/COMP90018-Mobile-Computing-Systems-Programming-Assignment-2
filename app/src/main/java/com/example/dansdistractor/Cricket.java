@@ -3,21 +3,25 @@ package com.example.dansdistractor;/**
  */
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
- *
  * @ClassName: Cricket
- * @Description:    //TODO
+ * @Description: //TODO
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 7:03 下午
  */
-public class Cricket extends Fragment {
+public class Cricket extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     public Cricket() {
         // Required empty public constructor
     }
@@ -28,6 +32,9 @@ public class Cricket extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_list_history, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_list);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         CouponListAdaptor adaptor = new CouponListAdaptor(requireActivity(), R.layout.coupon_list, Coupon.getCoupons());
         ListView listView = view.findViewById(R.id.history_list_view_bak);
@@ -42,6 +49,18 @@ public class Cricket extends Fragment {
 //            }
 //        });
         return view;
+    }
+
+
+    @Override
+    public void onRefresh() {
+        Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 2000);
     }
 
 
