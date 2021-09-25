@@ -50,11 +50,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (userProfile != null) {
                     String nameUserProfile = userProfile.name;
                     String emailUserProfile = userProfile.email;
-                    String ageUserProfile = userProfile.age;
 
                     name.setText(nameUserProfile);
                     email.setText(emailUserProfile);
-                    age.setText(ageUserProfile);
                 }
             }
 

@@ -2,7 +2,8 @@ package com.example.dansdistractor;
 
 public class UserSchema {
 
-    public String name, age, email;
+    public String name, email, location;
+
 
     public UserSchema(){
     }

@@ -60,6 +60,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 break;
             case R.id.forgetpassword:
                 startActivity(new Intent(this, ForgetPassword.class));
+                break;
         }
     }
 

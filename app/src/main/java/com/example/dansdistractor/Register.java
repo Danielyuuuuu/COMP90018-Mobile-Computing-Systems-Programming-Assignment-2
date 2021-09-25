@@ -51,7 +51,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.logo:
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, Login.class));
                 break;
             case R.id.register:
                 registerUser();
@@ -100,7 +100,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         if(incompleteForm) return;
 
         //start registering
-        Toast.makeText(Register.this, "register start", Toast.LENGTH_LONG).show();
+        //Toast.makeText(Register.this, "register start", Toast.LENGTH_LONG).show();
 
         //set loading icon to visible
         progressBar.setVisibility(View.VISIBLE);
