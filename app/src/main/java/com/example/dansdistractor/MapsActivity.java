@@ -5,12 +5,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,14 +36,15 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
-    public static final int DEFAULT_UPDATE_INTERVAL = 10;
-    public static final int FAST_UPDATE_INTERVAL = 3;
+    public static final int DEFAULT_UPDATE_INTERVAL = 5;
+    public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     private GoogleMap mMap;
@@ -61,6 +65,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Current location
     Location currentLocation;
 
+    Marker currentLocationMarker = null;
+
+    Button btn_pause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        myApplication = (MyApplication)getApplicationContext();
+        myApplication = (MyApplication) getApplicationContext();
 
         // Set all properties of LocationRequest
         locationRequest = new LocationRequest();
@@ -86,6 +93,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Request to access location permission from the user
         requestLocationPermission();
+
+        btn_pause = findViewById(R.id.btn_pause);
+
+        // The pause/resume button
+        btn_pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Click the button when the session is paused
+                if(myApplication.getSessionPaused()){
+                    if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
+                    }
+                    btn_pause.setText("Pause");
+                    myApplication.setSessionPaused(false);
+                }
+                // Click the button when the session is running
+                else{
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                    btn_pause.setText("Resume");
+                    myApplication.setSessionPaused(true);
+                }
+            }
+        });
+
     }
 
     /**
@@ -100,12 +131,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        updateGPS(true);
+        updateGPS(myApplication.getSessionStarted());
 
-        LatLng lastLocationPlaced = new LatLng(-34, 151);
-        savedLocations = myApplication.getMyLocations();
+        // Event that is triggered whenever the update interval is met
+        locationCallBack = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                Toast.makeText(MapsActivity.this, "Automatically update location", Toast.LENGTH_SHORT).show();
+                currentLocationMarker.remove();
+                LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(currentLatLng);
+                markerOptions.title("Lat: " + currentLatLng.latitude + "; Lon: " + currentLatLng.longitude);
+                currentLocationMarker = mMap.addMarker(markerOptions);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
+            }
+        };
+
+        // Set up a location update loop
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
+        }
     }
 
+    // Generate a list of random points
     public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
 
         List<LatLng> randomPoints = new ArrayList<>();
@@ -144,20 +194,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return randomPoints;
     }
 
-    private void updateGPS(boolean startExercising){
-        // Get permissions from the user to track GPS
-        // Get the current location from the fused client
-        // Update the UI - i.e. set all properties in their associated text view items
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+    // To update the location and the UI
+    private void updateGPS(Boolean sessionStarted){
 
+        // When the user grants the location permission
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             // User provided the permission
             Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
             locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    // We got permission. Put the values of location. XXX into the UI components.
-//                    updateUIValues(location);
                     currentLocation = location;
                     savedLocations = myApplication.getMyLocations();
                     savedLocations.add(currentLocation);
@@ -167,11 +213,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
                     markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
-                    mMap.addMarker(markerOptions);
+                    currentLocationMarker = mMap.addMarker(markerOptions);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
-                    if (startExercising){
+                    // Run this when starting a new workout session
+                    if (!sessionStarted){
+                        myApplication.startSession();
                         targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                        myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
@@ -180,9 +229,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
 
+                    // Run this when the session is paused
+                    if (myApplication.getSessionPaused()){
+                        for(LatLng targetLocation: myApplication.getTargetLocations()){
+                            markerOptions = new MarkerOptions();
+                            markerOptions.position(targetLocation);
+                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
+                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        }
+                        myApplication.setSessionPaused(false);
+                        Toast.makeText(myApplication, "Resuming the workout session", Toast.LENGTH_SHORT).show();
+                    }
+
+                    myApplication.getMyLocations().add(currentLocation);
                 }
             });
 
+            // Send a toast message when it failed to update the current location
             locationTask.addOnFailureListener(this, new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
@@ -190,15 +253,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
         }
+        // When the user does not grant the location permission
         else{
-            // Permission not granted yet
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
             }
         }
     }
 
+    // To request location permission from the user
     private void requestLocationPermission(){
+        // Permission granted, do nothing
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             return;
         }
@@ -211,7 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
+    // Handle the request permission result
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -226,5 +291,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Can safely close the map when the user has paused the workout session
+        if(myApplication.getSessionPaused()){
+            finish();
+        }
+        // Create a prompt message asking if the user wants to close the workout session
+        else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setMessage("Do you want to close this workout session?");
+
+            // The map closes when the user press 'Yes'
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                    myApplication.endSession();
+                    finish();
+                }
+            });
+
+            // The map will not be closed when the user press 'No'
+            builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alert=builder.create();
+            alert.show();
+        }
+
     }
 }
