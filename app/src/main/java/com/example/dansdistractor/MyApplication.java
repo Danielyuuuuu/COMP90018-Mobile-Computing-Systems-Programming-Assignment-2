@@ -11,33 +11,65 @@ import java.util.List;
 public class MyApplication extends Application {
     private static MyApplication singleton;
 
-    private List<Location> myLocations;
+    private List<Location> myLocations = null;
 
-    private List<LatLng> targetLocations;
+    private List<LatLng> targetLocations = null;
 
-    public List<LatLng> getTargetLocations() {
+    private Boolean sessionStarted = false;
+    private Boolean sessionPaused = false;
+
+    protected Boolean getSessionPaused(){
+        return sessionPaused;
+    }
+
+    protected void setSessionPaused(Boolean sessionPaused){
+        this.sessionPaused = sessionPaused;
+    }
+
+    protected Boolean getSessionStarted(){
+        return sessionStarted;
+    }
+
+    protected void setSessionStarted(Boolean sessionStarted){
+        this.sessionStarted = sessionStarted;
+    }
+
+    protected List<LatLng> getTargetLocations() {
         return targetLocations;
     }
 
-    public void setTargetLocations(List<LatLng> targetLocations) {
+    protected void setTargetLocations(List<LatLng> targetLocations) {
         this.targetLocations = targetLocations;
     }
 
-    public List<Location> getMyLocations() {
+    protected List<Location> getMyLocations() {
         return myLocations;
     }
 
-    public void setMyLocations(List<Location> myLocations) {
+    protected void setMyLocations(List<Location> myLocations) {
         this.myLocations = myLocations;
     }
 
-    public MyApplication getInstance(){
+    protected MyApplication getInstance(){
         return singleton;
+    }
+
+    protected void startSession(){
+        myLocations = new ArrayList<>();
+        targetLocations = new ArrayList<>();
+        sessionStarted = true;
+    }
+
+    protected void endSession(){
+        myLocations = new ArrayList<>();
+        targetLocations = new ArrayList<>();
+        sessionStarted = false;
     }
 
     public void onCreate(){
         super.onCreate();
         singleton = this;
         myLocations = new ArrayList<>();
+        targetLocations = new ArrayList<>();
     }
 }

@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,11 +24,20 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import android.util.Log;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity{
-    public static final int DEFAULT_UPDATE_INTERVAL = 30;
-    public static final int FAST_UPDATE_INTERVAL = 5;
+import androidx.appcompat.app.AppCompatActivity;
+
+
+public class MainActivity extends AppCompatActivity {
+    //    private Button button;
+    Button button;
+    public static final int DEFAULT_UPDATE_INTERVAL = 10;
+    public static final int FAST_UPDATE_INTERVAL = 3;
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
@@ -55,25 +67,7 @@ public class MainActivity extends AppCompatActivity{
 
         myApplication = (MyApplication)getApplicationContext();
 
-        // Set all properties of LocationRequest
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(1000 * FAST_UPDATE_INTERVAL);
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        // Request to access location permission from the user
-        requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-
-        //set onclick function to each of the button
-        btn_map.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateGPS();
-
-                Intent i = new Intent(MainActivity.this, MapsActivity.class);
-                startActivity(i);
-            }
-        });
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,49 +75,45 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(new Intent(MainActivity.this, Login.class));
             }
         });
-    }
 
+        btn_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // When the user has paused a workout session, resume it
+                if (myApplication.getSessionStarted()){
+                    Intent i = new Intent(MainActivity.this, MapsActivity.class);
+                    startActivity(i);
 
-    private void updateGPS(){
-        // Get permissions from the user to track GPS
-        // Get the current location from the fused client
-        // Update the UI - i.e. set all properties in their associated text view items
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            // User provided the permission
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    // We got permission. Put the values of location. XXX into the UI components.
-//                    updateUIValues(location);
-                    currentLocation = location;
-                    savedLocations = myApplication.getMyLocations();
-                    savedLocations.add(currentLocation);
                 }
-            });
-        }
-        else{
-            // Permission not granted yet
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch(requestCode){
-            case PERMISSION_FINE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    updateGPS();
-                }
+                // Create a brand new workout session
                 else{
-                    Toast.makeText(this, "This app requires to grant location permission to be able to work", Toast.LENGTH_LONG).show();
-                    finish();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setCancelable(false);
+                    builder.setMessage("Do you want to start a workout session?");
+
+                    // Starts a workout session by clicking 'Yes'
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                        myApplication.startSession();
+                            Intent i = new Intent(MainActivity.this, MapsActivity.class);
+                            startActivity(i);
+                        }
+                    });
+
+                    // Do nothing when clicking 'No'
+                    builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(myApplication, "Come back when you want to start a workout session", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    AlertDialog alert=builder.create();
+                    alert.show();
                 }
-                break;
-        }
+            }
+        });
     }
+
 }
