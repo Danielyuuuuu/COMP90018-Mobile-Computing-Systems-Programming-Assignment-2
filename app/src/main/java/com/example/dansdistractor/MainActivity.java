@@ -34,28 +34,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {
-    //    private Button button;
-    Button button;
-    public static final int DEFAULT_UPDATE_INTERVAL = 10;
-    public static final int FAST_UPDATE_INTERVAL = 3;
-    private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
     private Button btn_login;
     MyApplication myApplication;
-    List<Location> savedLocations;
-
-    // Current location
-    Location currentLocation;
-
-    // Location request is a config file for all settings related to FusedLocationProviderClient
-    LocationRequest locationRequest;
-
-    LocationCallback locationCallBack;
-
-    // Google's API for location services. The majority of the app functions using this class.
-    FusedLocationProviderClient fusedLocationProviderClient;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
