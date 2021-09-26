@@ -32,6 +32,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 public class MainActivity extends AppCompatActivity {
     //    private Button button;
     Button button;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
+    private Button btn_login;
     MyApplication myApplication;
     List<Location> savedLocations;
 
@@ -61,8 +63,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_map = findViewById(R.id.btn_map);
+        btn_login = (Button) findViewById(R.id.btn_login);
 
         myApplication = (MyApplication)getApplicationContext();
+
+
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Login.class));
+            }
+        });
 
         btn_map.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 if (myApplication.getSessionStarted()){
                     Intent i = new Intent(MainActivity.this, MapsActivity.class);
                     startActivity(i);
+
                 }
                 // Create a brand new workout session
                 else{
