@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn_map;
     private Button btn_login;
     Button btn_summary;
+    private Button btn_vouchers;
+    private Button btn_fitness;
     MyApplication myApplication;
 
     @Override
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         btn_map = findViewById(R.id.btn_map);
         btn_login = (Button) findViewById(R.id.btn_login);
         btn_summary = findViewById(R.id.button_summary);
+        btn_vouchers = findViewById(R.id.button_voucher);
+        btn_fitness = findViewById(R.id.button_fitness);
 
         myApplication = (MyApplication)getApplicationContext();
 
@@ -104,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
+        btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
+
     }
 
 }
