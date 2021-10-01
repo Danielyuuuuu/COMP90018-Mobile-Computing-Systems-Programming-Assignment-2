@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DansDistractor">
         <activity
-            android:name=".VoucherActivity"
+            android:name=".vouchers.VoucherActivity"
             android:exported="true" />
         <activity
             android:name=".summary"

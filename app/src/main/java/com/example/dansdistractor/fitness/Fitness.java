@@ -1,4 +1,6 @@
-package com.example.dansdistractor;
+package com.example.dansdistractor.fitness;
+
+import com.example.dansdistractor.R;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,4 @@
-package com.example.dansdistractor;
-
-import static java.security.AccessController.getContext;
+package com.example.dansdistractor.vouchers;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,8 +7,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.Toast;
+
+import com.example.dansdistractor.R;
 
 public class VoucherActivity extends AppCompatActivity implements  SwipeRefreshLayout.OnRefreshListener{
     private SwipeRefreshLayout mSwipeRefreshLayout;

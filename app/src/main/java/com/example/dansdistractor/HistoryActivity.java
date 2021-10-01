@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.dansdistractor.fitness.TabAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 public class HistoryActivity extends AppCompatActivity {

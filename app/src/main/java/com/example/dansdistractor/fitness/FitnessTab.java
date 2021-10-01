@@ -1,6 +1,4 @@
-package com.example.dansdistractor;/**
- * Created by wongchihaul on 2021/9/22
- */
+package com.example.dansdistractor.fitness;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.dansdistractor.R;
 
 /**
  * @ClassName: FitnessTab

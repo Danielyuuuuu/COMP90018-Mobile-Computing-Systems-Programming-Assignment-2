@@ -4,7 +4,7 @@
     android:id="@+id/swiperefresh_recycle"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VoucherActivity">
+    tools:context=".vouchers.VoucherActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/demo_recycler"

@@ -1,8 +1,7 @@
-package com.example.dansdistractor;/**
- * Created by wongchihaul on 2021/9/22
- */
+package com.example.dansdistractor.fitness;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,13 +34,14 @@ public class TabAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new FitnessTab();
+                return new Monthly();
             case 1:
-                return new FitnessTab();
+                return new Weekly();
             case 2:
-                return new FitnessTab();
+                return new Yearly();
             default:
-                return null;
+                Toast.makeText(context.getApplicationContext(), "You've found a no man's land", Toast.LENGTH_SHORT).show();
+                return new Monthly();
         }
     }
     @Override

@@ -1,6 +1,8 @@
-package com.example.dansdistractor;/**
+package com.example.dansdistractor.vouchers;/**
  * Created by wongchihaul on 2021/9/22
  */
+
+import com.example.dansdistractor.R;
 
 import java.util.ArrayList;
 

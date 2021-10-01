@@ -1,4 +1,4 @@
-package com.example.dansdistractor;
+package com.example.dansdistractor.fitness;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.dansdistractor.R;
 import com.example.dansdistractor.utils.ChartStyle;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
