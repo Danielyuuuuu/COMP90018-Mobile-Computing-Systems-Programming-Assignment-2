@@ -37,13 +37,15 @@ public class TabAdapter extends FragmentPagerAdapter {
             case 0:
                 return new FitnessTab();
             case 1:
-                return new VoucherTab();
+                return new FitnessTab();
+            case 2:
+                return new FitnessTab();
             default:
                 return null;
         }
     }
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 }

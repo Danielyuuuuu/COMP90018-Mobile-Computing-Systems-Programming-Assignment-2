@@ -1,6 +1,4 @@
-package com.example.dansdistractor;/**
- * Created by wongchihaul on 2021/9/22
- */
+package com.example.dansdistractor;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
  * @ClassName: VoucherTab
- * @Description: //TODO
+ * @Description: DEPRECATED!!!
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 7:03 下午
  */
@@ -24,7 +22,7 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public VoucherTab() {
-        // Required empty public constructor
+
     }
 
 

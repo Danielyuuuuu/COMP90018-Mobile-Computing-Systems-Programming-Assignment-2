@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
     private final int resourceId;
     private final List<Voucher> voucherList;
 
-    public VoucherRecycleAdaptor(List<Voucher> _voucherList, int _resourceId) {
+    public VoucherRecycleAdaptor(ArrayList<com.example.dansdistractor.Voucher> _voucherList, int _resourceId) {
         resourceId = _resourceId;
         voucherList = _voucherList;
     }

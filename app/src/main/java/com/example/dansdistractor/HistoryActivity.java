@@ -21,8 +21,9 @@ public class HistoryActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Fitness Summary"));
-        tabLayout.addTab(tabLayout.newTab().setText("Vouchers"));
+        tabLayout.addTab(tabLayout.newTab().setText("Weekly"));
+        tabLayout.addTab(tabLayout.newTab().setText("Monthly"));
+        tabLayout.addTab(tabLayout.newTab().setText("Yearly"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 

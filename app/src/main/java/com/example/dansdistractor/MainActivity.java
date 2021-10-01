@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
+        btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
 
     }
