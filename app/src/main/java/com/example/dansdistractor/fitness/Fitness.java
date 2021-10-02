@@ -16,14 +16,14 @@ public class Fitness {
     //categories of fitness summary, displayed next to icons
     private String category;
     //the volume of fitness, e.g. 34 KM, 19342 steps
-    private long number;
+    private float number;
     //
 
     public Fitness() {
 
     }
 
-    public Fitness(int _fitnessIcon, String _fitnessCategory, long _fitnessNumber) {
+    public Fitness(int _fitnessIcon, String _fitnessCategory, float _fitnessNumber) {
         icon = _fitnessIcon;
         category = _fitnessCategory;
         number = _fitnessNumber;
@@ -46,7 +46,7 @@ public class Fitness {
         return category;
     }
 
-    public long getNumber() {
+    public float getNumber() {
         return number;
     }
 

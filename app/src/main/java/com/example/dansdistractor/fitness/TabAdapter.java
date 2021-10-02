@@ -34,9 +34,9 @@ public class TabAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new Monthly();
-            case 1:
                 return new Weekly();
+            case 1:
+                return new Monthly();
             case 2:
                 return new Yearly();
             default:

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.dansdistractor.R;
+import com.example.dansdistractor.utils.ChartStyle;
 
 /**
  * @ClassName: FitnessTab
@@ -22,20 +23,23 @@ import com.example.dansdistractor.R;
  */
 public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    protected int TYPE;
 
     public FitnessTab() {
-        // Required empty public constructor
+        // Set to WEEK Tab by default
+        TYPE = ChartStyle.WEEK;
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.history_recycler, container, false);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_recycle);
+        mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        FitnessRecycleAdaptor adaptor = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_card);
+        FitnessRecycleAdaptor adaptor = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_card, TYPE);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);
@@ -47,11 +51,6 @@ public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefresh
     @Override
     public void onRefresh() {
         Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }, 2000);
+        new Handler().postDelayed(() -> mSwipeRefreshLayout.setRefreshing(false), 2000);
     }
 }

@@ -12,6 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dansdistractor.R;
 import com.example.dansdistractor.utils.ChartStyle;
+import com.example.dansdistractor.utils.DemoData;
+import com.example.dansdistractor.utils.MonthData;
+import com.example.dansdistractor.utils.WeekData;
+import com.example.dansdistractor.utils.YearData;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.BarData;
@@ -21,24 +25,51 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @ClassName: FitnessRecycleAdapter
- * @Description: //TODO
+ * @Description: Bridge between Fitness Tab and User's data.
  * @Author: wongchihaul
  * @CreateDate: 2021/9/24 11:46 下午
  */
 public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
 
-    private final int resourceId;
-    private final List<Fitness> fitnessList;
+    public static final int STEPS = 0;
+    public static final int SPEED = 1;
+    public static final int DISTANCE = 2;
+    private int resourceId;
+    private List<Fitness> fitnessList;
+    private int TYPE;
+    // User's data should be store in List<BarEntry>
+    private List<BarEntry> userEntries;
 
-
-    public FitnessRecycleAdaptor(List<Fitness> _fitnessList, int _resourceId) {
+    /**
+     * This one doesn't specify user's data so use demo data instead.
+     *
+     * @param _fitnessList
+     * @param _resourceId
+     * @param _TYPE
+     */
+    public FitnessRecycleAdaptor(List<Fitness> _fitnessList, int _resourceId, int _TYPE) {
         resourceId = _resourceId;
         fitnessList = _fitnessList;
+        TYPE = _TYPE;
+    }
+
+    /**
+     * @param _fitnessList
+     * @param _resourceId
+     * @param _TYPE
+     * @param _userEntries
+     */
+    public FitnessRecycleAdaptor(List<Fitness> _fitnessList, int _resourceId, int _TYPE, List<BarEntry> _userEntries) {
+        resourceId = _resourceId;
+        fitnessList = _fitnessList;
+        TYPE = _TYPE;
+        userEntries = _userEntries;
     }
 
 
@@ -51,22 +82,67 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
         return viewHolder;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MyViewHolder mvh = (MyViewHolder) holder;
-        onBindViewHolder(mvh, position);
+        DemoData demoData = new WeekData();
+        switch (TYPE) {
+            case ChartStyle.WEEK:
+                break;
+            case ChartStyle.MONTH:
+                demoData = new MonthData();
+                break;
+            case ChartStyle.YEAR:
+                demoData = new YearData();
+                break;
+        }
+        onBindViewHolder(mvh, position, demoData);
+
     }
 
-
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    /**
+     * @param holder
+     * @param position
+     * @param demoData
+     */
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position, DemoData demoData) {
         Fitness fitness = fitnessList.get(position);
         holder.icon.setImageResource(fitness.getIcon());
         holder.category.setText(fitness.getCategory());
-        holder.number.setText(String.valueOf(fitness.getNumber()));
+        DecimalFormat df = new DecimalFormat("#0.00");
 //        initLineChart(holder.chart);
-        initBarChart(holder.chart);
+
+        List<BarEntry> entries;
+
+        if (userEntries != null) {
+
+            entries = userEntries;
+        } else {
+            entries = demoData.demoBarStep();
+        }
+        switch (position) {
+            case STEPS:
+                //steps
+                int steps = (int) DemoData.getAvg(demoData.demoBarStep());
+                holder.number.setText("avg: " + steps);
+                break;
+            case SPEED:
+                //speed
+                String speed = df.format(DemoData.getAvg(demoData.demoBarSpeed()));
+                holder.number.setText("avg: " + speed + "km/h");
+                entries = demoData.demoBarSpeed();
+                break;
+            case DISTANCE:
+                //distance
+                String distance = df.format(DemoData.getAvg(demoData.demoBarDistance()));
+                holder.number.setText("avg: " + distance + "km");
+                entries = demoData.demoBarDistance();
+                break;
+        }
 
 
+        initBarChart(holder.chart, entries, position);
     }
 
 
@@ -74,6 +150,7 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
     public int getItemCount() {
         return fitnessList.size();
     }
+
 
     private void initLineChart(LineChart chart) {
         List<Entry> entries = new ArrayList<>();
@@ -91,21 +168,23 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
 
     }
 
-    private void initBarChart(BarChart chart) {
+    /**
+     * @param chart
+     * @param entries
+     * @param category: steps, speed, distance
+     */
+    private void initBarChart(BarChart chart, List<BarEntry> entries, int category) {
         //Add data
-        List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(1, 9));
-        entries.add(new BarEntry(2, 3));
-        entries.add(new BarEntry(3, 5));
-        entries.add(new BarEntry(4, 15));
-        entries.add(new BarEntry(5, 2));
-        entries.add(new BarEntry(6, 4));
-        entries.add(new BarEntry(7, 8));
         BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
         BarData barData = new BarData(dataSet);
         chart.setData(barData);
         // set style
-        ChartStyle.defaultBarChart(chart);
+        if (category == STEPS) {
+            ChartStyle.defaultBarChart(chart, 10000, TYPE);
+        } else {
+            ChartStyle.defaultBarChart(chart, TYPE);
+        }
+
         // refresh
         chart.invalidate();
 
@@ -121,18 +200,13 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
 
         public MyViewHolder(@NonNull View view) {
             super(view);
-            icon = (ImageView) view.findViewById(R.id.fitness_icon);
-            category = (TextView) view.findViewById(R.id.fitness_category);
-            number = (TextView) view.findViewById(R.id.fitness_number);
+            icon = view.findViewById(R.id.fitness_icon);
+            category = view.findViewById(R.id.fitness_category);
+            number = view.findViewById(R.id.fitness_number);
 //            chart = (LineChart) view.findViewById(R.id.line_chart);
-            chart = (BarChart) view.findViewById(R.id.bar_chart);
+            chart = view.findViewById(R.id.bar_chart);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(), category.getText(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            view.setOnClickListener(v -> Toast.makeText(v.getContext(), category.getText(), Toast.LENGTH_SHORT).show());
 
         }
     }
