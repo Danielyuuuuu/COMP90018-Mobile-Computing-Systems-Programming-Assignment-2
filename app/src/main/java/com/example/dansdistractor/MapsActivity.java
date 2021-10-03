@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -35,11 +34,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
@@ -51,8 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ActivityMapsBinding binding;
 
     MyApplication myApplication;
-    List<Location> savedLocations;
-    List<LatLng> targetLocations;
+//    List<Location> historyLocations;
+//    List<LatLng> targetLocations;
 
     // Location request is a config file for all settings related to FusedLocationProviderClient
     LocationRequest locationRequest;
@@ -63,9 +59,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient fusedLocationProviderClient;
 
     // Current location
-    Location currentLocation;
+//    Location currentLocation;
 
     Marker currentLocationMarker = null;
+    List<Marker> targetLocationsMarkers;
 
     Button btn_pause;
 
@@ -95,6 +92,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestLocationPermission();
 
         btn_pause = findViewById(R.id.btn_pause);
+
+        targetLocationsMarkers = new ArrayList<>();
 
         // The pause/resume button
         btn_pause.setOnClickListener(new View.OnClickListener() {
@@ -204,9 +203,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    currentLocation = location;
-                    savedLocations = myApplication.getMyLocations();
-                    savedLocations.add(currentLocation);
+//                    currentLocation = location;
+                    myApplication.getMyLocations().add(location);
                     Toast.makeText(MapsActivity.this, "Update location", Toast.LENGTH_SHORT).show();
 
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -219,13 +217,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Run this when starting a new workout session
                     if (!sessionStarted){
                         myApplication.startSession();
-                        targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), 5000);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
                             markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
-                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            targetLocationsMarkers.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
                     }
 
@@ -241,7 +239,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Toast.makeText(myApplication, "Resuming the workout session", Toast.LENGTH_SHORT).show();
                     }
 
-                    myApplication.getMyLocations().add(currentLocation);
+                    // Check if the user has reached the target location
+//                    for ()
+
+                    myApplication.getMyLocations().add(location);
                 }
             });
 
