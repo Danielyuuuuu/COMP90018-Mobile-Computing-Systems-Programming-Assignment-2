@@ -270,7 +270,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
 
             // Target location reached
-            if(distances[0] <= 40){
+            if(distances[0] <= 50){
+                myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
                 Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_SHORT).show();
                 targetMarker.remove();
                 itr.remove();

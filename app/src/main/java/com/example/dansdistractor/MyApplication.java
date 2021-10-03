@@ -72,10 +72,7 @@ public class MyApplication extends Application {
     }
 
     protected void endSession(){
-        myLocations = new ArrayList<>();
-        targetLocations = new ArrayList<>();
         sessionStarted = false;
-        completedTargetLocations = new ArrayList<>();
     }
 
     public void onCreate(){
