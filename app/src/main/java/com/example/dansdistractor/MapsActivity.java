@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -35,17 +34,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
+    public static int NUMBER_OF_TARGET_LOCATIONS = 5;
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
+    private static int GENERATED_RADIUS = 5000;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -72,6 +69,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
+            GENERATED_RADIUS = b.getInt("radius");
+        }
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -219,7 +221,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Run this when starting a new workout session
                     if (!sessionStarted){
                         myApplication.startSession();
-                        targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 5000);
+                        targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), GENERATED_RADIUS);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
