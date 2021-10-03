@@ -1,5 +1,7 @@
 package com.example.dansdistractor;
 
+import com.example.dansdistractor.vouchers.Voucher;
+
 import java.util.ArrayList;
 
 public class UserSchema {
