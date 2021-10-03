@@ -1,9 +1,13 @@
 package com.example.dansdistractor;
 
+import java.util.ArrayList;
+
 public class UserSchema {
 
     public String name, email, location;
     public int points, totaldistance, usertotalpins;
+    public ArrayList<Voucher> vouchers;
+    public ArrayList<UserHistorySchema> userhistories;
 
     public UserSchema() {
     }
@@ -15,6 +19,7 @@ public class UserSchema {
         this.totaldistance = 0;
         this.usertotalpins = 0;
         this.location = null;
-
+        this.vouchers = new ArrayList<Voucher>();
+        this.userhistories = new ArrayList<UserHistorySchema>();
     }
 }
