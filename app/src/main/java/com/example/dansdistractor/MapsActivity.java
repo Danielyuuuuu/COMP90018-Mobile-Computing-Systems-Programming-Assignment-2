@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -47,8 +49,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ActivityMapsBinding binding;
 
     MyApplication myApplication;
-//    List<Location> historyLocations;
-//    List<LatLng> targetLocations;
 
     // Location request is a config file for all settings related to FusedLocationProviderClient
     LocationRequest locationRequest;
@@ -58,11 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // Google's API for location services. The majority of the app functions using this class.
     FusedLocationProviderClient fusedLocationProviderClient;
 
-    // Current location
-//    Location currentLocation;
-
     Marker currentLocationMarker = null;
-    List<Marker> targetLocationsMarkers;
+    List<Marker> targetLocationsMarker;
 
     Button btn_pause;
 
@@ -93,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btn_pause = findViewById(R.id.btn_pause);
 
-        targetLocationsMarkers = new ArrayList<>();
+        targetLocationsMarker = new ArrayList<>();
 
         // The pause/resume button
         btn_pause.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +141,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptions.position(currentLatLng);
                 markerOptions.title("Lat: " + currentLatLng.latitude + "; Lon: " + currentLatLng.longitude);
                 currentLocationMarker = mMap.addMarker(markerOptions);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
+//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
+
+                // Check if the user has reached the target location
+                checkIfReachedTargetLocation(locationResult.getLastLocation());
             }
         };
 
@@ -223,7 +223,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
                             markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
-                            targetLocationsMarkers.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+                            targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
                     }
 
@@ -238,9 +238,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         myApplication.setSessionPaused(false);
                         Toast.makeText(myApplication, "Resuming the workout session", Toast.LENGTH_SHORT).show();
                     }
-
-                    // Check if the user has reached the target location
-//                    for ()
 
                     myApplication.getMyLocations().add(location);
                 }
@@ -258,6 +255,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
+
+    // Check if the user has reached the target location
+    private void checkIfReachedTargetLocation(Location location){
+        float[] distances = new float[1];
+
+        Iterator<Marker> itr = targetLocationsMarker.iterator();
+        while(itr.hasNext()){
+            Marker targetMarker = itr.next();
+            Location.distanceBetween(location.getLatitude(), location.getLongitude(), targetMarker.getPosition().latitude, targetMarker.getPosition().longitude, distances);
+            Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
+
+            // Target location reached
+            if(distances[0] <= 40){
+                Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_SHORT).show();
+                targetMarker.remove();
+                itr.remove();
             }
         }
     }
