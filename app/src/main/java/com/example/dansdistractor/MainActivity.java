@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 EditText dots = settings.findViewById(R.id.dots);
                 EditText radius = settings.findViewById(R.id.radius);
                 dots.setText("5");
-                radius.setText("5");
+                radius.setText("5000");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Settings for Workout Session");

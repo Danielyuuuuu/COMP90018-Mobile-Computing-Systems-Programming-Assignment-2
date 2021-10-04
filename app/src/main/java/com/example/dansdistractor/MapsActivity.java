@@ -90,7 +90,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (b != null) {
             NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
             GENERATED_RADIUS = b.getInt("radius");
+            Log.i("MapsActivity", "onCreate: b != null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
+            Log.i("MapsActivity", "onCreate: b != null: radius: " + GENERATED_RADIUS);
         }
+        Log.i("MapsActivity", "onCreate: b == null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
+        Log.i("MapsActivity", "onCreate: b == null: radius: " + GENERATED_RADIUS);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
