@@ -44,6 +44,7 @@ import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -201,7 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DirectionsApiRequest directionsApiRequest = new DirectionsApiRequest(mGeoApiContext);
 
         directionsApiRequest.alternatives(false);
-        directionsApiRequest.origin(new com.google.maps.model.LatLng(currentLocationMarker.getPosition().latitude, currentLocationMarker.getPosition().longitude));
+        directionsApiRequest.origin(new com.google.maps.model.LatLng(currentLocationMarker.getPosition().latitude, currentLocationMarker.getPosition().longitude)).mode(TravelMode.WALKING);
 
         directionsApiRequest.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
