@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dansdistractor.vouchers.VoucherActivity;
@@ -21,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_vouchers;
     private Button btn_fitness;
     MyApplication myApplication;
+    TextView textview_setting;
+    Bundle b = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +37,35 @@ public class MainActivity extends AppCompatActivity {
         btn_summary = findViewById(R.id.button_summary);
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
+        textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
 
+        final EditText editText = new EditText(this);
+        textview_setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View settings = getLayoutInflater().inflate(R.layout.dialog_workout_session_setting, null);
+                EditText dots = settings.findViewById(R.id.dots);
+                EditText radius = settings.findViewById(R.id.radius);
+                dots.setText("5");
+                radius.setText("5");
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Settings for Workout Session");
+                builder.setView(settings);
+                builder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        b.putInt("radius", Integer.parseInt(radius.getText().toString()));
+                        b.putInt("dots", Integer.parseInt(dots.getText().toString()));
+                        Toast.makeText(MainActivity.this, "setting updated", Toast.LENGTH_LONG).show();
+                    }
+                });
+                builder.create();
+                builder.show();
+            }
+        });
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
 //                        myApplication.startSession();
                             Intent i = new Intent(MainActivity.this, MapsActivity.class);
+                            i.putExtras(b);
                             startActivity(i);
                         }
                     });

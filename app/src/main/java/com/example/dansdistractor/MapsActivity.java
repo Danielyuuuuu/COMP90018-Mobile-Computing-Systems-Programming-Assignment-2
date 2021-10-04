@@ -54,10 +54,11 @@ import java.util.Random;
 import io.opencensus.tags.Tag;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private static final int NUMBER_OF_TARGET_LOCATIONS = 5;
+    public static int NUMBER_OF_TARGET_LOCATIONS = 5;
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
+    private static int GENERATED_RADIUS = 5000;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -85,6 +86,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
+            GENERATED_RADIUS = b.getInt("radius");
+        }
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
