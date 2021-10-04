@@ -157,9 +157,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(currentLatLng);
-                markerOptions.title("Lat: " + currentLatLng.latitude + "; Lon: " + currentLatLng.longitude);
+                markerOptions.title("My current location");
                 currentLocationMarker = mMap.addMarker(markerOptions);
-//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
 
                 // Check if the user has reached the target location
                 checkIfReachedTargetLocation(locationResult.getLastLocation());
@@ -189,7 +188,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 marker.setTag(clicks);
                 Toast.makeText(MapsActivity.this, "Marker " + marker.getTitle() + " was clicked " + marker.getTag(), Toast.LENGTH_SHORT).show();
 
+                // Generate a direction when the user clicks onto one of the target locations
                 generateDirection(marker);
+
+
 
                 return false;
             }
@@ -225,7 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 DirectionsRoute route = result.routes[0];
-                Log.i("MapsActivity", "drawPolylineOnMap: route: " + route.toString());
+                Log.i("MapsActivity", "drawPolylineOnMap: route: " + route.legs[0].toString());
                 List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
                 List<LatLng> newDecodedPath = new ArrayList<>();
@@ -242,27 +244,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     polyline.remove();
                 }
 
-                // Draw the polyline when there is no polyline drawn before
-                if (polylineDestination == null){
-                    polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                    polyline.setColor(R.color.blue);
-                    polyline.setClickable(true);
-                    polylineDestination = marker;
-                }
-                else{
-                    // Draw the polyline only if the previous target location is not the same as the current target location
-                    if(!polylineDestination.equals(marker)){
+                // Draw the polyline only if the destination is not the current location
+                if (!marker.equals(currentLocationMarker)){
+                    // Draw the polyline when there is no polyline drawn before
+                    if (polylineDestination == null){
                         polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                         polyline.setColor(R.color.blue);
                         polyline.setClickable(true);
                         polylineDestination = marker;
                     }
-                    // Do not draw anything, and set the polyline destination to null
                     else{
-                        polylineDestination = null;
+                        // Draw the polyline only if the previous target location is not the same as the current target location
+                        if(!polylineDestination.equals(marker)){
+                            polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                            polyline.setColor(R.color.blue);
+                            polyline.setClickable(true);
+                            polylineDestination = marker;
+                        }
+                        // Do not draw anything, and set the polyline destination to null
+                        else{
+                            polylineDestination = null;
+                        }
                     }
                 }
-
+                else{
+                    polylineDestination = null;
+                }
             }
         });
     }
@@ -316,14 +323,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-//                    currentLocation = location;
                     myApplication.getMyLocations().add(location);
                     Toast.makeText(MapsActivity.this, "Update location", Toast.LENGTH_SHORT).show();
 
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
-                    markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
+                    markerOptions.title("My current location");
                     currentLocationMarker = mMap.addMarker(markerOptions);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
@@ -335,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
-                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
+                            markerOptions.title("Target location");
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
                     }
@@ -345,7 +351,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for(LatLng targetLocation: myApplication.getTargetLocations()){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
-                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
+                            markerOptions.title("Target location");
                             mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                         }
                         myApplication.setSessionPaused(false);
