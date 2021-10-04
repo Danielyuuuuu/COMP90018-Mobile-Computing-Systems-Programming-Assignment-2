@@ -241,19 +241,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     polyline.remove();
                 }
 
-                if (polylineDestination == null || !polylineDestination.equals(marker)){
+                // Draw the polyline when there is no polyline drawn before
+                if (polylineDestination == null){
                     polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                     polyline.setColor(R.color.blue);
                     polyline.setClickable(true);
                     polylineDestination = marker;
                 }
                 else{
+                    // Draw the polyline only if the previous target location is not the same as the current target location
                     if(!polylineDestination.equals(marker)){
                         polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
                         polyline.setColor(R.color.blue);
                         polyline.setClickable(true);
                         polylineDestination = marker;
                     }
+                    // Do not draw anything, and set the polyline destination to null
                     else{
                         polylineDestination = null;
                     }
