@@ -2,6 +2,7 @@ package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -11,6 +12,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -29,13 +33,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PendingResult;
+import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import io.opencensus.tags.Tag;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     public static int NUMBER_OF_TARGET_LOCATIONS = 5;
@@ -47,24 +63,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
 
-    MyApplication myApplication;
-    List<Location> savedLocations;
-    List<LatLng> targetLocations;
+    private MyApplication myApplication;
 
     // Location request is a config file for all settings related to FusedLocationProviderClient
-    LocationRequest locationRequest;
+    private LocationRequest locationRequest;
 
-    LocationCallback locationCallBack;
+    private LocationCallback locationCallBack;
 
     // Google's API for location services. The majority of the app functions using this class.
-    FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
-    // Current location
-    Location currentLocation;
+    private Marker currentLocationMarker = null;
+    private List<Marker> targetLocationsMarker;
 
-    Marker currentLocationMarker = null;
+    private Button btn_pause;
 
-    Button btn_pause;
+    private GeoApiContext mGeoApiContext = null;
+
+    Polyline polyline;
+    Marker polylineDestination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +115,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btn_pause = findViewById(R.id.btn_pause);
 
+        targetLocationsMarker = new ArrayList<>();
+
         // The pause/resume button
         btn_pause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +137,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
-
     }
 
     /**
@@ -145,9 +163,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(currentLatLng);
-                markerOptions.title("Lat: " + currentLatLng.latitude + "; Lon: " + currentLatLng.longitude);
+                markerOptions.title("My current location");
                 currentLocationMarker = mMap.addMarker(markerOptions);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12));
+
+                // Check if the user has reached the target location
+                checkIfReachedTargetLocation(locationResult.getLastLocation());
             }
         };
 
@@ -155,6 +175,109 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
         }
+
+        if(mGeoApiContext == null){
+            mGeoApiContext = new GeoApiContext.Builder()
+                    .apiKey("AIzaSyDxdEHhWFp-mLWMc5l7xA7Ug4WTCsLVFEw")
+                    .build();
+        }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                // lets count the number of times that pin is clicked
+                Integer clicks = (Integer) marker.getTag();
+                if(clicks == null){
+                    clicks = 0;
+                }
+                clicks++;
+                marker.setTag(clicks);
+                Toast.makeText(MapsActivity.this, "Marker " + marker.getTitle() + " was clicked " + marker.getTag(), Toast.LENGTH_SHORT).show();
+
+                // Generate a direction when the user clicks onto one of the target locations
+                generateDirection(marker);
+
+
+
+                return false;
+            }
+        });
+    }
+
+    // To generate a direction from the current location to the selected destination
+    private void generateDirection(Marker marker){
+        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+        DirectionsApiRequest directionsApiRequest = new DirectionsApiRequest(mGeoApiContext);
+
+        directionsApiRequest.alternatives(false);
+        directionsApiRequest.origin(new com.google.maps.model.LatLng(currentLocationMarker.getPosition().latitude, currentLocationMarker.getPosition().longitude)).mode(TravelMode.WALKING);
+
+        directionsApiRequest.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+            @Override
+            public void onResult(DirectionsResult result) {
+                Log.i("MapsActivity", "generateDirection: routes: " + result.routes[0].toString());
+                drawPolylineOnMap(result, marker);
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                Log.i("MapsActivity", "generateDirection: Failed: " + e.toString());
+            }
+        });
+        Log.i("MapsActivity", "generateDirection: after the request");
+    }
+
+    // To draw the direction polyline on to the map
+    private void drawPolylineOnMap(final DirectionsResult result, Marker marker){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                DirectionsRoute route = result.routes[0];
+                Log.i("MapsActivity", "drawPolylineOnMap: route: " + route.legs[0].toString());
+                List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                List<LatLng> newDecodedPath = new ArrayList<>();
+
+                // To loop through the LatLng coordinates of the polyline
+                for(com.google.maps.model.LatLng latLng: decodedPath){
+                    Log.i("MapsActivity", "drawPolylineOnMap: LatLng: " + latLng.toString());
+
+                    newDecodedPath.add(new LatLng(latLng.lat, latLng.lng));
+                }
+
+                // Remove the polyline that is currently in the map
+                if (polyline != null){
+                    polyline.remove();
+                }
+
+                // Draw the polyline only if the destination is not the current location
+                if (!marker.equals(currentLocationMarker)){
+                    // Draw the polyline when there is no polyline drawn before
+                    if (polylineDestination == null){
+                        polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                        polyline.setColor(R.color.blue);
+                        polyline.setClickable(true);
+                        polylineDestination = marker;
+                    }
+                    else{
+                        // Draw the polyline only if the previous target location is not the same as the current target location
+                        if(!polylineDestination.equals(marker)){
+                            polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                            polyline.setColor(R.color.blue);
+                            polyline.setClickable(true);
+                            polylineDestination = marker;
+                        }
+                        // Do not draw anything, and set the polyline destination to null
+                        else{
+                            polylineDestination = null;
+                        }
+                    }
+                }
+                else{
+                    polylineDestination = null;
+                }
+            }
+        });
     }
 
     // Generate a list of random points
@@ -206,28 +329,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationTask.addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    currentLocation = location;
-                    savedLocations = myApplication.getMyLocations();
-                    savedLocations.add(currentLocation);
+                    myApplication.getMyLocations().add(location);
                     Toast.makeText(MapsActivity.this, "Update location", Toast.LENGTH_SHORT).show();
 
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
-                    markerOptions.title("Lat: " + location.getLatitude() + "; Lon: " + location.getLongitude());
+                    markerOptions.title("My current location");
                     currentLocationMarker = mMap.addMarker(markerOptions);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
 
                     // Run this when starting a new workout session
                     if (!sessionStarted){
                         myApplication.startSession();
-                        targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), GENERATED_RADIUS);
+                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), 5000);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
-                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
-                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            markerOptions.title("Target location");
+                            targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
                     }
 
@@ -236,14 +357,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         for(LatLng targetLocation: myApplication.getTargetLocations()){
                             markerOptions = new MarkerOptions();
                             markerOptions.position(targetLocation);
-                            markerOptions.title("Lat: " + targetLocation.latitude + "; Lon: " + targetLocation.longitude);
+                            markerOptions.title("Target location");
                             mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                         }
                         myApplication.setSessionPaused(false);
                         Toast.makeText(myApplication, "Resuming the workout session", Toast.LENGTH_SHORT).show();
                     }
 
-                    myApplication.getMyLocations().add(currentLocation);
+                    myApplication.getMyLocations().add(location);
                 }
             });
 
@@ -259,6 +380,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
+
+    // Check if the user has reached the target location
+    private void checkIfReachedTargetLocation(Location location){
+        float[] distances = new float[1];
+
+        Iterator<Marker> itr = targetLocationsMarker.iterator();
+        while(itr.hasNext()){
+            Marker targetMarker = itr.next();
+            Location.distanceBetween(location.getLatitude(), location.getLongitude(), targetMarker.getPosition().latitude, targetMarker.getPosition().longitude, distances);
+            Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
+
+            // Target location reached
+            if(distances[0] <= 50){
+                myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
+                Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_SHORT).show();
+                targetMarker.remove();
+                itr.remove();
             }
         }
     }

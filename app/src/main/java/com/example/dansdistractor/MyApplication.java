@@ -15,8 +15,18 @@ public class MyApplication extends Application {
 
     private List<LatLng> targetLocations = null;
 
+    private List<LatLng> completedTargetLocations = null;
+
     private Boolean sessionStarted = false;
     private Boolean sessionPaused = false;
+
+    public List<LatLng> getCompletedTargetLocations() {
+        return completedTargetLocations;
+    }
+
+    public void setCompletedTargetLocations(List<LatLng> completedTargetLocations) {
+        this.completedTargetLocations = completedTargetLocations;
+    }
 
     protected Boolean getSessionPaused(){
         return sessionPaused;
@@ -58,11 +68,10 @@ public class MyApplication extends Application {
         myLocations = new ArrayList<>();
         targetLocations = new ArrayList<>();
         sessionStarted = true;
+        completedTargetLocations = new ArrayList<>();
     }
 
     protected void endSession(){
-        myLocations = new ArrayList<>();
-        targetLocations = new ArrayList<>();
         sessionStarted = false;
     }
 
@@ -71,5 +80,6 @@ public class MyApplication extends Application {
         singleton = this;
         myLocations = new ArrayList<>();
         targetLocations = new ArrayList<>();
+        completedTargetLocations = new ArrayList<>();
     }
 }
