@@ -2,6 +2,7 @@ package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -11,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,13 +33,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
+import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -70,6 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
 
     private GeoApiContext mGeoApiContext = null;
+
+    Polyline polyline;
+    Marker polylineDestination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    // To generate a direction from the current location to the selected destination
     private void generateDirection(Marker marker){
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
         DirectionsApiRequest directionsApiRequest = new DirectionsApiRequest(mGeoApiContext);
@@ -196,6 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onResult(DirectionsResult result) {
                 Log.i("MapsActivity", "generateDirection: routes: " + result.routes[0].toString());
+                drawPolylineOnMap(result, marker);
             }
 
             @Override
@@ -204,6 +216,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         Log.i("MapsActivity", "generateDirection: after the request");
+    }
+
+    // To draw the direction polyline on to the map
+    private void drawPolylineOnMap(final DirectionsResult result, Marker marker){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                DirectionsRoute route = result.routes[0];
+                Log.i("MapsActivity", "drawPolylineOnMap: route: " + route.toString());
+                List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                List<LatLng> newDecodedPath = new ArrayList<>();
+
+                // To loop through the LatLng coordinates of the polyline
+                for(com.google.maps.model.LatLng latLng: decodedPath){
+                    Log.i("MapsActivity", "drawPolylineOnMap: LatLng: " + latLng.toString());
+
+                    newDecodedPath.add(new LatLng(latLng.lat, latLng.lng));
+                }
+
+                // Remove the polyline that is currently in the map
+                if (polyline != null){
+                    polyline.remove();
+                }
+
+                if (polylineDestination == null || !polylineDestination.equals(marker)){
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setColor(R.color.blue);
+                    polyline.setClickable(true);
+                    polylineDestination = marker;
+                }
+                else{
+                    if(!polylineDestination.equals(marker)){
+                        polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                        polyline.setColor(R.color.blue);
+                        polyline.setClickable(true);
+                        polylineDestination = marker;
+                    }
+                    else{
+                        polylineDestination = null;
+                    }
+                }
+
+            }
+        });
     }
 
     // Generate a list of random points
