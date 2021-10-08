@@ -19,7 +19,7 @@ import com.example.dansdistractor.vouchers.VoucherActivity;
 public class MainActivity extends AppCompatActivity {
 
     Button btn_map;
-    private Button btn_login;
+    private Button btn_login, btn_pushup;
     Button btn_summary;
     private Button btn_vouchers;
     private Button btn_fitness;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         btn_summary = findViewById(R.id.button_summary);
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
+        btn_pushup = findViewById(R.id.button_pushup);
         textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
@@ -73,6 +74,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, Login.class));
             }
         });
+
+        btn_pushup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Pushup.class));
+            }
+        });
+
+
         btn_summary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
