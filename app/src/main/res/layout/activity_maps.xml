@@ -13,14 +13,45 @@
 
     <Button
         android:id="@+id/btn_pause"
-        android:layout_width="186dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="113dp"
-        android:layout_marginEnd="112dp"
-        android:layout_marginBottom="123dp"
-        android:text="Pause" />
+        android:layout_marginStart="167dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="134dp"
+        android:background="@drawable/btn_bg"
+        android:text="Pause"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_end"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="290dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/btn_bg"
+        android:text="End"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txt_steps"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="271dp"
+        android:text="Step:"
+        android:textColor="@color/blue"
+        android:textSize="23dp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
