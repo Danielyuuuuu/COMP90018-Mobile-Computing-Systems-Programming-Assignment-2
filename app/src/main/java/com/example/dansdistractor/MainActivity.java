@@ -13,13 +13,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dansdistractor.message.Locator;
 import com.example.dansdistractor.vouchers.VoucherActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
     Button btn_map;
-    private Button btn_login, btn_pushup;
+    private Button btn_login, btn_pushup, btn_message;
     Button btn_summary;
     private Button btn_vouchers;
     private Button btn_fitness;
@@ -38,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
         btn_pushup = findViewById(R.id.button_pushup);
+        btn_message = findViewById(R.id.button_message);
+
+
+
         textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
@@ -79,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, Pushup.class));
+            }
+        });
+
+        btn_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Locator.class));
             }
         });
 
