@@ -77,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> targetLocationsMarker;
 
     private Button btn_pause;
+    private Button btn_end;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -118,6 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestLocationPermission();
 
         btn_pause = findViewById(R.id.btn_pause);
+        btn_end = findViewById(R.id.btn_end);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -139,6 +141,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     btn_pause.setText("Resume");
                     myApplication.setSessionPaused(true);
                 }
+            }
+        });
+
+        btn_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeWorkoutPrompt();
             }
         });
     }
@@ -448,31 +457,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         // Create a prompt message asking if the user wants to close the workout session
         else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setCancelable(false);
-            builder.setMessage("Do you want to close this workout session?");
-
-            // The map closes when the user press 'Yes'
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-                    myApplication.endSession();
-                    finish();
-                }
-            });
-
-            // The map will not be closed when the user press 'No'
-            builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            AlertDialog alert=builder.create();
-            alert.show();
+            closeWorkoutPrompt();
         }
 
+    }
+
+    private void closeWorkoutPrompt(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("Do you want to close this workout session?");
+
+        // The map closes when the user press 'Yes'
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                myApplication.endSession();
+                finish();
+            }
+        });
+
+        // The map will not be closed when the user press 'No'
+        builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alert=builder.create();
+        alert.show();
     }
 }
