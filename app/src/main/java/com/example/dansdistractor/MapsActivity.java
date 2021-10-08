@@ -9,6 +9,10 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +21,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -53,7 +58,7 @@ import java.util.Random;
 
 import io.opencensus.tags.Tag;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener {
     public static int NUMBER_OF_TARGET_LOCATIONS = 5;
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     public static final int FAST_UPDATE_INTERVAL = 2;
@@ -77,11 +82,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private List<Marker> targetLocationsMarker;
 
     private Button btn_pause;
+    private Button btn_end;
 
     private GeoApiContext mGeoApiContext = null;
 
     Polyline polyline;
     Marker polylineDestination;
+
+    // Variables for the step counter
+    private static final int PERMISSION_ACTIVITY_RECOGNITION = 20;
+    private TextView txt_stepCounter;
+    private SensorManager sensorManager;
+    private Sensor mStepCounter;
+    private boolean isStepCounterSensorPresent;
+//    private int stepCount = 0;
+//    private boolean hasInitialStepCount = false;
+//    private int initialStepCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestLocationPermission();
 
         btn_pause = findViewById(R.id.btn_pause);
+        btn_end = findViewById(R.id.btn_end);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -141,6 +158,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+
+        btn_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeWorkoutPrompt();
+            }
+        });
+
+        txt_stepCounter = findViewById(R.id.txt_steps);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        requestActivityRecognitionPermission();
+
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
+            mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+            isStepCounterSensorPresent = true;
+            Toast.makeText(this, "Step sensor found", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            txt_stepCounter.setText("The step counter sensor is not present");
+            isStepCounterSensorPresent = false;
+            Toast.makeText(this, "Step sensor not found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -200,12 +241,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // Generate a direction when the user clicks onto one of the target locations
                 generateDirection(marker);
-
-
-
                 return false;
             }
         });
+
     }
 
     // To generate a direction from the current location to the selected destination
@@ -448,31 +487,89 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         // Create a prompt message asking if the user wants to close the workout session
         else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setCancelable(false);
-            builder.setMessage("Do you want to close this workout session?");
-
-            // The map closes when the user press 'Yes'
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-                    myApplication.endSession();
-                    finish();
-                }
-            });
-
-            // The map will not be closed when the user press 'No'
-            builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            AlertDialog alert=builder.create();
-            alert.show();
+            closeWorkoutPrompt();
         }
 
+    }
+
+    private void closeWorkoutPrompt(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("Do you want to close this workout session?");
+
+        // The map closes when the user press 'Yes'
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
+                myApplication.endSession();
+                finish();
+            }
+        });
+
+        // The map will not be closed when the user press 'No'
+        builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alert=builder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (!myApplication.isHasInitialStepCount()){
+            myApplication.setStepCount(0);
+            myApplication.setInitialStepCount((int) event.values[0]);
+            txt_stepCounter.setText("Step: 0");
+            myApplication.setHasInitialStepCount(true);
+        }
+        else{
+            myApplication.setStepCount((int) event.values[0] - myApplication.getInitialStepCount());
+            txt_stepCounter.setText("Step: " + myApplication.getStepCount());
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
+            sensorManager.unregisterListener(this, mStepCounter);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
+            mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+            if(mStepCounter != null){
+                sensorManager.registerListener(this, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
+            }
+            else{
+                Toast.makeText(this, "Step counter not found", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // To request location permission from the user
+    private void requestActivityRecognitionPermission(){
+        // Permission granted, do nothing
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        else{
+            // Permission not granted yet
+            requestPermissions(new String[] {Manifest.permission.ACTIVITY_RECOGNITION}, PERMISSION_ACTIVITY_RECOGNITION);
+        }
     }
 }

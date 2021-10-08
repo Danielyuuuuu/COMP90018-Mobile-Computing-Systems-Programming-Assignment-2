@@ -19,6 +19,33 @@ public class MyApplication extends Application {
 
     private Boolean sessionStarted = false;
     private Boolean sessionPaused = false;
+    private int stepCount = 0;
+    private boolean hasInitialStepCount = false;
+    private int initialStepCount = 0;
+
+    public int getStepCount() {
+        return stepCount;
+    }
+
+    public void setStepCount(int stepCount) {
+        this.stepCount = stepCount;
+    }
+
+    public boolean isHasInitialStepCount() {
+        return hasInitialStepCount;
+    }
+
+    public void setHasInitialStepCount(boolean hasInitialStepCount) {
+        this.hasInitialStepCount = hasInitialStepCount;
+    }
+
+    public int getInitialStepCount() {
+        return initialStepCount;
+    }
+
+    public void setInitialStepCount(int initialStepCount) {
+        this.initialStepCount = initialStepCount;
+    }
 
     public List<LatLng> getCompletedTargetLocations() {
         return completedTargetLocations;
@@ -69,10 +96,14 @@ public class MyApplication extends Application {
         targetLocations = new ArrayList<>();
         sessionStarted = true;
         completedTargetLocations = new ArrayList<>();
+        stepCount = 0;
+        hasInitialStepCount = false;
+        initialStepCount = 0;
     }
 
     protected void endSession(){
         sessionStarted = false;
+        hasInitialStepCount = false;
     }
 
     public void onCreate(){
@@ -81,5 +112,8 @@ public class MyApplication extends Application {
         myLocations = new ArrayList<>();
         targetLocations = new ArrayList<>();
         completedTargetLocations = new ArrayList<>();
+        stepCount = 0;
+        hasInitialStepCount = false;
+        initialStepCount = 0;
     }
 }

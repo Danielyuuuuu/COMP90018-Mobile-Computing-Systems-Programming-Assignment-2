@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         myApplication = (MyApplication)getApplicationContext();
 
+        // Set up initial value
+        b.putInt("radius", 5000);
+        b.putInt("dots", 5);
+
         final EditText editText = new EditText(this);
         textview_setting.setOnClickListener(new View.OnClickListener() {
             @Override
