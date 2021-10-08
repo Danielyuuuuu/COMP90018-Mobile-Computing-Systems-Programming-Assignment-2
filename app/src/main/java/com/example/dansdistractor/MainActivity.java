@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     MyApplication myApplication;
     TextView textview_setting;
     Bundle b = new Bundle();
-    private Button btn_stepCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
         textview_setting = findViewById(R.id.setting);
-        btn_stepCounter = findViewById(R.id.btn_stepCounter);
 
         myApplication = (MyApplication)getApplicationContext();
 
@@ -128,14 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
         btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
-
-        btn_stepCounter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, StepCounter.class);
-                startActivity(i);
-            }
-        });
 
     }
 

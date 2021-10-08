@@ -18,9 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DansDistractor">
         <activity
-            android:name=".StepCounter"
-            android:exported="true" />
-        <activity
             android:name=".vouchers.VoucherActivity"
             android:exported="true" />
         <activity
