@@ -11,20 +11,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener{
 
     private RelativeLayout logout;
-    private FirebaseUser user;
-    private DatabaseReference reference;
-    private String userID;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private String userID = user.getUid();
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference docRefCurrentUser = db.collection("Users").document(userID);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +36,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         logout = (RelativeLayout) findViewById(R.id.logout);
         logout.setOnClickListener(this);
 
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users");
-        userID = user.getUid();
-
         final TextView username = (TextView) findViewById(R.id.username);
         final TextView useremail = (TextView) findViewById(R.id.useremail);
         final TextView userpoints = (TextView) findViewById(R.id.userpoints);
         final TextView usertotaldistance = (TextView) findViewById(R.id.usertotaldistance);
         final TextView usertotalpins = (TextView) findViewById(R.id.usertotalpins);
 
-
-        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        docRefCurrentUser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                UserSchema userProfile = snapshot.getValue(UserSchema.class);
+            public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                UserSchema userProfile = documentSnapshot.toObject(UserSchema.class);
 
                 if (userProfile != null) {
                     String nameUserProfile = userProfile.name;
@@ -58,7 +54,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     int usertotaldistanceUserProfile = userProfile.totaldistance;
                     int usertotalpinsUserProfile = userProfile.usertotalpins;
 
-
                     username.setText(nameUserProfile);
                     useremail.setText(emailUserProfile);
                     userpoints.setText(String.valueOf(userpointsUserProfile));
@@ -66,14 +61,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     usertotalpins.setText(String.valueOf(usertotalpinsUserProfile));
                 }
             }
-
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onFailure(@NonNull Exception e) {
                 Toast.makeText(ProfileActivity.this, "Unable to obtain user info", Toast.LENGTH_LONG).show();
             }
         });
-
-
     }
 
     @Override
