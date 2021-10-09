@@ -12,17 +12,23 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dansdistractor.R;
+import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,8 +39,10 @@ public class Locator extends AppCompatActivity {
     public static final int DEFAULT_FAST_UPDATE_INTERVAL = 1;
     private static final int PERMISSIONS_FINE_LOCATION = 99;
 
-    TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed, tv_sensor, tv_updates, tv_address;
-    Switch sw_locationsupdates, sw_gps;
+    private TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed, tv_sensor, tv_updates, tv_address;
+    private Switch sw_locationsupdates, sw_gps;
+    private Button btn_submit;
+    private EditText et_content;
 
     // Google's API for location services
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -47,6 +55,12 @@ public class Locator extends AppCompatActivity {
 
     // A callback function whenever the location is updated
     LocationCallback locationCallBack;
+
+    // Store GPS location value
+    private Location userLocation;
+
+    // Access to Google Firestore
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -65,6 +79,10 @@ public class Locator extends AppCompatActivity {
         sw_locationsupdates = findViewById(R.id.sw_locationsupdates);
         sw_gps = findViewById(R.id.sw_gps);
 
+        // for leave message
+        btn_submit = findViewById(R.id.btn_submit);
+        et_content = findViewById(R.id.et_content);
+
         // set all properties of LocationRequest
         locationRequest = LocationRequest.create()
                 .setInterval(1000 * DEFAULT_UPDATE_INTERVAL)
@@ -79,8 +97,8 @@ public class Locator extends AppCompatActivity {
 
                 //save the location
                 Location location = locationResult.getLastLocation();
-                updateUIValues(location);
-
+                userLocation = location;
+                updateUIValues();
             }
         };
 
@@ -112,6 +130,66 @@ public class Locator extends AppCompatActivity {
         });
 
         updatedGPS();
+
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createMessage();
+            }
+        });
+
+    }
+
+    private void createMessage() {
+
+        String[] authorNameData = {"Traveler", "Adventurer", "Sightseer", "Voyager", "Wanderer", "Explorer", "Commuter", "Peddler", "Journeyer", "Backpacker", "Straggler"};
+
+        //equal to true when the leave message form contains error(s)
+        boolean incompleteForm = false;
+
+        String contentInput = et_content.getText().toString().trim();
+
+        if (contentInput.isEmpty()) {
+            et_content.setError("Message is required!");
+            et_content.requestFocus();
+            incompleteForm = true;
+        }
+
+        //terminate the register process when the form is incomplete
+        if(incompleteForm) return;
+
+        double lat = userLocation.getLatitude();
+        double lon = userLocation.getLongitude();
+        String  address;
+
+        Geocoder geocoder = new Geocoder(this);
+
+        try{
+            List<Address> addresses = geocoder.getFromLocation(userLocation.getLatitude(), userLocation.getLongitude(), 1);
+
+            address = addresses.get(0).getAddressLine(0);
+
+        }catch (Exception e){
+            address = "Unavailable";
+        }
+
+
+        MessageSchema message = new MessageSchema("author", lat, lon, contentInput, address);
+
+        db.collection("Message")
+                .add(message)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(@NonNull DocumentReference documentReference) {
+                        Toast.makeText(Locator.this, "Message has been successfully set in the location " + lat + ", " + lon, Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Locator.this, "Something when wrong please try again", Toast.LENGTH_LONG).show();
+                    }
+                });
 
     }
 
@@ -174,7 +252,9 @@ public class Locator extends AppCompatActivity {
                 public void onSuccess(@NonNull Location location) {
                     // we got permissions Put the values of location into the UI components
 
-                    updateUIValues(location);
+                    userLocation = location;
+
+                    updateUIValues();
 
                 }
             });
@@ -189,20 +269,20 @@ public class Locator extends AppCompatActivity {
     }
 
     // update all of the text view objects with a new location
-    private void updateUIValues(Location location){
+    private void updateUIValues(){
 
-        tv_lat.setText(String.valueOf(location.getLatitude()));
-        tv_lon.setText(String.valueOf(location.getLongitude()));
-        tv_accuracy.setText(String.valueOf(location.getAccuracy()));
+        tv_lat.setText(String.valueOf(userLocation.getLatitude()));
+        tv_lon.setText(String.valueOf(userLocation.getLongitude()));
+        tv_accuracy.setText(String.valueOf(userLocation.getAccuracy()));
 
-        if(location.hasAltitude()){
-            tv_altitude.setText(String.valueOf(location.getAltitude()));
+        if(userLocation.hasAltitude()){
+            tv_altitude.setText(String.valueOf(userLocation.getAltitude()));
         }else{
             tv_altitude.setText("Unavailable");
         }
 
-        if(location.hasSpeed()){
-            tv_speed.setText(String.valueOf(location.getSpeed()));
+        if(userLocation.hasSpeed()){
+            tv_speed.setText(String.valueOf(userLocation.getSpeed()));
         }else{
             tv_speed.setText("Unavailable");
         }
@@ -210,7 +290,7 @@ public class Locator extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(this);
 
         try{
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            List<Address> addresses = geocoder.getFromLocation(userLocation.getLatitude(), userLocation.getLongitude(), 1);
             tv_address.setText(addresses.get(0).getAddressLine(0));
 
         }catch (Exception e){
