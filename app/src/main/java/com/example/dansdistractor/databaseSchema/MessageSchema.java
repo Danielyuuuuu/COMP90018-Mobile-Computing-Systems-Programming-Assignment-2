@@ -22,4 +22,13 @@ public class MessageSchema {
         this.address = address;
 
     }
+
+    public MessageSchema(String author, double lat, double lon, String content, String address, Timestamp timestamp) {
+        this.author = author;
+        this.lat = lat;
+        this.lon = lon;
+        this.content = content;
+        this.timestamp = timestamp;
+        this.address = address;
+    }
 }

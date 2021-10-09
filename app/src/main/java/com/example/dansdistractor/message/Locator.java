@@ -11,6 +11,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,12 +27,20 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Locator extends AppCompatActivity {
@@ -38,6 +48,8 @@ public class Locator extends AppCompatActivity {
     public static final int DEFAULT_UPDATE_INTERVAL = 1;
     public static final int DEFAULT_FAST_UPDATE_INTERVAL = 1;
     private static final int PERMISSIONS_FINE_LOCATION = 99;
+    private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
+    private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
 
     private TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed, tv_sensor, tv_updates, tv_address;
     private Switch sw_locationsupdates, sw_gps;
@@ -61,6 +73,7 @@ public class Locator extends AppCompatActivity {
 
     // Access to Google Firestore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference messageRef = db.collection("Message");
 
 
     @Override
@@ -137,6 +150,8 @@ public class Locator extends AppCompatActivity {
                 createMessage();
             }
         });
+
+        getNearbyMessages(-38.976775, 145.3867417);
 
     }
 
@@ -300,5 +315,45 @@ public class Locator extends AppCompatActivity {
 
     }
 
+
+    public ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
+        final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
+        String TAG = "database";
+
+        messageRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                double messageLat = (double) document.getData().get("lat");
+                                double messageLon = (double) document.getData().get("lon");
+
+                                if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
+                                            lat, lon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                    result.add(newMessage);
+                                }
+
+                            }
+
+                        }else{
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
+        Collections.shuffle(result);
+        if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
+            return result;
+        }
+
+        ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+        return returnResult;
+    }
 
 }
