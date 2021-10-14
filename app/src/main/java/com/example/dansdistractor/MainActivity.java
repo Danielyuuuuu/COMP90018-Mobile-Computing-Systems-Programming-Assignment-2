@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     MyApplication myApplication;
     TextView textview_setting;
     Bundle b = new Bundle();
+    private Button btn_profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
+        btn_profile = findViewById(R.id.btn_profile);
 
         // Set up initial value
         b.putInt("radius", 5000);
@@ -136,6 +138,13 @@ public class MainActivity extends AppCompatActivity {
 
         btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
+
+        btn_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
 
     }
     public void openDialog() {
