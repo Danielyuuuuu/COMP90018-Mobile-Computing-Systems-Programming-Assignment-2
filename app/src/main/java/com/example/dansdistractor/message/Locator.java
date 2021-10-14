@@ -357,3 +357,8 @@ public class Locator extends AppCompatActivity {
     }
 
 }
+
+//TODO
+// add input message len limit
+// fix continue getting GPS
+// clean code
