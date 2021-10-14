@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DansDistractor">
         <activity
+            android:name=".message.Locator"
+            android:exported="true" />
+        <activity
             android:name=".Pushup"
             android:exported="true" />
         <activity
