@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference docRefCurrentUser = db.collection("Users").document(userID);
+    private ImageView closeProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         logout = (RelativeLayout) findViewById(R.id.logout);
         logout.setOnClickListener(this);
+
+        closeProfile = findViewById(R.id.closeProfile);
+        closeProfile.setOnClickListener(this);
 
         final TextView username = (TextView) findViewById(R.id.username);
         final TextView useremail = (TextView) findViewById(R.id.useremail);
@@ -74,6 +79,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()){
             case R.id.logout:
                 userLogout();
+                break;
+            case R.id.closeProfile:
+                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
                 break;
         }
 
