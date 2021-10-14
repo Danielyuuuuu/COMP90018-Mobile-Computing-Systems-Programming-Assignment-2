@@ -28,18 +28,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
-        android:id="@+id/btn_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_map"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
         android:id="@+id/button_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,8 +36,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_login"
+        app:layout_constraintTop_toBottomOf="@+id/btn_map"
         app:layout_constraintVertical_bias="0.111" />
+
+    <Button
+        android:id="@+id/btn_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Profile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_map"
+        app:layout_constraintVertical_bias="0.775" />
 
     <Button
         android:id="@+id/button_voucher"
@@ -110,5 +110,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/button_leavemsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="leave a message"
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="155dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

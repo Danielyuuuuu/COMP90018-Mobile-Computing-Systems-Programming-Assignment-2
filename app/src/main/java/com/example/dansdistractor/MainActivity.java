@@ -20,13 +20,17 @@ import com.example.dansdistractor.vouchers.VoucherActivity;
 public class MainActivity extends AppCompatActivity {
 
     Button btn_map;
+
     private Button btn_login, btn_pushup, btn_message;
+  
     Button btn_summary;
+    Button btn_leavemsg;
     private Button btn_vouchers;
     private Button btn_fitness;
     MyApplication myApplication;
     TextView textview_setting;
     Bundle b = new Bundle();
+    private Button btn_profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_map = findViewById(R.id.btn_map);
-        btn_login = (Button) findViewById(R.id.btn_login);
         btn_summary = findViewById(R.id.button_summary);
+        btn_leavemsg = findViewById(R.id.button_leavemsg);
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
         btn_pushup = findViewById(R.id.button_pushup);
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
+        btn_profile = findViewById(R.id.btn_profile);
 
         // Set up initial value
         b.putInt("radius", 5000);
@@ -77,13 +82,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, Login.class));
-            }
-        });
-
         btn_pushup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, summary.class));
+            }
+        });
+        btn_leavemsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDialog();
             }
         });
 
@@ -149,6 +153,18 @@ public class MainActivity extends AppCompatActivity {
         btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
 
+        btn_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
+
     }
+    public void openDialog() {
+        ExampleDialog exampleDialog = new ExampleDialog();
+        exampleDialog.show(getSupportFragmentManager(),"example dialog");
+    }
+
 
 }
