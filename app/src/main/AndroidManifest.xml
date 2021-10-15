@@ -24,7 +24,7 @@
             android:name=".Pushup"
             android:exported="true" />
         <activity
-            android:name=".vouchers.VoucherActivity"
+            android:name=".VoucherActivity"
             android:exported="true" />
         <activity
             android:name=".summary"

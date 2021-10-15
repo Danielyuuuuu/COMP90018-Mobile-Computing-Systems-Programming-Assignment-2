@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.dansdistractor.fitness.TabAdapter;
+import com.example.dansdistractor.fitness.FitnessTabAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -28,7 +28,7 @@ public class HistoryActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
-        final TabAdapter adapter = new TabAdapter(this, getSupportFragmentManager(),
+        final FitnessTabAdapter adapter = new FitnessTabAdapter(this, getSupportFragmentManager(),
                 tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));

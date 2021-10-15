@@ -17,7 +17,7 @@ import com.example.dansdistractor.utils.ChartStyle;
 
 /**
  * @ClassName: FitnessTab
- * @Description: //TODO
+
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 7:00 下午
  */
@@ -51,6 +51,11 @@ public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefresh
     @Override
     public void onRefresh() {
         Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(() -> mSwipeRefreshLayout.setRefreshing(false), 2000);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 2000);
     }
 }
