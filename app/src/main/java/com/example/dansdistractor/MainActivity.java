@@ -13,13 +13,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dansdistractor.message.Locator;
 import com.example.dansdistractor.vouchers.VoucherActivity;
 
 
 public class MainActivity extends AppCompatActivity {
 
     Button btn_map;
-    private Button btn_login, btn_pushup;
+
+    private Button btn_login, btn_pushup, btn_message;
+
     Button btn_summary;
     Button btn_leavemsg;
     private Button btn_vouchers;
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     MyApplication myApplication;
     TextView textview_setting;
     Bundle b = new Bundle();
+    private Button btn_profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +38,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_map = findViewById(R.id.btn_map);
-        btn_login = (Button) findViewById(R.id.btn_login);
         btn_summary = findViewById(R.id.button_summary);
         btn_leavemsg = findViewById(R.id.button_leavemsg);
         btn_vouchers = findViewById(R.id.button_voucher);
         btn_fitness = findViewById(R.id.button_fitness);
         btn_pushup = findViewById(R.id.button_pushup);
+        btn_message = findViewById(R.id.button_message);
+
+
+
         textview_setting = findViewById(R.id.setting);
 
         myApplication = (MyApplication)getApplicationContext();
+        btn_profile = findViewById(R.id.btn_profile);
 
         // Set up initial value
         b.putInt("radius", 5000);
@@ -74,17 +82,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, Login.class));
-            }
-        });
-
         btn_pushup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, Pushup.class));
+            }
+        });
+
+        btn_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Locator.class));
             }
         });
 
@@ -145,24 +153,29 @@ public class MainActivity extends AppCompatActivity {
         btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
 
-                Button button = findViewById(R.id.button_intent);
-                button.setOnClickListener(
+        btn_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+            }
+        });
+        Button button = findViewById(R.id.button_intent);
+        button.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                                Intent intent = new Intent(MainActivity.this,summary.class);
-                                intent.putExtra("steps", 999);
-                                intent.putExtra("myMileage", 999);
-                                intent.putExtra("myDuration", 999);
-                                intent.putExtra("mySpeed", 999);
-                                intent.putExtra("myCalorie", 999);
-                                intent.putExtra("myPoint", 999);
-                                intent.putExtra("myVoucher", 999);
-                                intent.putExtra("myProgress",79);
-                                startActivity(intent);
+                        Intent intent = new Intent(MainActivity.this,summary.class);
+                        intent.putExtra("steps", 999);
+                        intent.putExtra("myMileage", 999);
+                        intent.putExtra("myDuration", 999);
+                        intent.putExtra("mySpeed", 999);
+                        intent.putExtra("myCalorie", 999);
+                        intent.putExtra("myPoint", 999);
+                        intent.putExtra("myVoucher", 999);
+                        intent.putExtra("myProgress",79);
+                        startActivity(intent);
                     }
                 });
-
 
     }
     public void openDialog() {
