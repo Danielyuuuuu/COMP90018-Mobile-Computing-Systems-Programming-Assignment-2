@@ -145,6 +145,25 @@ public class MainActivity extends AppCompatActivity {
         btn_vouchers.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, VoucherActivity.class)));
         btn_fitness.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
 
+                Button button = findViewById(R.id.button_intent);
+                button.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                                Intent intent = new Intent(MainActivity.this,summary.class);
+                                intent.putExtra("steps", 999);
+                                intent.putExtra("myMileage", 999);
+                                intent.putExtra("myDuration", 999);
+                                intent.putExtra("mySpeed", 999);
+                                intent.putExtra("myCalorie", 999);
+                                intent.putExtra("myPoint", 999);
+                                intent.putExtra("myVoucher", 999);
+                                intent.putExtra("myProgress",79);
+                                startActivity(intent);
+                    }
+                });
+
+
     }
     public void openDialog() {
         ExampleDialog exampleDialog = new ExampleDialog();
