@@ -73,5 +73,8 @@ dependencies {
     //Google face detection
     implementation 'com.google.mlkit:face-detection:16.1.2'
 
+    //flip card view
+    implementation 'com.wajahatkarim3.EasyFlipView:EasyFlipView:3.0.0'
+
 
 }

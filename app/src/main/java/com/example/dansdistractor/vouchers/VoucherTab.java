@@ -37,7 +37,7 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(Voucher.getVouchers(), R.layout.voucher_card);
+        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(Voucher.getVouchers(), R.layout.voucher_card_flip);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);

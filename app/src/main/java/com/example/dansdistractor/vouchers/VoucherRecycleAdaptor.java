@@ -5,12 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dansdistractor.R;
+import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,13 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
         Voucher voucher = voucherList.get(position);
         holder.icon.setImageResource(voucher.getImage());
         holder.title.setText(voucher.getName());
-        holder.description.setText(voucher.getDesc() == null ? "Need More Details" : voucher.getDesc());
+//        holder.description.setText(voucher.getDesc() == null ? "Need More Details" : voucher.getDesc());
+
+        // ---> just for demo
+        holder.icon_back.setImageResource(voucher.getImage());
+//        holder.title_back.setText(voucher.getName());
+        holder.description_back.setText(voucher.getDesc() == null ? "This is an " + voucher.getName() : voucher.getDesc());
+        // <--- just for demo
     }
 
 
@@ -62,10 +68,16 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
     }
 
 
-    public static class MyViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    public class MyViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
         ImageView icon;
         TextView title;
         TextView description;
+
+        ImageView icon_back;
+        TextView title_back;
+        TextView description_back;
+
+        EasyFlipView myEasyFlipView;
 
         public MyViewHolder(@NonNull View view) {
             super(view);
@@ -73,10 +85,19 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
             title = (TextView) view.findViewById(R.id.voucher_name);
             description = (TextView) view.findViewById(R.id.voucher_description);
 
+            // --->just for demo
+            icon_back = (ImageView) view.findViewById(R.id.voucher_icon_back);
+            title_back = (TextView) view.findViewById(R.id.voucher_name_back);
+            description_back = (TextView) view.findViewById(R.id.voucher_description_back);
+            // <--- just for demo
+
+            myEasyFlipView = view.findViewById(R.id.easyFlipView);
+
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(), title.getText(), Toast.LENGTH_SHORT).show();
+                    myEasyFlipView.flipTheView();
                 }
             });
         }
