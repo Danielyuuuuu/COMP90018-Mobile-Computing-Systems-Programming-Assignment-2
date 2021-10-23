@@ -1,5 +1,7 @@
 package com.example.dansdistractor.vouchers;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -13,6 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.dansdistractor.R;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 /**
  * @ClassName: VoucherTab
@@ -37,7 +43,14 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(Voucher.getVouchers(), R.layout.voucher_card_flip);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("Vouchers", Activity.MODE_PRIVATE);
+        String activeVouchers = sharedPref.getString("ActiveVouchers", null);
+        Gson gson = new Gson();
+        ArrayList<Voucher> voucherList = gson.fromJson(activeVouchers, new TypeToken<ArrayList<Voucher>>() {
+        }.getType());
+
+
+        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(voucherList, R.layout.voucher_card_flip);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);
@@ -49,12 +62,13 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
     @Override
     public void onRefresh() {
         Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
+        new Handler().post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
-        }, 2000);
+        });
     }
+
 
 }

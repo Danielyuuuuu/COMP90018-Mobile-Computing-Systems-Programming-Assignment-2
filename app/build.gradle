@@ -76,5 +76,9 @@ dependencies {
     //flip card view
     implementation 'com.wajahatkarim3.EasyFlipView:EasyFlipView:3.0.0'
 
+    // image download manager
+    implementation 'com.squareup.picasso:picasso:2.8'
+
+
 
 }

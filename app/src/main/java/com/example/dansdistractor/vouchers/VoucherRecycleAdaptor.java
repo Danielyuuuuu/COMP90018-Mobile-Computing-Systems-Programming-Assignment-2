@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dansdistractor.R;
+import com.squareup.picasso.Picasso;
 import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.util.ArrayList;
@@ -50,12 +51,12 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Voucher voucher = voucherList.get(position);
-        holder.icon.setImageResource(voucher.getImage());
+        Picasso.get().load(voucher.getImageURI()).into(holder.icon);
         holder.title.setText(voucher.getName());
 //        holder.description.setText(voucher.getDesc() == null ? "Need More Details" : voucher.getDesc());
 
         // ---> just for demo
-        holder.icon_back.setImageResource(voucher.getImage());
+        Picasso.get().load(voucher.getImageURI()).into(holder.icon_back);
 //        holder.title_back.setText(voucher.getName());
         holder.description_back.setText(voucher.getDesc() == null ? "This is an " + voucher.getName() : voucher.getDesc());
         // <--- just for demo
