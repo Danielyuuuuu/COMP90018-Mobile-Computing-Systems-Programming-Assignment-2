@@ -637,6 +637,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             }
 
+
+
                         }else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
