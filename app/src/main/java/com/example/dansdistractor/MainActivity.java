@@ -3,6 +3,7 @@ package com.example.dansdistractor;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dansdistractor.message.Locator;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -177,7 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void openDialog() {
-        ExampleDialog exampleDialog = new ExampleDialog();
+        MyApplication user = (MyApplication) getApplicationContext();
+        ExampleDialog exampleDialog = new ExampleDialog(user);
         exampleDialog.show(getSupportFragmentManager(),"example dialog");
     }
 
