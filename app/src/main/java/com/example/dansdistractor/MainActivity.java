@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 EditText dots = settings.findViewById(R.id.dots);
                 EditText radius = settings.findViewById(R.id.radius);
                 dots.setText("5");
-                radius.setText("5000");
+                radius.setText("5");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Settings for Workout Session");
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        b.putInt("radius", Integer.parseInt(radius.getText().toString()));
+                        b.putInt("radius", Integer.parseInt(radius.getText().toString()) * 1000);
                         b.putInt("dots", Integer.parseInt(dots.getText().toString()));
                         Toast.makeText(MainActivity.this, "setting updated", Toast.LENGTH_LONG).show();
                     }
