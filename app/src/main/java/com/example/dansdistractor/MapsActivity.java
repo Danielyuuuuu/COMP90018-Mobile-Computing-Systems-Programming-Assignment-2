@@ -83,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button btn_pause;
     private Button btn_end;
+    private Button btn_leaveMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -135,6 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
+        btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -163,6 +165,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 closeWorkoutPrompt();
+            }
+        });
+
+        btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Do something!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
         });
 
@@ -385,7 +394,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Run this when starting a new workout session
                     if (!sessionStarted){
                         myApplication.startSession();
-                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), 5000);
+                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), GENERATED_RADIUS);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
