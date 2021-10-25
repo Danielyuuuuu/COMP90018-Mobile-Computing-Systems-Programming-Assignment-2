@@ -200,7 +200,7 @@ public class Locator extends AppCompatActivity {
 
     public ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
         final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
-        String TAG = "database";
+        String TAG = "getMessage";
 
         messageRef
                 .get()
