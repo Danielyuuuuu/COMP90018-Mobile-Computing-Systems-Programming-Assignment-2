@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -40,9 +41,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
@@ -52,6 +59,7 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -64,6 +72,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
     private static int GENERATED_RADIUS = 5000;
+    private static final double DEFAULT_LAT_LON_DEGREES = 500;
+    private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -99,6 +109,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //    private int stepCount = 0;
 //    private boolean hasInitialStepCount = false;
 //    private int initialStepCount = 0;
+
+    // Access to Google Firestore
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference messageRef = db.collection("Message");
+
+    ArrayList<MessageSchema> messages;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -403,6 +420,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             markerOptions.title("Target location");
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
+
+                        Log.i("abc", "Before message: " + location.toString());
+                        // Display all the messages on the map
+                        messages = getNearbyMessages(location.getLatitude(), location.getLongitude());
+                        for(MessageSchema message: messages){
+                            Location messageLocation = message.location;
+                            markerOptions = new MarkerOptions();
+                            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
+                            markerOptions.title("Message Board");
+                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                            Log.i("abc", "Message: " + messageLocation.toString());
+                        }
+                        Log.i("abc", "After message: " + location.toString());
                     }
 
                     // Run this when the session is paused
@@ -581,5 +611,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Permission not granted yet
             requestPermissions(new String[] {Manifest.permission.ACTIVITY_RECOGNITION}, PERMISSION_ACTIVITY_RECOGNITION);
         }
+    }
+
+    private ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
+        final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
+        String TAG = "getMessage";
+
+        messageRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                double messageLat = (double) document.getData().get("lat");
+                                double messageLon = (double) document.getData().get("lon");
+
+                                if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
+                                            lat, lon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                    result.add(newMessage);
+                                }
+
+                            }
+
+                        }else{
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
+        Collections.shuffle(result);
+        if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
+            return result;
+        }
+
+        ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+        return returnResult;
     }
 }
