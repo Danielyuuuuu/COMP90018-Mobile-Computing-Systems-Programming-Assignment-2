@@ -171,7 +171,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Do something!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                ExampleDialog exampleDialog = new ExampleDialog(myApplication);
+                exampleDialog.show(getSupportFragmentManager(),"example dialog");
             }
         });
 
