@@ -83,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button btn_pause;
     private Button btn_end;
+    private Button btn_leaveMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -135,6 +136,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
+        btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -163,6 +165,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 closeWorkoutPrompt();
+            }
+        });
+
+        btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Do something!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             }
         });
 
