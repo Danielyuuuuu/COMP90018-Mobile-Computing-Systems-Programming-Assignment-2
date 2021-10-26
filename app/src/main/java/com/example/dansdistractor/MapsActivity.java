@@ -95,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
     private Button btn_end;
     private Button btn_leaveMessage;
+    private Button btn_showMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -155,6 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
+        btn_showMessage = findViewById(R.id.btn_showMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -191,6 +193,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 ExampleDialog exampleDialog = new ExampleDialog(myApplication);
                 exampleDialog.show(getSupportFragmentManager(),"example dialog");
+            }
+        });
+
+        btn_showMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Location> myLocations = myApplication.getMyLocations();
+                if (myLocations.size() > 0){
+                    Location myLocation = myLocations.get(myLocations.size() - 1);
+                    openShowMessageDialog();
+                }
+                else{
+                    Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -671,5 +687,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         Log.i("abc", "After message");
 
+    }
+
+    private void openShowMessageDialog(){
+        ShowMessageDialog showMessageDialog = new ShowMessageDialog();
+        showMessageDialog.show(getSupportFragmentManager(), "New Dialog");
     }
 }
