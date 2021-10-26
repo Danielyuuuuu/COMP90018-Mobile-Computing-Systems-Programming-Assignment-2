@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="112dp"
         android:layout_marginTop="504dp"
-        android:text="Points"
+        android:text="Steps"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -114,11 +114,11 @@
         android:id="@+id/imageView_point"
         android:layout_width="68dp"
         android:layout_height="66dp"
-        android:layout_marginStart="28dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="496dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/moneybox" />
+        app:srcCompat="@drawable/steps_v2" />
 
     <ImageView
         android:id="@+id/imageView_voucher"
@@ -171,12 +171,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textView_stepLabel10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="13dp"
+        android:text="Goal"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/textView_stepLabel2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="248dp"
-        android:text="Summary"
+        android:text="Session Summary"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
