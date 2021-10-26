@@ -298,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(mGeoApiContext == null){
             mGeoApiContext = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDxdEHhWFp-mLWMc5l7xA7Ug4WTCsLVFEw")
+                    .apiKey("AIzaSyCDjKaiU54VIeHUIjZG1eiMLBdvmB4DOH8")
                     .build();
         }
 
