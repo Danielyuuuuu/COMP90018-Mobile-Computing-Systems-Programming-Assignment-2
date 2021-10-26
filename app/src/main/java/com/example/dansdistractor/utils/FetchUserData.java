@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @ClassName: FetchUserDataFromFirebase
@@ -61,6 +62,14 @@ public class FetchUserData {
     private WeekFields weekFields;
     private Calendar c;
 
+    // for shared preferences
+    public static final String ALL_VOUCHERS = UUID.randomUUID().toString();
+    public static final String ACTIVE_VOUCHERS = UUID.randomUUID().toString();
+    public static final String INACTIVE_VOUCHERS = UUID.randomUUID().toString();
+    public static final String YEARLY_HISTORY = UUID.randomUUID().toString();
+    public static final String MONTHLY_HISTORY = UUID.randomUUID().toString();
+    public static final String WEEKLY_HISTORY = UUID.randomUUID().toString();
+
 
     public FetchUserData(AppCompatActivity _activity) {
         // for all data
@@ -90,7 +99,7 @@ public class FetchUserData {
      * Fetch vouchers data
      */
     public void Vouchers() {
-        SharedPreferences sharedPref = activity.getSharedPreferences("Vouchers", Activity.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(ALL_VOUCHERS, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         // the id of voucher owned by user
         allVouchersRef
@@ -106,7 +115,7 @@ public class FetchUserData {
                             }
                         }
                         Gson gson = new Gson();
-                        editor.putString("ActiveVouchers", gson.toJson(userVouchers));
+                        editor.putString(ACTIVE_VOUCHERS, gson.toJson(userVouchers));
                         editor.apply();
                     }
 
