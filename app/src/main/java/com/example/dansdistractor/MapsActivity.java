@@ -613,15 +613,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
+    private void getNearbyMessages(double lat, double lon){
+
+        //final double DEFAULT_LAT_LON_DEGREES = 500;
+        //final int MAX_NUMBER_MESSAGE_RETURNED = 30;
+
+        //CollectionReference messageRef = db.collection("Message");
+
         final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
-        String TAG = "getMessage";
+        String TAG = "getMessage123";
 
         messageRef
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public synchronized void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
@@ -637,6 +643,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             }
 
+                            Collections.shuffle(result);
+                            if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
+                                Log.d(TAG, result.toString());
+                                //return result;
+                            }else{
+                                ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+                                Log.d(TAG, returnResult.toString());
+                                //return returnResult;
+                            }
 
 
                         }else{
@@ -644,14 +659,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                 });
-
-
-        Collections.shuffle(result);
-        if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
-            return result;
-        }
-
-        ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
-        return returnResult;
     }
+
+
 }
