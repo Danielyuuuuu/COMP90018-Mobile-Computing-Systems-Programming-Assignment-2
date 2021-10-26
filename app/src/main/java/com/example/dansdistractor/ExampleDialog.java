@@ -162,7 +162,7 @@ public class ExampleDialog extends AppCompatDialogFragment {
     private String getRandomAuthorName(){
 
         String[] authorNameData = {"Traveler", "Adventurer", "Sightseer", "Voyager", "Wanderer", "Explorer", "Commuter", "Peddler", "Journeyer", "Backpacker", "Straggler"};
-        String[] authorAdjData = {"Adventurous", "Affectionate", "Ambitious", "Amiable", "Compassionate", "Courageous", "Courteous", "Diligent", "Generous", "Gregarious ", "Impartial", "Passionate", "Witty"};
+        String[] authorAdjData = {"Adventurous", "Affectionate", "Ambitious", "Amiable", "Compassionate", "Courageous", "Courteous", "Diligent", "Generous", "Gregarious", "Impartial", "Passionate", "Witty"};
 
         int rnd = new Random().nextInt(authorNameData.length);
         int rnd2 = new Random().nextInt(authorNameData.length);

@@ -665,7 +665,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Location messageLocation = message.location;
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
-            markerOptions.title("Message Board");
+            markerOptions.title(messageLocation.getProvider());
             mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
             Log.i("abc", "Message: " + messageLocation.toString());
         }
