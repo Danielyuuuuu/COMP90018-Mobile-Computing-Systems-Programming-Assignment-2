@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 /**
  * @ClassName: VoucherTab
- * @Description: DEPRECATED!!!
  * @Author: wongchihaul
  * @CreateDate: 2021/9/22 7:03 下午
  */

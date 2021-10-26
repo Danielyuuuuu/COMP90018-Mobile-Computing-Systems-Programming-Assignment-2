@@ -1,4 +1,4 @@
-package com.example.dansdistractor;
+package com.example.dansdistractor.databaseSchema;
 
 import java.util.ArrayList;
 
