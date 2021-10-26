@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dansdistractor.R;
@@ -17,16 +18,11 @@ import com.example.dansdistractor.utils.MonthData;
 import com.example.dansdistractor.utils.WeekData;
 import com.example.dansdistractor.utils.YearData;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +41,7 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
     private int TYPE;
     // User's data should be store in List<BarEntry>
     private List<BarEntry> userEntries;
+    private FragmentActivity activity;
 
     /**
      * This one doesn't specify user's data so use demo data instead.
@@ -53,10 +50,11 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
      * @param _resourceId
      * @param _TYPE
      */
-    public FitnessRecycleAdaptor(List<Fitness> _fitnessList, int _resourceId, int _TYPE) {
+    public FitnessRecycleAdaptor(List<Fitness> _fitnessList, int _resourceId, int _TYPE, FragmentActivity _activity) {
         resourceId = _resourceId;
         fitnessList = _fitnessList;
         TYPE = _TYPE;
+        activity = _activity;
     }
 
     /**
@@ -86,15 +84,15 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MyViewHolder mvh = (MyViewHolder) holder;
-        DemoData demoData = new WeekData();
+        DemoData demoData = new WeekData(activity);
         switch (TYPE) {
             case ChartStyle.WEEK:
                 break;
             case ChartStyle.MONTH:
-                demoData = new MonthData();
+                demoData = new MonthData(activity);
                 break;
             case ChartStyle.YEAR:
-                demoData = new YearData();
+                demoData = new YearData(activity);
                 break;
         }
         onBindViewHolder(mvh, position, demoData);
@@ -111,7 +109,6 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
         holder.icon.setImageResource(fitness.getIcon());
         holder.category.setText(fitness.getCategory());
         DecimalFormat df = new DecimalFormat("#0.00");
-//        initLineChart(holder.chart);
 
         List<BarEntry> entries;
 
@@ -152,22 +149,6 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
     }
 
 
-    private void initLineChart(LineChart chart) {
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 9));
-        entries.add(new Entry(2, 3));
-        entries.add(new Entry(3, 5));
-        entries.add(new Entry(4, 15));
-        entries.add(new Entry(5, 2));
-        entries.add(new Entry(6, 4));
-        entries.add(new Entry(7, 8));
-        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        chart.invalidate(); // refresh
-
-    }
-
     /**
      * @param chart
      * @param entries
@@ -191,11 +172,10 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
     }
 
 
-    public static class MyViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
         TextView category;
         TextView number;
-        //        LineChart chart;
         BarChart chart;
 
         public MyViewHolder(@NonNull View view) {
@@ -203,7 +183,6 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
             icon = view.findViewById(R.id.fitness_icon);
             category = view.findViewById(R.id.fitness_category);
             number = view.findViewById(R.id.fitness_number);
-//            chart = (LineChart) view.findViewById(R.id.line_chart);
             chart = view.findViewById(R.id.bar_chart);
 
             view.setOnClickListener(v -> Toast.makeText(v.getContext(), category.getText(), Toast.LENGTH_SHORT).show());

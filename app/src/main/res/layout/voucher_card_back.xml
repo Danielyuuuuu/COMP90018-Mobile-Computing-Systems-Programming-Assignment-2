@@ -24,14 +24,13 @@
             android:id="@+id/voucher_icon_back"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="6dip" />
 
         <TextView
-            android:id="@+id/voucher_name_back"
+            android:id="@+id/placeholder_back"
             android:layout_width="fill_parent"
-            android:layout_height="26dp"
+            android:layout_height="6dp"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="5dp"
             android:layout_toEndOf="@id/voucher_icon_back"
@@ -44,7 +43,7 @@
             android:id="@+id/voucher_description_back"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/voucher_name_back"
+            android:layout_below="@id/placeholder_back"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="5dp"
             android:layout_toEndOf="@id/voucher_icon_back"
