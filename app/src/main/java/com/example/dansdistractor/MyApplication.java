@@ -4,7 +4,15 @@ import android.app.Application;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.example.dansdistractor.databaseSchema.MessageSchema;
+import com.example.dansdistractor.databaseSchema.UserHistorySchema;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.type.DateTime;
 
 import java.sql.Time;
@@ -36,6 +44,9 @@ public class MyApplication extends Application {
 
     private Date startDate;
     private Date endDate;
+
+    // Access to Google Firestore
+    private FirebaseFirestore db;
 
     public int getStepCount() {
         return stepCount;
@@ -122,10 +133,15 @@ public class MyApplication extends Application {
         hasInitialStepCount = false;
         endDate = new java.util.Date();
         Log.i("datetime", "enddate: " + endDate.toString());
+        storeUserData();
     }
 
     public void onCreate(){
         super.onCreate();
+
+        // Access to Google Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         singleton = this;
         myLocations = new ArrayList<>();
         targetLocations = new ArrayList<>();
@@ -134,4 +150,33 @@ public class MyApplication extends Application {
         hasInitialStepCount = false;
         initialStepCount = 0;
     }
+
+    private void storeUserData(){
+
+        Log.d("userHistory", endDate.toString());
+        Log.d("userHistory", startDate.toString());
+        Log.d("userHistory", myLocations.toString());
+        Log.d("userHistory", targetLocations.toString());
+        Log.d("userHistory", completedTargetLocations.toString());
+        //Log.d("userHistory", stepCount);
+
+        UserHistorySchema userHistory = new UserHistorySchema(endDate, startDate, myLocations, targetLocations, completedTargetLocations, 100);
+
+        Log.d("userHistory", userHistory.toString());
+
+        db.collection("UserHistory")
+                .add(userHistory)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(@NonNull DocumentReference documentReference) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
+    }
+
+
 }
