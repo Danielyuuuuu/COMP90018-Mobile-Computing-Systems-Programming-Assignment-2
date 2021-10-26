@@ -420,6 +420,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             markerOptions.title("Target location");
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
+
+                        getNearbyMessages(location.getLatitude(), location.getLongitude());
                     }
 
                     // Run this when the session is paused
@@ -634,11 +636,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
                                 Log.d(TAG, result.toString());
                                 //return result;
+                                displayMessages(result);
                             }else{
                                 ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
                                 Log.d(TAG, returnResult.toString());
                                 //return returnResult;
+                                displayMessages(returnResult);
                             }
+
+//                            ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+//                            displayMessages(returnResult);
 
 
                         }else{
@@ -648,21 +655,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
     }
 
-
-        Collections.shuffle(result);
-        if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
-            return result;
-        }
-
-        ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
-        return returnResult;
-    }
-
     // Display all the nearby messages on the map
-    private void displayMessages(ArrayList<MessageSchema> messages, double lat, double lng){
+    private void displayMessages(ArrayList<MessageSchema> messages){
 
-        Log.i("abc", "Before message: lat: " + lat + " lng: " + lng);
-        messages = getNearbyMessages(lat, lng);
+        Log.i("abc", "Before message");
         for(MessageSchema message: messages){
             Location messageLocation = message.location;
             MarkerOptions markerOptions = new MarkerOptions();
@@ -671,7 +667,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
             Log.i("abc", "Message: " + messageLocation.toString());
         }
-        Log.i("abc", "After message: lat: " + lat + " lng: " + lng);
+        Log.i("abc", "After message");
 
     }
 }
