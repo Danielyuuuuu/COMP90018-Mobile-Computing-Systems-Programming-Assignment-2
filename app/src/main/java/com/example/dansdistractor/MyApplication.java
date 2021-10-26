@@ -2,10 +2,16 @@ package com.example.dansdistractor;
 
 import android.app.Application;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.type.DateTime;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MyApplication extends Application {
@@ -22,6 +28,14 @@ public class MyApplication extends Application {
     private int stepCount = 0;
     private boolean hasInitialStepCount = false;
     private int initialStepCount = 0;
+
+//    private LocalDate startDate;
+//    private LocalTime startTime;
+//    private LocalDate endDate;
+//    private LocalTime endTime;
+
+    private Date startDate;
+    private Date endDate;
 
     public int getStepCount() {
         return stepCount;
@@ -99,11 +113,15 @@ public class MyApplication extends Application {
         stepCount = 0;
         hasInitialStepCount = false;
         initialStepCount = 0;
+        startDate = new java.util.Date();
+        Log.i("datetime", "startdate: " + startDate.toString());
     }
 
     protected void endSession(){
         sessionStarted = false;
         hasInitialStepCount = false;
+        endDate = new java.util.Date();
+        Log.i("datetime", "enddate: " + endDate.toString());
     }
 
     public void onCreate(){
