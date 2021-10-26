@@ -1,7 +1,6 @@
 package com.example.dansdistractor.databaseSchema;
 
-import android.location.Location;
-
+import com.example.dansdistractor.utils.MyLocation;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
@@ -19,14 +18,14 @@ public class UserHistorySchema {
     public double avgSpeed;
     public String user;
 
-    public List<Location> myLocations = null;
+    public List<MyLocation> myLocations = null;
     private List<LatLng> targetLocations = null;
     private List<LatLng> completedTargetLocations = null;
 
     public UserHistorySchema() {
     }
 
-    public UserHistorySchema(String user, Date endDateTime, Date startDateTime, List<Location> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps) {
+    public UserHistorySchema(String user, Date endDateTime, Date startDateTime, List<MyLocation> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps) {
         this.user = user;
         this.endDateTime = endDateTime;
         this.startDateTime = startDateTime;
@@ -39,7 +38,7 @@ public class UserHistorySchema {
         this.pins = getPins();
     }
 
-    public UserHistorySchema(String user, Date endDateTime, Date startDateTime, List<Location> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps, double distance, double avgSpeed, int pins) {
+    public UserHistorySchema(String user, Date endDateTime, Date startDateTime, List<MyLocation> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps, double distance, double avgSpeed, int pins) {
         this.user = user;
         this.endDateTime = endDateTime;
         this.startDateTime = startDateTime;
@@ -59,7 +58,7 @@ public class UserHistorySchema {
 
         for (int counter = 0; counter < myLocations.size() - 1; counter++) {
 
-            totalDistance += myLocations.get(counter).distanceTo(myLocations.get(counter + 1));
+            totalDistance += myLocations.get(counter).getLocation().distanceTo(myLocations.get(counter + 1).getLocation());
         }
 
         return totalDistance;

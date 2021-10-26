@@ -66,6 +66,7 @@ public class FetchUserData {
     public static final String ALL_VOUCHERS = UUID.randomUUID().toString();
     public static final String ACTIVE_VOUCHERS = UUID.randomUUID().toString();
     public static final String INACTIVE_VOUCHERS = UUID.randomUUID().toString();
+    public static final String ALL_HISTORY = UUID.randomUUID().toString();
     public static final String YEARLY_HISTORY = UUID.randomUUID().toString();
     public static final String MONTHLY_HISTORY = UUID.randomUUID().toString();
     public static final String WEEKLY_HISTORY = UUID.randomUUID().toString();
@@ -109,7 +110,6 @@ public class FetchUserData {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (DocumentSnapshot document : task.getResult()) {
                             String voucherID = document.getId();
-                            System.out.println(voucherID);
                             if (userVoucherIDs.contains(voucherID)) {
                                 userVouchers.add(document.toObject(Voucher.class));
                             }
@@ -127,7 +127,7 @@ public class FetchUserData {
      * Fetch fitness data
      */
     public void Fitness() {
-        SharedPreferences sharedPref = activity.getSharedPreferences("Fitness", Activity.MODE_PRIVATE);
+        SharedPreferences sharedPref = activity.getSharedPreferences(ALL_HISTORY, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         LocalDateTime ldt = LocalDateTime.now();
         int thisYear = ldt.getYear();
@@ -141,33 +141,48 @@ public class FetchUserData {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         task.getResult().forEach(document -> {
                             // find current user's history and group by year
-                            if (userID.equals(document.getId())) {
+                            if (userID.equals(document.get("user", String.class))) {
+                                System.out.println("Matched! " + userID);
                                 UserHistorySchema history = document.toObject(UserHistorySchema.class);
                                 Date date = history.endDateTime;
-                                // only this year's date will be showed
-                                if (date.getYear() == thisYear) {
-                                    updateUserHistory(yearlyUserHistory, date.getMonth(), history);
+                                c.setTime(date);
+                                System.out.println(date);
 
-                                    if (date.getMonth() == thisMonth) {
-                                        updateUserHistory(monthlyUserHistory, getDayOfMonth(date), history);
+                                // only this year's date will be showed
+                                if (c.get(Calendar.YEAR) == thisYear) {
+
+                                    // don't know why c.get(Calendar.MONTH) return 9 (where date is "Oct 26, 2021")
+                                    // hence I plus 1 to it
+                                    updateUserHistory(yearlyUserHistory, c.get(Calendar.MONTH) + 1, history);
+
+                                    if (c.get(Calendar.MONTH) + 1 == thisMonth) {
+                                        updateUserHistory(monthlyUserHistory, c.get(Calendar.DAY_OF_MONTH), history);
                                     }
-                                    if (getWeekOfYear(date) == thisWeek) {
-                                        updateUserHistory(weeklyUserHistory, getDayOfMonth(date), history);
+
+                                    if (c.get(Calendar.WEEK_OF_YEAR) == thisWeek) {
+                                        System.out.println("Week Matched ! " + thisWeek);
+                                        // Calendar.DAY_OF_WEEK starts from Sunday, i.e., Sunday returns 1 and Saturday returns 7
+                                        // transform it to a start-from-Monday week, i.e., Monday return 1 and Sunday returns 7
+                                        int dayOfWeek = (c.get(Calendar.DAY_OF_WEEK) - 1) % 7 == 0 ? 7 : c.get(Calendar.DAY_OF_WEEK) - 1;
+                                        updateUserHistory(weeklyUserHistory, dayOfWeek, history);
                                     }
                                 }
                             }
                         });
                         Gson gson = new Gson();
-                        editor.putString("YearlyHistory", gson.toJson(yearlyUserHistory));
-                        editor.putString("MonthlyHistory", gson.toJson(monthlyUserHistory));
-                        editor.putString("WeeklyHistory", gson.toJson(weeklyUserHistory));
+                        editor.putString(YEARLY_HISTORY, gson.toJson(yearlyUserHistory));
+                        editor.putString(MONTHLY_HISTORY, gson.toJson(monthlyUserHistory));
+                        editor.putString(WEEKLY_HISTORY, gson.toJson(weeklyUserHistory));
+
+                        System.out.println(WEEKLY_HISTORY + " " + gson.toJson(weeklyUserHistory));
+
                         editor.apply();
                     }
                 });
     }
 
     /**
-     * Fetch all data from user.
+     * Fetch all vouchers from user.
      */
     private void fetchUserVouchers() {
         userRef
@@ -186,11 +201,6 @@ public class FetchUserData {
     private int getWeekOfYear(LocalDateTime date) {
         int weekNumber = date.get(weekFields.weekOfWeekBasedYear());
         return weekNumber;
-    }
-
-    private int getWeekOfYear(Date date) {
-        c.setTime(date);
-        return c.get(Calendar.WEEK_OF_YEAR);
     }
 
     private int getDayOfMonth(Date date) {
