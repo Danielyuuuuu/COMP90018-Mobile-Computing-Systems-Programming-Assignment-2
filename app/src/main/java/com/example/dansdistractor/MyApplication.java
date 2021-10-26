@@ -11,6 +11,8 @@ import com.example.dansdistractor.databaseSchema.UserHistorySchema;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.type.DateTime;
@@ -140,7 +142,7 @@ public class MyApplication extends Application {
         super.onCreate();
 
         // Access to Google Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         singleton = this;
         myLocations = new ArrayList<>();
@@ -153,6 +155,8 @@ public class MyApplication extends Application {
 
     private void storeUserData(){
 
+        String currentFirebaseUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         Log.d("userHistory", endDate.toString());
         Log.d("userHistory", startDate.toString());
         Log.d("userHistory", myLocations.toString());
@@ -160,7 +164,7 @@ public class MyApplication extends Application {
         Log.d("userHistory", completedTargetLocations.toString());
         //Log.d("userHistory", stepCount);
 
-        UserHistorySchema userHistory = new UserHistorySchema(endDate, startDate, myLocations, targetLocations, completedTargetLocations, 100);
+        UserHistorySchema userHistory = new UserHistorySchema(currentFirebaseUserID, endDate, startDate, myLocations, targetLocations, completedTargetLocations, stepCount);
 
         Log.d("userHistory", userHistory.toString());
 

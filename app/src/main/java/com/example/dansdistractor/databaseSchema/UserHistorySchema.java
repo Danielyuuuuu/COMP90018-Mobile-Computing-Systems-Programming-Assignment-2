@@ -3,6 +3,7 @@ package com.example.dansdistractor.databaseSchema;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.sql.Time;
 import java.util.Date;
@@ -13,6 +14,7 @@ public class UserHistorySchema {
     public Date endDateTime, startDateTime;
     public int steps, pins;
     public double distance, avgSpeed;
+    public String user;
 
     public List<Location> myLocations = null;
     private List<LatLng> targetLocations = null;
@@ -21,7 +23,8 @@ public class UserHistorySchema {
     public UserHistorySchema() {
     }
 
-    public UserHistorySchema(Date endDateTime, Date startDateTime, List<Location> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps) {
+    public UserHistorySchema(String user, Date endDateTime, Date startDateTime, List<Location> myLocations, List<LatLng> targetLocations, List<LatLng> completedTargetLocations, int steps) {
+        this.user = user;
         this.endDateTime = endDateTime;
         this.startDateTime = startDateTime;
         this.myLocations = myLocations;
@@ -48,7 +51,7 @@ public class UserHistorySchema {
 
     private double getSpeed(){
         if (endDateTime.getTime() - startDateTime.getTime() == 0) return 0;
-        return distance/endDateTime.getTime() - startDateTime.getTime();
+        return distance/(endDateTime.getTime() - startDateTime.getTime());
     }
 
     private int getPins(){
