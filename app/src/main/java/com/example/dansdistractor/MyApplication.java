@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -54,6 +55,7 @@ public class MyApplication extends Application {
     private Double distance;
     private Double speed;
     private int pins;
+    private int goal;
 
 
 
