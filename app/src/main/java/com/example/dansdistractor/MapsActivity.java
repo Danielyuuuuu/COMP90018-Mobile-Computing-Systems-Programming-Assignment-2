@@ -1,6 +1,7 @@
 package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -528,6 +529,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // The map closes when the user press 'Yes'
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
