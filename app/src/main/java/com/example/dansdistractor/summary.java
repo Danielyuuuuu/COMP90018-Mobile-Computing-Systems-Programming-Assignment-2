@@ -34,15 +34,17 @@ public class summary extends AppCompatActivity {
 
         TextView duration = findViewById(R.id.textView_duration);
         //duration.setText(myDuration+" Mins");
-        duration.setText(intent.getIntExtra("myDuration",0)+" Mins");
+
+        if(intent.getIntExtra("myDuration",0) == 0) duration.setText("<1 Mins");
+        else duration.setText(intent.getIntExtra("myDuration",0)+" Mins");
 
         TextView distance = findViewById(R.id.textView_distance);
        // distance.setText(myMileage+" KMs");
-        distance.setText(intent.getIntExtra("myMileage",0)+" KMs");
+        distance.setText(intent.getIntExtra("myMileage",0)+" Ms");
 
         TextView speed = findViewById(R.id.textView_speed);
         //speed.setText(mySpeed+" KM/H");
-        speed.setText(intent.getIntExtra("mySpeed",0)+" KM/H");
+        speed.setText(intent.getDoubleExtra("mySpeed",0)+" KM/H");
 
         TextView calorie = findViewById(R.id.textView_calorie);
         //calorie.setText(myCalorie+"");
