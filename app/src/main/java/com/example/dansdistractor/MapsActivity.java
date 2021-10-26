@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -202,7 +203,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 List<Location> myLocations = myApplication.getMyLocations();
                 if (myLocations.size() > 0){
                     Location myLocation = myLocations.get(myLocations.size() - 1);
-                    openShowMessageDialog();
+
+                    // !!!!!!!!!!!!!
+                    float[] distances = new float[1];
+
+                    float shortestDistance = 0;
+                    MessageSchema messageToDisplay = null;
+                    Boolean hasFirst = false;
+                    Iterator<MessageSchema> itr = messages.iterator();
+                    while(itr.hasNext()){
+                        MessageSchema messageSchema = itr.next();
+                        Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), messageSchema.location.getLatitude(), messageSchema.location.getLongitude(), distances);
+
+                        if (!hasFirst){
+                            shortestDistance = distances[0];
+                            messageToDisplay = messageSchema;
+                            hasFirst = true;
+                        }
+                        else{
+                            if (shortestDistance > distances[0]){
+                                shortestDistance = distances[0];
+                                messageToDisplay = messageSchema;
+                            }
+                        }
+                    }
+
+                    // !!!!!!!!!!!!!
+
+//                    MessageSchema messageToDisplay = messages.get(0);
+//
+                    openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
+//                    openShowMessageDialog("author", "content");
                 }
                 else{
                     Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
@@ -655,11 +686,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Log.d(TAG, result.toString());
                                 //return result;
                                 displayMessages(result);
+                                messages = result;
                             }else{
                                 ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
                                 Log.d(TAG, returnResult.toString());
                                 //return returnResult;
                                 displayMessages(returnResult);
+                                messages = returnResult;
                             }
 
 //                            ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
@@ -689,8 +722,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void openShowMessageDialog(){
-        ShowMessageDialog showMessageDialog = new ShowMessageDialog();
+    private void openShowMessageDialog(String author, String message){
+        ShowMessageDialog showMessageDialog = new ShowMessageDialog().newInstance(author, message);
         showMessageDialog.show(getSupportFragmentManager(), "New Dialog");
     }
 }
