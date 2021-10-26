@@ -420,19 +420,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             markerOptions.title("Target location");
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
-
-                        Log.i("abc", "Before message: " + location.toString());
-                        // Display all the messages on the map
-                        messages = getNearbyMessages(location.getLatitude(), location.getLongitude());
-                        for(MessageSchema message: messages){
-                            Location messageLocation = message.location;
-                            markerOptions = new MarkerOptions();
-                            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
-                            markerOptions.title("Message Board");
-                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                            Log.i("abc", "Message: " + messageLocation.toString());
-                        }
-                        Log.i("abc", "After message: " + location.toString());
                     }
 
                     // Run this when the session is paused
@@ -653,5 +640,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
         return returnResult;
+    }
+
+    // Display all the nearby messages on the map
+    private void displayMessages(ArrayList<MessageSchema> messages, double lat, double lng){
+
+        Log.i("abc", "Before message: lat: " + lat + " lng: " + lng);
+        messages = getNearbyMessages(lat, lng);
+        for(MessageSchema message: messages){
+            Location messageLocation = message.location;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
+            markerOptions.title("Message Board");
+            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            Log.i("abc", "Message: " + messageLocation.toString());
+        }
+        Log.i("abc", "After message: lat: " + lat + " lng: " + lng);
+
     }
 }
