@@ -3,6 +3,7 @@ package com.example.dansdistractor;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dansdistractor.message.Locator;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -53,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up initial value
         b.putInt("radius", 5000);
         b.putInt("dots", 5);
+        b.putInt("goalDistance", 5000);
+        b.putInt("goalSteps", 6000);
 
         final EditText editText = new EditText(this);
         textview_setting.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +66,14 @@ public class MainActivity extends AppCompatActivity {
                 View settings = getLayoutInflater().inflate(R.layout.dialog_workout_session_setting, null);
                 EditText dots = settings.findViewById(R.id.dots);
                 EditText radius = settings.findViewById(R.id.radius);
+                EditText goalDistance = settings.findViewById(R.id.goalDistance);
+                EditText goalSteps = settings.findViewById(R.id.goalSteps);
+
+
                 dots.setText("5");
-                radius.setText("5000");
+                radius.setText("5");
+                goalDistance.setText("5000");
+                goalSteps.setText("6000");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Settings for Workout Session");
@@ -70,8 +81,10 @@ public class MainActivity extends AppCompatActivity {
                 builder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        b.putInt("radius", Integer.parseInt(radius.getText().toString()));
+                        b.putInt("radius", Integer.parseInt(radius.getText().toString()) * 1000);
                         b.putInt("dots", Integer.parseInt(dots.getText().toString()));
+                        b.putInt("goalDistance", Integer.parseInt(goalDistance.getText().toString()));
+                        b.putInt("goalSteps", Integer.parseInt(goalSteps.getText().toString()));
                         Toast.makeText(MainActivity.this, "setting updated", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -177,7 +190,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void openDialog() {
-        ExampleDialog exampleDialog = new ExampleDialog();
+        MyApplication user = (MyApplication) getApplicationContext();
+        ExampleDialog exampleDialog = new ExampleDialog(user);
         exampleDialog.show(getSupportFragmentManager(),"example dialog");
     }
 

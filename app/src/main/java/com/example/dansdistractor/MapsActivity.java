@@ -1,6 +1,7 @@
 package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -18,12 +19,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -40,9 +43,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.dansdistractor.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
@@ -52,6 +61,7 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -64,6 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
     private static int GENERATED_RADIUS = 5000;
+    private static final double DEFAULT_LAT_LON_DEGREES = 500;
+    private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -83,6 +95,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Button btn_pause;
     private Button btn_end;
+    private Button btn_leaveMessage;
+    private Button btn_showMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -98,6 +112,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //    private int stepCount = 0;
 //    private boolean hasInitialStepCount = false;
 //    private int initialStepCount = 0;
+
+    // Access to Google Firestore
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference messageRef = db.collection("Message");
+
+    ArrayList<MessageSchema> messages;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +156,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
+        btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
+        btn_showMessage = findViewById(R.id.btn_showMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -163,6 +186,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 closeWorkoutPrompt();
+            }
+        });
+
+        btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExampleDialog exampleDialog = new ExampleDialog(myApplication);
+                exampleDialog.show(getSupportFragmentManager(),"example dialog");
+            }
+        });
+
+        btn_showMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Location> myLocations = myApplication.getMyLocations();
+                if (myLocations.size() > 0){
+                    Location myLocation = myLocations.get(myLocations.size() - 1);
+
+                    // !!!!!!!!!!!!!
+                    float[] distances = new float[1];
+
+                    float shortestDistance = 0;
+                    MessageSchema messageToDisplay = null;
+                    Boolean hasFirst = false;
+                    Iterator<MessageSchema> itr = messages.iterator();
+                    while(itr.hasNext()){
+                        MessageSchema messageSchema = itr.next();
+                        Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), messageSchema.location.getLatitude(), messageSchema.location.getLongitude(), distances);
+
+                        if (!hasFirst){
+                            shortestDistance = distances[0];
+                            messageToDisplay = messageSchema;
+                            hasFirst = true;
+                        }
+                        else{
+                            if (shortestDistance > distances[0]){
+                                shortestDistance = distances[0];
+                                messageToDisplay = messageSchema;
+                            }
+                        }
+                    }
+
+                    // !!!!!!!!!!!!!
+
+//                    MessageSchema messageToDisplay = messages.get(0);
+//
+                    openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
+//                    openShowMessageDialog("author", "content");
+                }
+                else{
+                    Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -223,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(mGeoApiContext == null){
             mGeoApiContext = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDxdEHhWFp-mLWMc5l7xA7Ug4WTCsLVFEw")
+                    .apiKey("AIzaSyCDjKaiU54VIeHUIjZG1eiMLBdvmB4DOH8")
                     .build();
         }
 
@@ -385,7 +460,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Run this when starting a new workout session
                     if (!sessionStarted){
                         myApplication.startSession();
-                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), 5000);
+                        List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), GENERATED_RADIUS);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
                             markerOptions = new MarkerOptions();
@@ -393,6 +468,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             markerOptions.title("Target location");
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
+
+                        getNearbyMessages(location.getLatitude(), location.getLongitude());
                     }
 
                     // Run this when the session is paused
@@ -499,6 +576,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // The map closes when the user press 'Yes'
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
@@ -571,5 +649,81 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Permission not granted yet
             requestPermissions(new String[] {Manifest.permission.ACTIVITY_RECOGNITION}, PERMISSION_ACTIVITY_RECOGNITION);
         }
+    }
+
+    private void getNearbyMessages(double lat, double lon){
+
+        //final double DEFAULT_LAT_LON_DEGREES = 500;
+        //final int MAX_NUMBER_MESSAGE_RETURNED = 30;
+
+        //CollectionReference messageRef = db.collection("Message");
+
+        final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
+        String TAG = "getMessage123";
+
+        messageRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public synchronized void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+                                double messageLat = (double) document.getData().get("lat");
+                                double messageLon = (double) document.getData().get("lon");
+
+                                if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
+                                            lat, lon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                    result.add(newMessage);
+                                }
+
+                            }
+
+                            Collections.shuffle(result);
+                            if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
+                                Log.d(TAG, result.toString());
+                                //return result;
+                                displayMessages(result);
+                                messages = result;
+                            }else{
+                                ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+                                Log.d(TAG, returnResult.toString());
+                                //return returnResult;
+                                displayMessages(returnResult);
+                                messages = returnResult;
+                            }
+
+//                            ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+//                            displayMessages(returnResult);
+
+
+                        }else{
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    // Display all the nearby messages on the map
+    private void displayMessages(ArrayList<MessageSchema> messages){
+
+        Log.i("abc", "Before message");
+        for(MessageSchema message: messages){
+            Location messageLocation = message.location;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
+            markerOptions.title(messageLocation.getProvider());
+            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            Log.i("abc", "Message: " + messageLocation.toString());
+        }
+        Log.i("abc", "After message");
+
+    }
+
+    private void openShowMessageDialog(String author, String message){
+        ShowMessageDialog showMessageDialog = new ShowMessageDialog().newInstance(author, message);
+        showMessageDialog.show(getSupportFragmentManager(), "New Dialog");
     }
 }

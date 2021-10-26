@@ -20,6 +20,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dansdistractor.MyApplication;
 import com.example.dansdistractor.R;
 import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -96,58 +97,13 @@ public class Locator extends AppCompatActivity {
         btn_submit = findViewById(R.id.btn_submit);
         et_content = findViewById(R.id.et_content);
 
-        // set all properties of LocationRequest
-        locationRequest = LocationRequest.create()
-                .setInterval(1000 * DEFAULT_UPDATE_INTERVAL)
-                .setFastestInterval(1000 * DEFAULT_FAST_UPDATE_INTERVAL)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        // event that is triggered whenever the update interval is met
-        locationCallBack = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-
-                //save the location
-                Location location = locationResult.getLastLocation();
-                userLocation = location;
-                updateUIValues();
-            }
-        };
 
 
-        sw_gps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sw_gps.isChecked()) {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    tv_sensor.setText("Using GPS sensor");
-                } else {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-                    tv_sensor.setText("Using Towers + WIFI");
-                }
-            }
-        });
-
-        sw_locationsupdates.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sw_locationsupdates.isChecked()) {
-                    // turn on location tracking
-                    startLocationUpdate();
-                } else {
-                    // turn off tracking
-                    stopLocationUpdate();
-                }
-            }
-        });
-
-        updatedGPS();
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createMessage();
+                createMessage(123,1527);
             }
         });
 
@@ -155,7 +111,7 @@ public class Locator extends AppCompatActivity {
 
     }
 
-    private void createMessage() {
+    private void createMessage(double getLat, double getLon) {
 
         String[] authorNameData = {"Traveler", "Adventurer", "Sightseer", "Voyager", "Wanderer", "Explorer", "Commuter", "Peddler", "Journeyer", "Backpacker", "Straggler"};
 
@@ -173,14 +129,14 @@ public class Locator extends AppCompatActivity {
         //terminate the register process when the form is incomplete
         if(incompleteForm) return;
 
-        double lat = userLocation.getLatitude();
-        double lon = userLocation.getLongitude();
+        double lat = getLat;
+        double lon = getLon;
         String  address;
 
         Geocoder geocoder = new Geocoder(this);
 
         try{
-            List<Address> addresses = geocoder.getFromLocation(userLocation.getLatitude(), userLocation.getLongitude(), 1);
+            List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
 
             address = addresses.get(0).getAddressLine(0);
 
@@ -208,80 +164,6 @@ public class Locator extends AppCompatActivity {
 
     }
 
-    private void stopLocationUpdate() {
-        tv_updates.setText("Location is not being tracked");
-        tv_lat.setText("Location is not being tracked");
-        tv_lon.setText("Location is not being tracked");
-        tv_speed.setText("Location is not being tracked");
-        tv_address.setText("Location is not being tracked");
-        tv_accuracy.setText("Location is not being tracked");
-        tv_altitude.setText("Location is not being tracked");
-        tv_sensor.setText("Location is not being tracked");
-
-        fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-
-    }
-
-    private void startLocationUpdate() {
-        tv_updates.setText("Location is being tracked");
-
-        // check the permissions form the user to track GPS
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
-            }
-        }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
-        updatedGPS();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode){
-            case PERMISSIONS_FINE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    updatedGPS();
-                }else{
-                    Toast.makeText(this, "This app requires permission to be granted in order to work properly", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-        }
-    }
-
-    private void updatedGPS(){
-
-        // get permissions form the user to track GPS
-        // get the current location form the fused client
-        // update the UI - i.e. set all properties in their associated text view items
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-
-            // user provided the permission
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(@NonNull Location location) {
-                    // we got permissions Put the values of location into the UI components
-
-                    userLocation = location;
-
-                    updateUIValues();
-
-                }
-            });
-
-        }else{
-            // permissions not granted yet
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
-            }
-        }
-    }
 
     // update all of the text view objects with a new location
     private void updateUIValues(){
@@ -318,7 +200,7 @@ public class Locator extends AppCompatActivity {
 
     public ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
         final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
-        String TAG = "database";
+        String TAG = "getMessage";
 
         messageRef
                 .get()
@@ -357,8 +239,3 @@ public class Locator extends AppCompatActivity {
     }
 
 }
-
-//TODO
-// add input message len limit
-// fix continue getting GPS
-// clean code

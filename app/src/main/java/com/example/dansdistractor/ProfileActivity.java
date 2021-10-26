@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dansdistractor.databaseSchema.UserSchema;
 import com.example.dansdistractor.utils.FetchUserData;
+import com.example.dansdistractor.vouchers.Voucher;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

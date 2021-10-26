@@ -7,12 +7,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.dansdistractor.fitness.FitnessTabAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class HistoryActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
     ViewPager viewPager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
