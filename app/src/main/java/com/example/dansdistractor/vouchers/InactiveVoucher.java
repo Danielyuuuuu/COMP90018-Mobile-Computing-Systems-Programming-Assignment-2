@@ -6,5 +6,8 @@ package com.example.dansdistractor.vouchers;
  * @Author: wongchihaul
  * @CreateDate: 2021/10/15 11:44 下午
  */
-public class Inactivate extends VoucherTab {
+public class InactiveVoucher extends VoucherTab {
+    public InactiveVoucher() {
+        super.setStatus(VoucherRecycleAdaptor.INACTIVE);
+    }
 }

@@ -28,9 +28,9 @@ import java.util.ArrayList;
  */
 public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private int status;
 
     public VoucherTab() {
-
     }
 
 
@@ -50,7 +50,7 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
         }.getType());
 
 
-        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(voucherList, R.layout.voucher_card_flip);
+        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(voucherList, R.layout.voucher_card_flip, status);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);
@@ -61,14 +61,19 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
 
     @Override
     public void onRefresh() {
-        Toast.makeText(getContext(), "Refresh", Toast.LENGTH_SHORT).show();
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(false);
+                ViewGroup vg = requireActivity().findViewById(R.id.voucher_main_layout);
+                vg.invalidate();
+                Toast.makeText(getContext(), "Refresh Vouchers", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

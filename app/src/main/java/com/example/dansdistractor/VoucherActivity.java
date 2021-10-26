@@ -1,34 +1,21 @@
 package com.example.dansdistractor;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.dansdistractor.vouchers.VoucherTabAdapter;
 import com.google.android.material.tabs.TabLayout;
 
-public class VoucherActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class VoucherActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voucher);
-
-
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_recycle);
-//        mSwipeRefreshLayout.setOnRefreshListener(this);
-//
-//        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(Voucher.getVouchers(), R.layout.voucher_card);
-//        RecyclerView recyclerView = findViewById(R.id.demo_recycler);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(adaptor);
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
@@ -56,16 +43,5 @@ public class VoucherActivity extends AppCompatActivity implements SwipeRefreshLa
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-    }
-
-    @Override
-    public void onRefresh() {
-        Toast.makeText(this, "VoucherActivity", Toast.LENGTH_SHORT).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }, 2000);
     }
 }
