@@ -202,33 +202,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Location myLocation = myLocations.get(myLocations.size() - 1);
 
                     // !!!!!!!!!!!!!
-                    float[] distances = new float[1];
-
-                    float shortestDistance = 0;
+                    double distance = 0.0;
+                    double shortestDistance = 0.0;
                     MessageSchema messageToDisplay = null;
                     Boolean hasFirst = false;
                     Iterator<MessageSchema> itr = messages.iterator();
                     while(itr.hasNext()){
                         MessageSchema messageSchema = itr.next();
-                        Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), messageSchema.location.getLatitude(), messageSchema.location.getLongitude(), distances);
+                        distance = myLocation.distanceTo(messageSchema.location);
 
                         if (!hasFirst){
-                            shortestDistance = distances[0];
+                            shortestDistance = distance;
                             messageToDisplay = messageSchema;
                             hasFirst = true;
                         }
                         else{
-                            if (shortestDistance > distances[0]){
-                                shortestDistance = distances[0];
+                            if (shortestDistance >= distance){
+                                shortestDistance = distance;
                                 messageToDisplay = messageSchema;
                             }
                         }
                     }
 
                     // !!!!!!!!!!!!!
-
-//                    MessageSchema messageToDisplay = messages.get(0);
-//
                     openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
 //                    openShowMessageDialog("author", "content");
                 }
