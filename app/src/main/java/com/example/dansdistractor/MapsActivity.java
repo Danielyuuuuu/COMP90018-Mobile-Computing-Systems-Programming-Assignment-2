@@ -1,6 +1,7 @@
 package com.example.dansdistractor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -18,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -94,6 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
     private Button btn_end;
     private Button btn_leaveMessage;
+    private Button btn_showMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -154,6 +157,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
+        btn_showMessage = findViewById(R.id.btn_showMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -190,6 +194,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 ExampleDialog exampleDialog = new ExampleDialog(myApplication);
                 exampleDialog.show(getSupportFragmentManager(),"example dialog");
+            }
+        });
+
+        btn_showMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Location> myLocations = myApplication.getMyLocations();
+                if (myLocations.size() > 0){
+                    Location myLocation = myLocations.get(myLocations.size() - 1);
+
+                    // !!!!!!!!!!!!!
+                    float[] distances = new float[1];
+
+                    float shortestDistance = 0;
+                    MessageSchema messageToDisplay = null;
+                    Boolean hasFirst = false;
+                    Iterator<MessageSchema> itr = messages.iterator();
+                    while(itr.hasNext()){
+                        MessageSchema messageSchema = itr.next();
+                        Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), messageSchema.location.getLatitude(), messageSchema.location.getLongitude(), distances);
+
+                        if (!hasFirst){
+                            shortestDistance = distances[0];
+                            messageToDisplay = messageSchema;
+                            hasFirst = true;
+                        }
+                        else{
+                            if (shortestDistance > distances[0]){
+                                shortestDistance = distances[0];
+                                messageToDisplay = messageSchema;
+                            }
+                        }
+                    }
+
+                    // !!!!!!!!!!!!!
+
+//                    MessageSchema messageToDisplay = messages.get(0);
+//
+                    openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
+//                    openShowMessageDialog("author", "content");
+                }
+                else{
+                    Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -250,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(mGeoApiContext == null){
             mGeoApiContext = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyDxdEHhWFp-mLWMc5l7xA7Ug4WTCsLVFEw")
+                    .apiKey("AIzaSyCDjKaiU54VIeHUIjZG1eiMLBdvmB4DOH8")
                     .build();
         }
 
@@ -421,18 +469,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             targetLocationsMarker.add(mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
                         }
 
-                        Log.i("abc", "Before message: " + location.toString());
-                        // Display all the messages on the map
-                        messages = getNearbyMessages(location.getLatitude(), location.getLongitude());
-                        for(MessageSchema message: messages){
-                            Location messageLocation = message.location;
-                            markerOptions = new MarkerOptions();
-                            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
-                            markerOptions.title("Message Board");
-                            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                            Log.i("abc", "Message: " + messageLocation.toString());
-                        }
-                        Log.i("abc", "After message: " + location.toString());
+                        getNearbyMessages(location.getLatitude(), location.getLongitude());
                     }
 
                     // Run this when the session is paused
@@ -539,6 +576,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // The map closes when the user press 'Yes'
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
@@ -613,15 +651,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private ArrayList<MessageSchema> getNearbyMessages(double lat, double lon){
+    private void getNearbyMessages(double lat, double lon){
+
+        //final double DEFAULT_LAT_LON_DEGREES = 500;
+        //final int MAX_NUMBER_MESSAGE_RETURNED = 30;
+
+        //CollectionReference messageRef = db.collection("Message");
+
         final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
-        String TAG = "getMessage";
+        String TAG = "getMessage123";
 
         messageRef
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public synchronized void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
@@ -637,6 +681,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             }
 
+                            Collections.shuffle(result);
+                            if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
+                                Log.d(TAG, result.toString());
+                                //return result;
+                                displayMessages(result);
+                                messages = result;
+                            }else{
+                                ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+                                Log.d(TAG, returnResult.toString());
+                                //return returnResult;
+                                displayMessages(returnResult);
+                                messages = returnResult;
+                            }
+
+//                            ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
+//                            displayMessages(returnResult);
 
 
                         }else{
@@ -644,14 +704,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                 });
+    }
 
+    // Display all the nearby messages on the map
+    private void displayMessages(ArrayList<MessageSchema> messages){
 
-        Collections.shuffle(result);
-        if(result.size() < MAX_NUMBER_MESSAGE_RETURNED){
-            return result;
+        Log.i("abc", "Before message");
+        for(MessageSchema message: messages){
+            Location messageLocation = message.location;
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
+            markerOptions.title(messageLocation.getProvider());
+            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            Log.i("abc", "Message: " + messageLocation.toString());
         }
+        Log.i("abc", "After message");
 
-        ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
-        return returnResult;
+    }
+
+    private void openShowMessageDialog(String author, String message){
+        ShowMessageDialog showMessageDialog = new ShowMessageDialog().newInstance(author, message);
+        showMessageDialog.show(getSupportFragmentManager(), "New Dialog");
     }
 }

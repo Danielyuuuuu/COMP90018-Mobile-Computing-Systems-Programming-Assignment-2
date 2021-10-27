@@ -1,5 +1,7 @@
 package com.example.dansdistractor.vouchers;
 
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,6 @@ import java.util.List;
 
 /**
  * @ClassName: VoucherRecycleAdaptor
-
  * @Author: wongchihaul
  * @CreateDate: 2021/9/25 6:47 下午
  */
@@ -26,10 +27,15 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
 
     private final int resourceId;
     private final List<Voucher> voucherList;
+    public static final int ACTIVE = 10;
+    public static final int INACTIVE = 11;
+    private final int status;
 
-    public VoucherRecycleAdaptor(ArrayList<Voucher> _voucherList, int _resourceId) {
+    public VoucherRecycleAdaptor(ArrayList<Voucher> _voucherList, int _resourceId, int _status) {
         resourceId = _resourceId;
         voucherList = _voucherList;
+        status = _status;
+
     }
 
 
@@ -50,16 +56,28 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
 
 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Voucher voucher = voucherList.get(position);
-        Picasso.get().load(voucher.getImageURI()).into(holder.icon);
-        holder.title.setText(voucher.getName());
-//        holder.description.setText(voucher.getDesc() == null ? "Need More Details" : voucher.getDesc());
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
 
-        // ---> just for demo
-        Picasso.get().load(voucher.getImageURI()).into(holder.icon_back);
-//        holder.title_back.setText(voucher.getName());
+
+        Voucher voucher = voucherList.get(position);
+
+        //download and show icon via URL link
+        Picasso.get().load(voucher.getImageURI()).fit().centerCrop().into(holder.icon);
+        Picasso.get().load(voucher.getImageURI()).fit().centerCrop().into(holder.icon_back);
+
+        //set vendor name
+
+        holder.title.setText(voucher.getName());
+
+        // grey out inactive voucher
+        if (status == INACTIVE) {
+            holder.icon.setColorFilter(filter);
+            holder.icon_back.setColorFilter(filter);
+        }
+
         holder.description_back.setText(voucher.getDesc() == null ? "This is an " + voucher.getName() : voucher.getDesc());
-        // <--- just for demo
     }
 
 
@@ -88,7 +106,7 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
 
             // --->just for demo
             icon_back = (ImageView) view.findViewById(R.id.voucher_icon_back);
-            title_back = (TextView) view.findViewById(R.id.voucher_name_back);
+//            title_back = (TextView) view.findViewById(R.id.voucher_name_back);
             description_back = (TextView) view.findViewById(R.id.voucher_description_back);
             // <--- just for demo
 

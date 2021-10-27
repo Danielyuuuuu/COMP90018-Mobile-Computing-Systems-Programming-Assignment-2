@@ -20,13 +20,19 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.example.dansdistractor.message.Locator;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -156,7 +162,7 @@ public class ExampleDialog extends AppCompatDialogFragment {
     private String getRandomAuthorName(){
 
         String[] authorNameData = {"Traveler", "Adventurer", "Sightseer", "Voyager", "Wanderer", "Explorer", "Commuter", "Peddler", "Journeyer", "Backpacker", "Straggler"};
-        String[] authorAdjData = {"Adventurous", "Affectionate", "Ambitious", "Amiable", "Compassionate", "Courageous", "Courteous", "Diligent", "Generous", "Gregarious ", "Impartial", "Passionate", "Witty"};
+        String[] authorAdjData = {"Adventurous", "Affectionate", "Ambitious", "Amiable", "Compassionate", "Courageous", "Courteous", "Diligent", "Generous", "Gregarious", "Impartial", "Passionate", "Witty"};
 
         int rnd = new Random().nextInt(authorNameData.length);
         int rnd2 = new Random().nextInt(authorNameData.length);

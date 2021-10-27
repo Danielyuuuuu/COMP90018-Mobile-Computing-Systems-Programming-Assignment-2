@@ -1,8 +1,7 @@
 package com.example.dansdistractor;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,23 +10,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.dansdistractor.databaseSchema.UserSchema;
+import com.example.dansdistractor.utils.FetchUserData;
 import com.example.dansdistractor.vouchers.Voucher;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
-
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RelativeLayout logout;
@@ -37,8 +35,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference docRefCurrentUser = db.collection("Users").document(userID);
     private ImageView closeProfile;
-    private ArrayList<String> userVoucherID = new ArrayList<>();
-    private ArrayList<Voucher> vouchers = new ArrayList<>();
+    private FetchUserData mFetchUserdata = new FetchUserData(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +65,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     int userpointsUserProfile = userProfile.points;
                     int usertotaldistanceUserProfile = userProfile.totaldistance;
                     int usertotalpinsUserProfile = userProfile.usertotalpins;
-                    userVoucherID = userProfile.vouchers;
 
                     username.setText(nameUserProfile);
                     useremail.setText(emailUserProfile);
@@ -78,7 +74,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
                 // get vouchers from firebase
-                getUserVoucherFromFirebase();
+                mFetchUserdata.Vouchers();
+                // get fitness history from firebase
+                mFetchUserdata.Fitness();
 
 
             }
@@ -111,34 +109,5 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, MainActivity.class));
-    }
-
-    /**
-     * Return all vouchers that user owns
-     * Since retrieving data from firebase is asynchronous so I need to do this before user accesses voucher page
-     *
-     * @return list of documents
-     */
-    public void getUserVoucherFromFirebase() {
-        SharedPreferences sharedPref = getSharedPreferences("Vouchers", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        // the id of voucher owned by user
-        db.collection("Vouchers")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            String voucherID = document.getId();
-                            if (userVoucherID.contains(voucherID)) {
-                                vouchers.add(document.toObject(Voucher.class));
-                            }
-                        }
-                        Gson gson = new Gson();
-                        editor.putString("ActiveVouchers", gson.toJson(vouchers));
-                        editor.apply();
-                    }
-
-                });
     }
 }
