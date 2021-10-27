@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
     private static int GENERATED_RADIUS = 5000;
-    private static final double DEFAULT_LAT_LON_DEGREES = 500;
+    private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
 
     private GoogleMap mMap;
@@ -643,16 +643,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(task.isSuccessful()){
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                double messageLat = (double) document.getData().get("lat");
-                                double messageLon = (double) document.getData().get("lon");
+                                MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
+                                        (double) document.getData().get("lat"), (double) document.getData().get("lon"),
+                                        (String) document.getData().get("content"), (String) document.getData().get("address"),
+                                        (Timestamp) document.getData().get("timestamp"));
 
-                                if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
-                                            messageLat, messageLon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                Location userInitLoc = myApplication.getMyLocations().get(0);
+
+                                if(newMessage.location.distanceTo(userInitLoc) <=  GENERATED_RADIUS){
                                     result.add(newMessage);
                                 }
-
                             }
 
                             Collections.shuffle(result);
