@@ -213,22 +213,23 @@ public class MyApplication extends Application {
 
         double totalDistance = 0;
 
+
         for (int counter = 0; counter < myLocations.size()-1; counter++) {
 
             totalDistance += myLocations.get(counter).distanceTo(myLocations.get(counter+1));
         }
 
         return totalDistance;
+
     }
 
     private double getSpeed(){
         if (endDate.getTime() - startDate.getTime() == 0) return 0;
-        return Math.round((distance/(endDate.getTime() - startDate.getTime()) * 3.6) * 100.0)/100.0;
+        return Math.round((distance/((endDate.getTime() - startDate.getTime())/1000) * 3.6) * 100.0)/100.0;
     }
 
     private int getPins(){
         return completedTargetLocations.size();
     }
-
 
 }
