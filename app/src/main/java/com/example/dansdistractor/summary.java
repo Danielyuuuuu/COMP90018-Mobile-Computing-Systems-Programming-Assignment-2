@@ -4,11 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class summary extends AppCompatActivity {
     private RingProgressView ringProgressView;
     int myProgress=0;
+    private Button btn_close;
+
+
 //    int mySteps=210;
 //    double myMileage=1.2;
 //    int myDuration=50;
@@ -16,10 +21,21 @@ public class summary extends AppCompatActivity {
 //    int myCalorie=1200;
 //    int myPoint=500;
 //    int myVoucher=3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
+
+        btn_close = findViewById(R.id.btn_close);
+
+        btn_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(summary.this, MainActivity.class));
+            }
+        });
 
         Intent intent =getIntent();
 
