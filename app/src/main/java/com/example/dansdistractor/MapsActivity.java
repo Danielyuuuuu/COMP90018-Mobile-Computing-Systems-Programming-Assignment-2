@@ -644,7 +644,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
                                     Log.d(TAG, document.getId() + " => " + document.getData());
                                     MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
-                                            lat, lon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                            messageLat, messageLon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
                                     result.add(newMessage);
                                 }
 
