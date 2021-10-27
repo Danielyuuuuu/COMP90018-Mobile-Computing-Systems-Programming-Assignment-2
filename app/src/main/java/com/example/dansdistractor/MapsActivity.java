@@ -201,7 +201,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (myLocations.size() > 0){
                     Location myLocation = myLocations.get(myLocations.size() - 1);
 
-                    // !!!!!!!!!!!!!
                     double distance = 0.0;
                     double shortestDistance = 0.0;
                     MessageSchema messageToDisplay = null;
@@ -224,9 +223,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
 
-                    // !!!!!!!!!!!!!
                     openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
-//                    openShowMessageDialog("author", "content");
                 }
                 else{
                     Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
