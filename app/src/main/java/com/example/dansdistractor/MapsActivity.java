@@ -179,6 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        // The end button
         btn_end.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,6 +187,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        // The leave a message button
         btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,40 +196,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        // The show message button
         btn_showMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<Location> myLocations = myApplication.getMyLocations();
-                if (myLocations.size() > 0){
-                    Location myLocation = myLocations.get(myLocations.size() - 1);
 
-                    double distance = 0.0;
-                    double shortestDistance = 0.0;
-                    MessageSchema messageToDisplay = null;
-                    Boolean hasFirst = false;
-                    Iterator<MessageSchema> itr = messages.iterator();
-                    while(itr.hasNext()){
-                        MessageSchema messageSchema = itr.next();
-                        distance = myLocation.distanceTo(messageSchema.location);
+                Location myLocation = myLocations.get(myLocations.size() - 1);
 
-                        if (!hasFirst){
+                double distance = 0.0;
+                double shortestDistance = 0.0;
+                MessageSchema messageToDisplay = null;
+                Boolean hasFirst = false;
+                Iterator<MessageSchema> itr = messages.iterator();
+
+                // To find the nearest message
+                while(itr.hasNext()){
+                    MessageSchema messageSchema = itr.next();
+                    distance = myLocation.distanceTo(messageSchema.location);
+
+                    if (!hasFirst){
+                        shortestDistance = distance;
+                        messageToDisplay = messageSchema;
+                        hasFirst = true;
+                    }
+                    else{
+                        if (shortestDistance >= distance){
                             shortestDistance = distance;
                             messageToDisplay = messageSchema;
-                            hasFirst = true;
-                        }
-                        else{
-                            if (shortestDistance >= distance){
-                                shortestDistance = distance;
-                                messageToDisplay = messageSchema;
-                            }
                         }
                     }
+                }
 
-                    openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
-                }
-                else{
-                    Toast.makeText(MapsActivity.this, "Can't find your location", Toast.LENGTH_SHORT).show();
-                }
+                // Show the nearest message
+                openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
+
             }
         });
 
@@ -237,6 +240,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         requestActivityRecognitionPermission();
 
+        // Check if the step counter sensor is present
         if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
             mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
             isStepCounterSensorPresent = true;
@@ -286,12 +290,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, null);
         }
 
+        // Setup the API key
         if(mGeoApiContext == null){
             mGeoApiContext = new GeoApiContext.Builder()
                     .apiKey("AIzaSyCDjKaiU54VIeHUIjZG1eiMLBdvmB4DOH8")
                     .build();
         }
 
+        // Setup the marker click listener
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
@@ -527,6 +533,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    // A close workout prompt to as user if he/she wants to close the workout
     private void closeWorkoutPrompt(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
@@ -621,12 +628,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    // To get the nearby messages
     private void getNearbyMessages(double lat, double lon){
-
-        //final double DEFAULT_LAT_LON_DEGREES = 500;
-        //final int MAX_NUMBER_MESSAGE_RETURNED = 30;
-
-        //CollectionReference messageRef = db.collection("Message");
 
         final ArrayList<MessageSchema> result = new ArrayList<MessageSchema>();
         String TAG = "getMessage123";
@@ -664,11 +667,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 displayMessages(returnResult);
                                 messages = returnResult;
                             }
-
-//                            ArrayList<MessageSchema> returnResult = (ArrayList<MessageSchema>) result.subList(0, MAX_NUMBER_MESSAGE_RETURNED);
-//                            displayMessages(returnResult);
-
-
                         }else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -692,6 +690,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    // To show the message dialog
     private void openShowMessageDialog(String author, String message){
         ShowMessageDialog showMessageDialog = new ShowMessageDialog().newInstance(author, message);
         showMessageDialog.show(getSupportFragmentManager(), "New Dialog");
