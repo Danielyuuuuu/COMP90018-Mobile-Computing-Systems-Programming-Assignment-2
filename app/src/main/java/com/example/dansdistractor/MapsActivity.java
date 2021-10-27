@@ -151,17 +151,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
 
-        // Request to access location permission from the user
-        requestLocationPermission();
-
-        while(ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            try {
-                wait(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
@@ -532,38 +521,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // To request location permission from the user
-    private void requestLocationPermission(){
-        // Permission granted, do nothing
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            return;
-        }
-        else{
-            // Permission not granted yet
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-            }
-        }
-    }
-
-
-    // Handle the request permission result
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch(requestCode){
-            case PERMISSION_FINE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    updateGPS(false);
-                }
-                else{
-                    Toast.makeText(this, "This app requires to grant location permission to be able to work", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-        }
-    }
-
     @Override
     public void onBackPressed() {
         // Can safely close the map when the user has paused the workout session
@@ -656,6 +613,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else{
             // Permission not granted yet
             requestPermissions(new String[] {Manifest.permission.ACTIVITY_RECOGNITION}, PERMISSION_ACTIVITY_RECOGNITION);
+        }
+    }
+
+    // Handle the request permission result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode){
+            case PERMISSION_ACTIVITY_RECOGNITION:
+                if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                    txt_stepCounter.setText("Step counter permission not granted");
+                }
         }
     }
 
