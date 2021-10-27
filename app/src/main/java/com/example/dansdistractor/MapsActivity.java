@@ -278,7 +278,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                updateGPS(myApplication.getSessionStarted());
                 Toast.makeText(MapsActivity.this, "Automatically update location", Toast.LENGTH_SHORT).show();
                 currentLocationMarker.remove();
                 LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
@@ -286,6 +285,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptions.position(currentLatLng);
                 markerOptions.title("My current location");
                 currentLocationMarker = mMap.addMarker(markerOptions);
+
+                Location myLocation = new Location("My location");
+                myLocation.setLatitude(currentLatLng.latitude);
+                myLocation.setLongitude(currentLatLng.longitude);
+                myApplication.getMyLocations().add(myLocation);
 
                 // Check if the user has reached the target location
                 checkIfReachedTargetLocation(locationResult.getLastLocation());
