@@ -1,34 +1,28 @@
 package com.example.dansdistractor;
 
+import static java.lang.Math.toIntExact;
+
 import android.app.Application;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.example.dansdistractor.databaseSchema.UserHistorySchema;
+import com.example.dansdistractor.utils.MyLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.type.DateTime;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static java.lang.Math.toIntExact;
 
 public class MyApplication extends Application {
     private static MyApplication singleton;
@@ -189,11 +183,13 @@ public class MyApplication extends Application {
         initialStepCount = 0;
     }
 
-    private void storeUserData(){
+    private void storeUserData() {
 
         String currentFirebaseUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        UserHistorySchema userHistory = new UserHistorySchema(currentFirebaseUserID, endDate, startDate, myLocations, targetLocations, completedTargetLocations, stepCount, distance, speed, pins);
+        ArrayList<MyLocation> myLocationsEX = new ArrayList<>();
+        myLocations.forEach(l -> myLocationsEX.add(new MyLocation(l)));
+        UserHistorySchema userHistory = new UserHistorySchema(currentFirebaseUserID, endDate, startDate, myLocationsEX, targetLocations, completedTargetLocations, stepCount, distance, speed, pins);
 
         Log.d("userHistory", userHistory.toString());
 
