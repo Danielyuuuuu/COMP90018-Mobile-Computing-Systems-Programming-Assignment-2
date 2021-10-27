@@ -208,12 +208,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null){
             mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
             isStepCounterSensorPresent = true;
-            Toast.makeText(this, "Step sensor found", Toast.LENGTH_SHORT).show();
         }
         else{
             txt_stepCounter.setText("The step counter sensor is not present");
             isStepCounterSensorPresent = false;
-            Toast.makeText(this, "Step sensor not found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -236,7 +234,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                Toast.makeText(MapsActivity.this, "Automatically update location", Toast.LENGTH_SHORT).show();
                 currentLocationMarker.remove();
                 LatLng currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
@@ -297,8 +294,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Generate a direction when the user clicks onto one of the target locations
                     generateDirection(marker);
                 }
-
-
                 return false;
             }
         });
@@ -415,8 +410,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onSuccess(Location location) {
                     myApplication.getMyLocations().add(location);
-                    Toast.makeText(MapsActivity.this, "Update location", Toast.LENGTH_SHORT).show();
-
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
@@ -484,7 +477,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Target location reached
             if(distances[0] <= 50){
                 myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
-                Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_LONG).show();
                 targetMarker.remove();
                 itr.remove();
                 polylineDestination = null;
@@ -570,9 +563,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mStepCounter = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
             if(mStepCounter != null){
                 sensorManager.registerListener(this, mStepCounter, SensorManager.SENSOR_DELAY_NORMAL);
-            }
-            else{
-                Toast.makeText(this, "Step counter not found", Toast.LENGTH_SHORT).show();
             }
         }
     }
