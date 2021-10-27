@@ -291,6 +291,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myLocation.setLongitude(currentLatLng.longitude);
                 myApplication.getMyLocations().add(myLocation);
 
+                if (polylineDestination != null) {
+                    generateDirection(polylineDestination);
+                }
+
                 // Check if the user has reached the target location
                 checkIfReachedTargetLocation(locationResult.getLastLocation());
             }
@@ -478,10 +482,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myApplication.getMyLocations().add(location);
                 }
             });
-
-            if (polylineDestination != null) {
-                generateDirection(polylineDestination);
-            }
 
             // Send a toast message when it failed to update the current location
             locationTask.addOnFailureListener(this, new OnFailureListener() {
