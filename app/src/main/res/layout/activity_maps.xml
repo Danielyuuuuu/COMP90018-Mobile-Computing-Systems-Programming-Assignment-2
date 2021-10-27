@@ -40,20 +40,6 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/btn_showMessage"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_end"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="289dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/btn_bg"
-        android:text="Show Message"
-        android:textStyle="bold" />
-
-    <Button
         android:id="@+id/btn_leaveMessage"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
