@@ -95,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 userLogout();
                 break;
             case R.id.closeProfile:
-                startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+                startActivity(new Intent(ProfileActivity.this, NavigationActivity.class));
                 break;
         }
 
@@ -108,6 +108,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, NavigationActivity.class));
     }
 }
