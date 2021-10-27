@@ -51,6 +51,8 @@ public class FetchUserData {
     private CollectionReference allVouchersRef;
     private ArrayList<String> userVoucherIDs;
     private ArrayList<Voucher> userVouchers;
+    private ArrayList<String> userInValidVoucherIDs;
+    private ArrayList<Voucher> userInvalidVouchers;
 
     // for user's fitness history
     private CollectionReference userHistoryRef;
@@ -71,8 +73,6 @@ public class FetchUserData {
     public static final String YEARLY_HISTORY = String.valueOf("YEARLY_HISTORY".hashCode());
     public static final String MONTHLY_HISTORY = String.valueOf("MONTHLY_HISTORY".hashCode());
     public static final String WEEKLY_HISTORY = String.valueOf("WEEKLY_HISTORY".hashCode());
-    private ArrayList<String> userInValidVoucherIDs;
-    private ArrayList<Voucher> userInvalidVouchers;
 
 
     public FetchUserData(AppCompatActivity _activity) {
@@ -88,6 +88,7 @@ public class FetchUserData {
         allVouchersRef = db.collection("Vouchers");
         userVoucherIDs = new ArrayList<>();
         userVouchers = new ArrayList<>();
+        userInValidVoucherIDs = new ArrayList<>();
         userInvalidVouchers = new ArrayList<>();
 
         // for user's fitness history
