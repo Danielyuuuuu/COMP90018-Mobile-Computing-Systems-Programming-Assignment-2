@@ -239,6 +239,8 @@ public class MyApplication extends Application {
 
     private int getProgress(Integer goalDistance, Integer goalSteps){
 
+        if(goalDistance == 0 || goalSteps == 0) return 100;
+
         return (int) Math.round((distance/goalDistance + stepCount/goalSteps)/2);
     }
 

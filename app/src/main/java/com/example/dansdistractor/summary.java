@@ -75,15 +75,13 @@ public class summary extends AppCompatActivity {
 //                        if (currentProgress >= 100) {
 //                            currentProgress = 20;
 //                        }
+                        if(currentProgress==myProgress){
+                            break;
+                        }
                         Thread.sleep(10);
                         currentProgress += 1;
                         ringProgressView.setCurrentProgress(currentProgress);
                         ringProgressView.postInvalidate();
-                        //
-                        if(currentProgress==myProgress){
-                            break;
-                        }
-
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
