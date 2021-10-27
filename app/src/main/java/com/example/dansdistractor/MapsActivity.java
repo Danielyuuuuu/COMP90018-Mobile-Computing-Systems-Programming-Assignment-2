@@ -210,6 +210,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Boolean hasFirst = false;
                 Iterator<MessageSchema> itr = messages.iterator();
 
+                Log.i("abc", "Before find nearest message");
+
                 // To find the nearest message
                 while(itr.hasNext()){
                     MessageSchema messageSchema = itr.next();
@@ -226,7 +228,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             messageToDisplay = messageSchema;
                         }
                     }
+
+                    Log.i("abc", "In: distance: " + distance + " |location: " + messageSchema.location.toString());
                 }
+
+                Log.i("abc", "After find nearest message");
 
                 // Show the nearest message
                 openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
