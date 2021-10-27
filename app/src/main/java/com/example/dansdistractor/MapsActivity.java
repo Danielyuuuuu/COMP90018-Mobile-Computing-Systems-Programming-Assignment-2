@@ -62,6 +62,7 @@ import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -74,8 +75,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
     private static int GENERATED_RADIUS = 5000;
-    private static final double DEFAULT_LAT_LON_DEGREES = 500;
+    private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
+    private static final Integer MESSAGE_BOARD_TAG = 1;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -96,7 +98,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
     private Button btn_end;
     private Button btn_leaveMessage;
-    private Button btn_showMessage;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -119,6 +120,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     ArrayList<MessageSchema> messages;
     Bundle b;
+
+    private HashMap<Marker, MessageSchema> messagesHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +157,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
-        btn_showMessage = findViewById(R.id.btn_showMessage);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -193,50 +195,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 ExampleDialog exampleDialog = new ExampleDialog(myApplication);
                 exampleDialog.show(getSupportFragmentManager(),"example dialog");
-            }
-        });
-
-        // The show message button
-        btn_showMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Location> myLocations = myApplication.getMyLocations();
-
-                Location myLocation = myLocations.get(myLocations.size() - 1);
-
-                double distance = 0.0;
-                double shortestDistance = 0.0;
-                MessageSchema messageToDisplay = null;
-                Boolean hasFirst = false;
-                Iterator<MessageSchema> itr = messages.iterator();
-
-                Log.i("abc", "Before find nearest message");
-
-                // To find the nearest message
-                while(itr.hasNext()){
-                    MessageSchema messageSchema = itr.next();
-                    distance = myLocation.distanceTo(messageSchema.location);
-
-                    if (!hasFirst){
-                        shortestDistance = distance;
-                        messageToDisplay = messageSchema;
-                        hasFirst = true;
-                    }
-                    else{
-                        if (shortestDistance >= distance){
-                            shortestDistance = distance;
-                            messageToDisplay = messageSchema;
-                        }
-                    }
-
-                    Log.i("abc", "In: distance: " + distance + " |location: " + messageSchema.location.toString());
-                }
-
-                Log.i("abc", "After find nearest message");
-
-                // Show the nearest message
-                openShowMessageDialog("From: " + messageToDisplay.author, "Message: " + messageToDisplay.content);
-
             }
         });
 
@@ -286,6 +244,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptions.title("My current location");
                 currentLocationMarker = mMap.addMarker(markerOptions);
 
+                Location myLocation = new Location("My location");
+                myLocation.setLatitude(currentLatLng.latitude);
+                myLocation.setLongitude(currentLatLng.longitude);
+                myApplication.getMyLocations().add(myLocation);
+
+                if (polylineDestination != null) {
+                    generateDirection(polylineDestination);
+                }
+
                 // Check if the user has reached the target location
                 checkIfReachedTargetLocation(locationResult.getLastLocation());
             }
@@ -307,17 +274,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-                // lets count the number of times that pin is clicked
-                Integer clicks = (Integer) marker.getTag();
-                if(clicks == null){
-                    clicks = 0;
-                }
-                clicks++;
-                marker.setTag(clicks);
-                Toast.makeText(MapsActivity.this, "Marker " + marker.getTitle() + " was clicked " + marker.getTag(), Toast.LENGTH_SHORT).show();
 
-                // Generate a direction when the user clicks onto one of the target locations
-                generateDirection(marker);
+                if(marker.getTag() == MESSAGE_BOARD_TAG){
+                    List<Location> myLocations = myApplication.getMyLocations();
+
+                    Location myLocation = myLocations.get(myLocations.size() - 1);
+                    MessageSchema clickedMessageSchema = messagesHashMap.get(marker);
+
+                    float distanceBetweenMessage = myLocation.distanceTo(clickedMessageSchema.location);
+
+                    if (distanceBetweenMessage < 50){
+                        // Show the nearest message
+                        openShowMessageDialog("From: " + clickedMessageSchema.author, "Message: " + clickedMessageSchema.content);
+                    }
+                    else{
+                        Toast.makeText(MapsActivity.this, "Need to move closer to see the message", Toast.LENGTH_LONG).show();
+                    }
+
+
+                }
+                else{
+                    // Generate a direction when the user clicks onto one of the target locations
+                    generateDirection(marker);
+                }
+
+
                 return false;
             }
         });
@@ -473,10 +454,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myApplication.getMyLocations().add(location);
                 }
             });
-
-            if (polylineDestination != null) {
-                generateDirection(polylineDestination);
-            }
 
             // Send a toast message when it failed to update the current location
             locationTask.addOnFailureListener(this, new OnFailureListener() {
@@ -638,16 +615,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(task.isSuccessful()){
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                double messageLat = (double) document.getData().get("lat");
-                                double messageLon = (double) document.getData().get("lon");
+                                MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
+                                        (double) document.getData().get("lat"), (double) document.getData().get("lon"),
+                                        (String) document.getData().get("content"), (String) document.getData().get("address"),
+                                        (Timestamp) document.getData().get("timestamp"));
 
-                                if(messageLat >= lat - DEFAULT_LAT_LON_DEGREES && messageLat <= lat + DEFAULT_LAT_LON_DEGREES && messageLon >= lon - DEFAULT_LAT_LON_DEGREES && messageLon <= lon + DEFAULT_LAT_LON_DEGREES){
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    MessageSchema newMessage = new MessageSchema((String) document.getData().get("author"),
-                                            messageLat, messageLon, (String) document.getData().get("content"), (String) document.getData().get("address"), (Timestamp) document.getData().get("timestamp"));
+                                Location userInitLoc = myApplication.getMyLocations().get(0);
+
+                                if(newMessage.location.distanceTo(userInitLoc) <=  GENERATED_RADIUS){
                                     result.add(newMessage);
                                 }
-
                             }
 
                             Collections.shuffle(result);
@@ -672,6 +649,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Display all the nearby messages on the map
     private void displayMessages(ArrayList<MessageSchema> messages){
+        messagesHashMap = new HashMap<>();
 
         Log.i("abc", "Before message");
         for(MessageSchema message: messages){
@@ -679,7 +657,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(new LatLng(messageLocation.getLatitude(), messageLocation.getLongitude()));
             markerOptions.title(messageLocation.getProvider());
-            mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            Marker newMarker = mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            newMarker.setTag(MESSAGE_BOARD_TAG);
+            messagesHashMap.put(newMarker, message);
             Log.i("abc", "Message: " + messageLocation.toString());
         }
         Log.i("abc", "After message");
