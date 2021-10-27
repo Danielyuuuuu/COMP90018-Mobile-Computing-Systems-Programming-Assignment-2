@@ -30,7 +30,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * @ClassName: FetchUserDataFromFirebase
@@ -52,6 +51,9 @@ public class FetchUserData {
     private CollectionReference allVouchersRef;
     private ArrayList<String> userVoucherIDs;
     private ArrayList<Voucher> userVouchers;
+    // for shared preferences
+    public static final String ALL_VOUCHERS = String.valueOf("ALL_VOUCHERS".hashCode());
+    public static final String REMOTE_ACTIVE_VOUCHERS = String.valueOf("REMOTE_ACTIVE_VOUCHERS".hashCode());
 
     // for user's fitness history
     private CollectionReference userHistoryRef;
@@ -61,15 +63,15 @@ public class FetchUserData {
     private ArrayList<UserHistorySchema> currentUserHistory;
     private WeekFields weekFields;
     private Calendar c;
-
-    // for shared preferences
-    public static final String ALL_VOUCHERS = UUID.randomUUID().toString();
-    public static final String ACTIVE_VOUCHERS = UUID.randomUUID().toString();
-    public static final String INACTIVE_VOUCHERS = UUID.randomUUID().toString();
-    public static final String ALL_HISTORY = UUID.randomUUID().toString();
-    public static final String YEARLY_HISTORY = UUID.randomUUID().toString();
-    public static final String MONTHLY_HISTORY = UUID.randomUUID().toString();
-    public static final String WEEKLY_HISTORY = UUID.randomUUID().toString();
+    public static final String REMOTE_VERIFIED_VOUCHERS = String.valueOf("REMOTE_VERIFIED_VOUCHERS".hashCode());
+    public static final String LOCAL_ACTIVE_VOUCHERS = String.valueOf("LOCAL_ACTIVE_VOUCHERS".hashCode());
+    public static final String LOCAL_VERIFIED_VOUCHERS = String.valueOf("LOCAL_VERIFIED_VOUCHERS".hashCode());
+    public static final String ALL_HISTORY = String.valueOf("ALL_HISTORY".hashCode());
+    public static final String YEARLY_HISTORY = String.valueOf("YEARLY_HISTORY".hashCode());
+    public static final String MONTHLY_HISTORY = String.valueOf("MONTHLY_HISTORY".hashCode());
+    public static final String WEEKLY_HISTORY = String.valueOf("WEEKLY_HISTORY".hashCode());
+    private ArrayList<String> userInValidVoucherIDs;
+    private ArrayList<Voucher> userInvalidVouchers;
 
 
     public FetchUserData(AppCompatActivity _activity) {
@@ -85,6 +87,7 @@ public class FetchUserData {
         allVouchersRef = db.collection("Vouchers");
         userVoucherIDs = new ArrayList<>();
         userVouchers = new ArrayList<>();
+        userInvalidVouchers = new ArrayList<>();
 
         // for user's fitness history
         userHistoryRef = db.collection("UserHistory");
@@ -102,6 +105,8 @@ public class FetchUserData {
     public void Vouchers() {
         SharedPreferences sharedPref = activity.getSharedPreferences(ALL_VOUCHERS, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+        //reset cache
+        editor.remove(REMOTE_ACTIVE_VOUCHERS).remove(REMOTE_VERIFIED_VOUCHERS).apply();
         // the id of voucher owned by user
         allVouchersRef
                 .get()
@@ -113,9 +118,20 @@ public class FetchUserData {
                             if (userVoucherIDs.contains(voucherID)) {
                                 userVouchers.add(document.toObject(Voucher.class));
                             }
+                            if (userInValidVoucherIDs.contains(voucherID)) {
+                                userInvalidVouchers.add(document.toObject(Voucher.class));
+                            }
                         }
                         Gson gson = new Gson();
-                        editor.putString(ACTIVE_VOUCHERS, gson.toJson(userVouchers));
+
+                        if (!sharedPref.contains(REMOTE_ACTIVE_VOUCHERS)) {
+                            editor.putString(REMOTE_ACTIVE_VOUCHERS, gson.toJson(userVouchers));
+                            editor.putString(LOCAL_ACTIVE_VOUCHERS, gson.toJson(userVouchers));
+                        }
+                        if (!sharedPref.contains(REMOTE_VERIFIED_VOUCHERS)) {
+                            editor.putString(REMOTE_VERIFIED_VOUCHERS, gson.toJson(userInvalidVouchers));
+                            editor.putString(LOCAL_VERIFIED_VOUCHERS, gson.toJson(userInvalidVouchers));
+                        }
                         editor.apply();
                     }
 
@@ -142,11 +158,9 @@ public class FetchUserData {
                         task.getResult().forEach(document -> {
                             // find current user's history and group by year
                             if (userID.equals(document.get("user", String.class))) {
-                                System.out.println("Matched! " + userID);
                                 UserHistorySchema history = document.toObject(UserHistorySchema.class);
                                 Date date = history.endDateTime;
                                 c.setTime(date);
-                                System.out.println(date);
 
                                 // only this year's date will be showed
                                 if (c.get(Calendar.YEAR) == thisYear) {
@@ -160,7 +174,6 @@ public class FetchUserData {
                                     }
 
                                     if (c.get(Calendar.WEEK_OF_YEAR) == thisWeek) {
-                                        System.out.println("Week Matched ! " + thisWeek);
                                         // Calendar.DAY_OF_WEEK starts from Sunday, i.e., Sunday returns 1 and Saturday returns 7
                                         // transform it to a start-from-Monday week, i.e., Monday return 1 and Sunday returns 7
                                         int dayOfWeek = (c.get(Calendar.DAY_OF_WEEK) - 1) % 7 == 0 ? 7 : c.get(Calendar.DAY_OF_WEEK) - 1;
@@ -173,8 +186,6 @@ public class FetchUserData {
                         editor.putString(YEARLY_HISTORY, gson.toJson(yearlyUserHistory));
                         editor.putString(MONTHLY_HISTORY, gson.toJson(monthlyUserHistory));
                         editor.putString(WEEKLY_HISTORY, gson.toJson(weeklyUserHistory));
-
-                        System.out.println(WEEKLY_HISTORY + " " + gson.toJson(weeklyUserHistory));
 
                         editor.apply();
                     }
@@ -191,6 +202,7 @@ public class FetchUserData {
                     UserSchema userProfile = documentSnapshot.toObject(UserSchema.class);
                     if (userProfile != null) {
                         userVoucherIDs = userProfile.vouchers;
+                        userInValidVoucherIDs = userProfile.invalidVouchers;
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(activity, "Unable to obtain user's vouchers", Toast.LENGTH_LONG).show());
