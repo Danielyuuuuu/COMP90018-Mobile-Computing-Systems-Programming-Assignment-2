@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class summary extends AppCompatActivity {
@@ -60,6 +62,13 @@ public class summary extends AppCompatActivity {
 
         myProgress=intent.getIntExtra("myProgress",0);
 
+        Button buttonSummaryReturn = findViewById(R.id.button_summary_return);
+        buttonSummaryReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(summary.this, NavigationActivity.class));
+            }
+        });
         ringProgressView = (RingProgressView) findViewById(R.id.ringProgress);
         runChart();
     }
