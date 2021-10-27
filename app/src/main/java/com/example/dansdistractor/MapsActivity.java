@@ -118,12 +118,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CollectionReference messageRef = db.collection("Message");
 
     ArrayList<MessageSchema> messages;
-
+    Bundle b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle b = getIntent().getExtras();
+        b = getIntent().getExtras();
         if (b != null) {
             NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
             GENERATED_RADIUS = b.getInt("radius");
@@ -545,7 +545,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-                myApplication.endSession();
+                myApplication.endSession(b.getInt("goalDistance"), b.getInt("goalSteps"));
                 finish();
             }
         });

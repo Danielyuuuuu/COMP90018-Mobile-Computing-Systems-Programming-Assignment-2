@@ -140,7 +140,7 @@ public class MyApplication extends Application {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected void endSession(){
+    protected void endSession(Integer goalDistance, Integer goalSteps){
         sessionStarted = false;
         hasInitialStepCount = false;
         endDate = new java.util.Date();
