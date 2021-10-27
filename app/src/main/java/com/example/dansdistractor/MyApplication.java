@@ -11,7 +11,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.example.dansdistractor.databaseSchema.MessageSchema;
 import com.example.dansdistractor.databaseSchema.UserHistorySchema;
 import com.example.dansdistractor.utils.MyLocation;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,6 +26,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
