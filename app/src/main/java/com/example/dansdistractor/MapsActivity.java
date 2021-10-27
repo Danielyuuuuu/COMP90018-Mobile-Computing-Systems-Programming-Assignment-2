@@ -154,6 +154,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Request to access location permission from the user
         requestLocationPermission();
 
+        while(ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            try {
+                wait(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
