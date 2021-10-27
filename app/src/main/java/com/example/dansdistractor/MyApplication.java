@@ -14,13 +14,22 @@ import androidx.annotation.RequiresApi;
 import com.example.dansdistractor.databaseSchema.UserHistorySchema;
 import com.example.dansdistractor.utils.MyLocation;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -140,7 +149,7 @@ public class MyApplication extends Application {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected void endSession(){
+    protected void endSession(Integer goalDistance, Integer goalSteps){
         sessionStarted = false;
         hasInitialStepCount = false;
         endDate = new java.util.Date();
@@ -157,14 +166,18 @@ public class MyApplication extends Application {
 
         Intent intent = new Intent(MyApplication.this,summary.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("steps", stepCount);
-        intent.putExtra("myMileage", (int) Math.round(distance));
+        intent.putExtra("goalSteps", goalSteps);
+        intent.putExtra("mySteps", stepCount);
+        intent.putExtra("myDistance", (int) Math.round(distance));
         intent.putExtra("myDuration", toIntExact(((endDate.getTime() - startDate.getTime())/1000/60)));
         intent.putExtra("mySpeed", speed);
-        intent.putExtra("myCalorie", 999);
+        intent.putExtra("myCalorie", getCalorie());
         intent.putExtra("myPoint", pins);
         intent.putExtra("myVoucher", 999);
-        intent.putExtra("myProgress",79);
+        intent.putExtra("myProgress",getProgress(goalDistance,goalSteps));
+        intent.putExtra("goalDistance",goalDistance);
+
+
         startActivity(intent);
     }
 
@@ -183,6 +196,7 @@ public class MyApplication extends Application {
         initialStepCount = 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void storeUserData() {
 
         String currentFirebaseUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -199,6 +213,12 @@ public class MyApplication extends Application {
                     @Override
                     public void onSuccess(@NonNull DocumentReference documentReference) {
 
+                        DocumentReference usersDocRef = db.collection("Users").document(currentFirebaseUserID);
+
+                        usersDocRef.update("totaldistance", FieldValue.increment(distance));
+                        usersDocRef.update("usertotalpins", FieldValue.increment(pins));
+                        usersDocRef.update("points", FieldValue.increment(pins));
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -213,22 +233,34 @@ public class MyApplication extends Application {
 
         double totalDistance = 0;
 
+
         for (int counter = 0; counter < myLocations.size()-1; counter++) {
 
             totalDistance += myLocations.get(counter).distanceTo(myLocations.get(counter+1));
         }
 
         return totalDistance;
+
     }
 
     private double getSpeed(){
         if (endDate.getTime() - startDate.getTime() == 0) return 0;
-        return Math.round((distance/(endDate.getTime() - startDate.getTime()) * 3.6) * 100.0)/100.0;
+        return Math.round((distance/((endDate.getTime() - startDate.getTime())/1000) * 3.6) * 100.0)/100.0;
     }
 
     private int getPins(){
         return completedTargetLocations.size();
     }
 
+    private int getProgress(Integer goalDistance, Integer goalSteps){
+
+        if(goalDistance == 0 || goalSteps == 0) return 100;
+
+        return (int) Math.round((distance/goalDistance + stepCount/goalSteps)*100/2);
+    }
+
+    private double getCalorie(){
+        return Math.round(stepCount/1000*40*100.0)/100.0;
+    }
 
 }

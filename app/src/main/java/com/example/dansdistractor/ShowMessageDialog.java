@@ -28,13 +28,14 @@ public class ShowMessageDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.layout_show_message_dialog, null);
 
+        // Find the textview from layout
         txt_author = view.findViewById(R.id.txt_author);
         txt_message = view.findViewById(R.id.txt_message);
 
         txt_author.setText(getArguments().getString("messageAuthor"));
         txt_message.setText(getArguments().getString("messageContent"));
 
-
+        // Set the dialog view
         builder.setView(view)
             .setTitle("Message Board")
             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -46,14 +47,11 @@ public class ShowMessageDialog extends AppCompatDialogFragment {
         return builder.create();
     }
 
-    /**
-     * Create a new instance of MyDialogFragment, providing "num"
-     * as an argument.
-     */
+
+    // Get two input variables for the dialog
     static ShowMessageDialog newInstance(String author, String message) {
         ShowMessageDialog f = new ShowMessageDialog();
 
-        // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putString("messageAuthor", author);
         args.putString("messageContent", message);

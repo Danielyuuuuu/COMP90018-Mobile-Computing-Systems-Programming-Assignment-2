@@ -4,11 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class summary extends AppCompatActivity {
     private RingProgressView ringProgressView;
     int myProgress=0;
+    private Button btn_close;
+
+
 //    int mySteps=210;
 //    double myMileage=1.2;
 //    int myDuration=50;
@@ -16,21 +21,32 @@ public class summary extends AppCompatActivity {
 //    int myCalorie=1200;
 //    int myPoint=500;
 //    int myVoucher=3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
+
+        btn_close = findViewById(R.id.btn_close);
+
+        btn_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(summary.this, MainActivity.class));
+            }
+        });
 
         Intent intent =getIntent();
 
 
        TextView steps = findViewById(R.id.steps);
         //steps.setText(mySteps+" Steps");
-        steps.setText(intent.getIntExtra("steps",0)+" Steps");
+        steps.setText(intent.getIntExtra("goalSteps",0)+" Steps");
 
         TextView mileage = findViewById(R.id.mileages);
         //mileage.setText(myMileage+" KMs");
-        mileage.setText(intent.getIntExtra("myMileage",0)+" KMs");
+        mileage.setText(intent.getIntExtra("goalDistance",0)+" Ms");
 
         TextView duration = findViewById(R.id.textView_duration);
         //duration.setText(myDuration+" Mins");
@@ -40,7 +56,7 @@ public class summary extends AppCompatActivity {
 
         TextView distance = findViewById(R.id.textView_distance);
        // distance.setText(myMileage+" KMs");
-        distance.setText(intent.getIntExtra("myMileage",0)+" Ms");
+        distance.setText(intent.getIntExtra("myDistance",0)+" Ms");
 
         TextView speed = findViewById(R.id.textView_speed);
         //speed.setText(mySpeed+" KM/H");
@@ -48,11 +64,11 @@ public class summary extends AppCompatActivity {
 
         TextView calorie = findViewById(R.id.textView_calorie);
         //calorie.setText(myCalorie+"");
-        calorie.setText(intent.getIntExtra("myCalorie",0)+"");
+        calorie.setText(intent.getDoubleExtra("myCalorie",0)+"");
 
         TextView point = findViewById(R.id.textView_points);
         //point.setText(myPoint+"");
-        point.setText(intent.getIntExtra("myPoint",0)+"");
+        point.setText(intent.getIntExtra("mySteps",0)+"");
 
         TextView voucher = findViewById(R.id.textView_vouchers);
         //voucher.setText(myVoucher+"");
@@ -75,15 +91,13 @@ public class summary extends AppCompatActivity {
 //                        if (currentProgress >= 100) {
 //                            currentProgress = 20;
 //                        }
+                        if(currentProgress==myProgress){
+                            break;
+                        }
                         Thread.sleep(10);
                         currentProgress += 1;
                         ringProgressView.setCurrentProgress(currentProgress);
                         ringProgressView.postInvalidate();
-                        //
-                        if(currentProgress==myProgress){
-                            break;
-                        }
-
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

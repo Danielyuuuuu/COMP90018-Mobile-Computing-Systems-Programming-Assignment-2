@@ -1,9 +1,12 @@
 package com.example.dansdistractor;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +14,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.dansdistractor.message.Locator;
 
@@ -19,6 +24,9 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static final int DEFAULT_UPDATE_INTERVAL = 5;
+    public static final int FAST_UPDATE_INTERVAL = 2;
+    private static final int PERMISSION_FINE_LOCATION = 10;
 
     Button btn_map;
 
@@ -188,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        requestLocationPermission();
+
     }
     public void openDialog() {
         MyApplication user = (MyApplication) getApplicationContext();
@@ -195,5 +205,36 @@ public class MainActivity extends AppCompatActivity {
         exampleDialog.show(getSupportFragmentManager(),"example dialog");
     }
 
+    // Handle the request permission result
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch(requestCode){
+            case PERMISSION_FINE_LOCATION:
+                if(grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                    Toast.makeText(this, "This app requires to grant location permission to be able to work", Toast.LENGTH_LONG).show();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        finishAffinity();
+                    } else {
+                        finish();
+                    }
+                }
+                break;
+        }
+    }
+
+    // To request location permission from the user
+    private void requestLocationPermission(){
+        // Permission granted, do nothing
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+        else{
+            // Permission not granted yet
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
 
 }
