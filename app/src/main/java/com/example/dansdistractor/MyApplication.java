@@ -99,7 +99,7 @@ public class MyApplication extends Application {
         this.sessionPaused = sessionPaused;
     }
 
-    protected Boolean getSessionStarted(){
+    public Boolean getSessionStarted(){
         return sessionStarted;
     }
 

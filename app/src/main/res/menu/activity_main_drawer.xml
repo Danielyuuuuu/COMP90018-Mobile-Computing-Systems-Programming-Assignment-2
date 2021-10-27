@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_baseline_home_24"
             android:title="@string/menu_home" />
         <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_baseline_people_24"
+            android:title="@string/menu_profile" />
+        <item
             android:id="@+id/nav_voucher"
             android:icon="@drawable/ic_baseline_collections_24"
             android:title="@string/menu_voucher" />

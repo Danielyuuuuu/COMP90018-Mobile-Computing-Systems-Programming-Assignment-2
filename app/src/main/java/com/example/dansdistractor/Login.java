@@ -111,7 +111,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 if(task.isSuccessful()){
                     //redirect to user profile
                     progressBar.setVisibility(View.GONE);
-                    startActivity(new Intent(Login.this, MainActivity.class));
+                    startActivity(new Intent(Login.this, NavigationActivity.class));
                 }else{
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(Login.this, "Failed to login! Unrecognised username or password.", Toast.LENGTH_LONG).show();
