@@ -51,9 +51,6 @@ public class FetchUserData {
     private CollectionReference allVouchersRef;
     private ArrayList<String> userVoucherIDs;
     private ArrayList<Voucher> userVouchers;
-    // for shared preferences
-    public static final String ALL_VOUCHERS = String.valueOf("ALL_VOUCHERS".hashCode());
-    public static final String REMOTE_ACTIVE_VOUCHERS = String.valueOf("REMOTE_ACTIVE_VOUCHERS".hashCode());
 
     // for user's fitness history
     private CollectionReference userHistoryRef;
@@ -63,6 +60,10 @@ public class FetchUserData {
     private ArrayList<UserHistorySchema> currentUserHistory;
     private WeekFields weekFields;
     private Calendar c;
+
+    // for shared preferences
+    public static final String ALL_VOUCHERS = String.valueOf("ALL_VOUCHERS".hashCode());
+    public static final String REMOTE_ACTIVE_VOUCHERS = String.valueOf("REMOTE_ACTIVE_VOUCHERS".hashCode());
     public static final String REMOTE_VERIFIED_VOUCHERS = String.valueOf("REMOTE_VERIFIED_VOUCHERS".hashCode());
     public static final String LOCAL_ACTIVE_VOUCHERS = String.valueOf("LOCAL_ACTIVE_VOUCHERS".hashCode());
     public static final String LOCAL_VERIFIED_VOUCHERS = String.valueOf("LOCAL_VERIFIED_VOUCHERS".hashCode());

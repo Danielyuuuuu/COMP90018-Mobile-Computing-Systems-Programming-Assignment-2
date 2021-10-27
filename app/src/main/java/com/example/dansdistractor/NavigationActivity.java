@@ -4,27 +4,26 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Menu;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dansdistractor.databaseSchema.UserSchema;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.dansdistractor.databaseSchema.UserSchema;
 import com.example.dansdistractor.databinding.ActivityNavigationBinding;
+import com.example.dansdistractor.utils.FetchUserData;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -43,6 +42,10 @@ public class NavigationActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference docRefCurrentUser = db.collection("Users").document(userID);
     private FirebaseAuth mAuth;
+
+    // get users' fitness and vouchers info from database
+    private FetchUserData mFetchUserdata = new FetchUserData(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +96,11 @@ public class NavigationActivity extends AppCompatActivity {
 
         // To request location permission
         requestLocationPermission();
+
+        // get vouchers from firebase
+        mFetchUserdata.Vouchers();
+        // get fitness history from firebase
+        mFetchUserdata.Fitness();
     }
 
     @Override

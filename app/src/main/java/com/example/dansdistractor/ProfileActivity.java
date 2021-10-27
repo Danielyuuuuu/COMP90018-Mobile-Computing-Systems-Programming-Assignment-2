@@ -14,9 +14,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.dansdistractor.databaseSchema.UserSchema;
-import com.example.dansdistractor.utils.FetchUserData;
-import com.example.dansdistractor.vouchers.Voucher;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +32,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference docRefCurrentUser = db.collection("Users").document(userID);
     private ImageView closeProfile;
-    private FetchUserData mFetchUserdata = new FetchUserData(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +68,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     usertotaldistance.setText(String.valueOf(usertotaldistanceUserProfile));
                     usertotalpins.setText(String.valueOf(usertotalpinsUserProfile));
                 }
-
-                // get vouchers from firebase
-                mFetchUserdata.Vouchers();
-                // get fitness history from firebase
-                mFetchUserdata.Fitness();
-
 
             }
         }).addOnFailureListener(new OnFailureListener() {
