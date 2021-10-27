@@ -1,7 +1,5 @@
 package com.example.dansdistractor.databaseSchema;
 
-import com.example.dansdistractor.databaseSchema.UserHistorySchema;
-
 import java.util.ArrayList;
 
 public class UserSchema {

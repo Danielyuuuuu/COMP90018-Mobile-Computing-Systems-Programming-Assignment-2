@@ -39,7 +39,7 @@ public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefresh
         mSwipeRefreshLayout = view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        FitnessRecycleAdaptor adaptor = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_card, TYPE);
+        FitnessRecycleAdaptor adaptor = new FitnessRecycleAdaptor(Fitness.getFitness(), R.layout.fitness_card, TYPE, getActivity());
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);
