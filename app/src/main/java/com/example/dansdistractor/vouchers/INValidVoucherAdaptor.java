@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ public class INValidVoucherAdaptor extends RecyclerView.Adapter {
         Gson gson = new Gson();
         SharedPreferences sharedPref = tab.requireActivity().getSharedPreferences(FetchUserData.ALL_VOUCHERS, Activity.MODE_PRIVATE);
         String INValidVouchers = sharedPref.getString(FetchUserData.LOCAL_VERIFIED_VOUCHERS, "");
-        Log.d("INActive", INValidVouchers);
         voucherList = gson.fromJson(INValidVouchers, new TypeToken<ArrayList<Voucher>>() {
         }.getType());
     }
