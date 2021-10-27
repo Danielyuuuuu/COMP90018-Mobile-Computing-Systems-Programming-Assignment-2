@@ -241,7 +241,7 @@ public class MyApplication extends Application {
 
         if(goalDistance == 0 || goalSteps == 0) return 100;
 
-        return (int) Math.round((distance/goalDistance + stepCount/goalSteps)/2);
+        return (int) Math.round((distance/goalDistance + stepCount/goalSteps)*100/2);
     }
 
     private double getCalorie(){

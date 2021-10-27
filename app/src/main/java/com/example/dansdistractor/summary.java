@@ -30,7 +30,7 @@ public class summary extends AppCompatActivity {
 
         TextView mileage = findViewById(R.id.mileages);
         //mileage.setText(myMileage+" KMs");
-        mileage.setText(intent.getIntExtra("goalDistance",0)+" KMs");
+        mileage.setText(intent.getIntExtra("goalDistance",0)+" Ms");
 
         TextView duration = findViewById(R.id.textView_duration);
         //duration.setText(myDuration+" Mins");
