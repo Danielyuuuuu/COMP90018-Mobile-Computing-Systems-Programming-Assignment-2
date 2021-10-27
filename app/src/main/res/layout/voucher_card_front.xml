@@ -4,7 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view_coupon"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="150dp"
     android:layout_marginStart="20dp"
     android:layout_marginTop="5dp"
     android:layout_marginEnd="20dp"
@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/voucher_icon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="6dip" />
@@ -31,7 +31,7 @@
         <TextView
             android:id="@+id/voucher_name"
             android:layout_width="fill_parent"
-            android:layout_height="26dp"
+            android:layout_height="36dp"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="5dp"
             android:layout_toEndOf="@id/voucher_icon"
@@ -41,17 +41,20 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/voucher_description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_below="@id/voucher_name"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="5dp"
-            android:layout_toEndOf="@id/voucher_icon"
-            android:ellipsize="marquee"
+            android:layout_marginTop="40dp"
+            android:layout_toEndOf="@id/voucher_icon">
 
-            android:textSize="12sp" />
+            <Button
+                android:id="@+id/verify_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="VERIFY" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

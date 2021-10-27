@@ -1,7 +1,5 @@
 package com.example.dansdistractor.vouchers;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.dansdistractor.R;
-import com.example.dansdistractor.utils.FetchUserData;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
 
 /**
  * @ClassName: VoucherTab
@@ -31,7 +24,7 @@ import java.util.ArrayList;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private int status;
+    public RecyclerView.Adapter adaptor;
 
     public VoucherTab() {
     }
@@ -45,14 +38,6 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh_recycle);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(FetchUserData.ALL_VOUCHERS, Activity.MODE_PRIVATE);
-        String activeVouchers = sharedPref.getString(FetchUserData.ACTIVE_VOUCHERS, null);
-        Gson gson = new Gson();
-        ArrayList<Voucher> voucherList = gson.fromJson(activeVouchers, new TypeToken<ArrayList<Voucher>>() {
-        }.getType());
-
-
-        VoucherRecycleAdaptor adaptor = new VoucherRecycleAdaptor(voucherList, R.layout.voucher_card_flip, status);
         RecyclerView recyclerView = view.findViewById(R.id.demo_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adaptor);
@@ -72,10 +57,5 @@ public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefresh
                 Toast.makeText(getContext(), "Refresh Vouchers", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 }

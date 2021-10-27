@@ -1,41 +1,55 @@
 package com.example.dansdistractor.vouchers;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dansdistractor.R;
+import com.example.dansdistractor.utils.FetchUserData;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * @ClassName: VoucherRecycleAdaptor
+ * @ClassName: INValidVoucherAdaptor
+ * @Description:
  * @Author: wongchihaul
- * @CreateDate: 2021/9/25 6:47 下午
+ * @CreateDate: 2021/10/27 8:22 下午
  */
-public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
+public class INValidVoucherAdaptor extends RecyclerView.Adapter {
 
     private final int resourceId;
-    private final List<Voucher> voucherList;
-    public static final int ACTIVE = 10;
-    public static final int INACTIVE = 11;
-    private final int status;
+    private final Fragment tab;
+    private ArrayList<Voucher> voucherList;
 
-    public VoucherRecycleAdaptor(ArrayList<Voucher> _voucherList, int _resourceId, int _status) {
+    public INValidVoucherAdaptor(int _resourceId, Fragment _tab) {
         resourceId = _resourceId;
-        voucherList = _voucherList;
-        status = _status;
+        tab = _tab;
 
+        // get data from shared preferences
+        voucherList = new ArrayList<>();
+        Gson gson = new Gson();
+        SharedPreferences sharedPref = tab.requireActivity().getSharedPreferences(FetchUserData.ALL_VOUCHERS, Activity.MODE_PRIVATE);
+        String INValidVouchers = sharedPref.getString(FetchUserData.LOCAL_VERIFIED_VOUCHERS, "");
+        Log.d("INActive", INValidVouchers);
+        voucherList = gson.fromJson(INValidVouchers, new TypeToken<ArrayList<Voucher>>() {
+        }.getType());
     }
 
 
@@ -43,8 +57,7 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(resourceId, parent, false);
-        MyViewHolder viewHolder = new MyViewHolder(view);
-
+        MyViewHolder viewHolder = new MyViewHolder(view, tab);
         return viewHolder;
     }
 
@@ -60,7 +73,6 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
         matrix.setSaturation(0);
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
 
-
         Voucher voucher = voucherList.get(position);
 
         //download and show icon via URL link
@@ -68,14 +80,11 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
         Picasso.get().load(voucher.getImageURI()).fit().centerCrop().into(holder.icon_back);
 
         //set vendor name
-
         holder.title.setText(voucher.getName());
 
         // grey out inactive voucher
-        if (status == INACTIVE) {
-            holder.icon.setColorFilter(filter);
-            holder.icon_back.setColorFilter(filter);
-        }
+        holder.icon.setColorFilter(filter);
+        holder.icon_back.setColorFilter(filter);
 
         holder.description_back.setText(voucher.getDesc() == null ? "This is an " + voucher.getName() : voucher.getDesc());
     }
@@ -87,32 +96,29 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
     }
 
 
-    public class MyViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
         TextView title;
-        TextView description;
-
+        Button verifyButton;
         ImageView icon_back;
-        TextView title_back;
         TextView description_back;
 
         EasyFlipView myEasyFlipView;
 
-        public MyViewHolder(@NonNull View view) {
+        public MyViewHolder(@NonNull View view, Fragment tab) {
             super(view);
             icon = (ImageView) view.findViewById(R.id.voucher_icon);
             title = (TextView) view.findViewById(R.id.voucher_name);
-            description = (TextView) view.findViewById(R.id.voucher_description);
-
-            // --->just for demo
             icon_back = (ImageView) view.findViewById(R.id.voucher_icon_back);
-//            title_back = (TextView) view.findViewById(R.id.voucher_name_back);
             description_back = (TextView) view.findViewById(R.id.voucher_description_back);
-            // <--- just for demo
+            verifyButton = (Button) view.findViewById(R.id.verify_button);
+
+            verifyButton.setText("VERIFIED");
+            verifyButton.setOnClickListener(button -> {
+                Toast.makeText(verifyButton.getContext(), title.getText() + " is verified", Toast.LENGTH_SHORT).show();
+            });
 
             myEasyFlipView = view.findViewById(R.id.easyFlipView);
-
-
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -124,3 +130,4 @@ public class VoucherRecycleAdaptor extends RecyclerView.Adapter {
 
 
 }
+
