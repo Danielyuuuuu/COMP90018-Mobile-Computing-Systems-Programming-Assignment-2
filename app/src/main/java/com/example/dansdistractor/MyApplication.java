@@ -157,14 +157,18 @@ public class MyApplication extends Application {
 
         Intent intent = new Intent(MyApplication.this,summary.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("steps", stepCount);
-        intent.putExtra("myMileage", (int) Math.round(distance));
+        intent.putExtra("goalSteps", goalSteps);
+        intent.putExtra("mySteps", stepCount);
+        intent.putExtra("myDistance", (int) Math.round(distance));
         intent.putExtra("myDuration", toIntExact(((endDate.getTime() - startDate.getTime())/1000/60)));
         intent.putExtra("mySpeed", speed);
-        intent.putExtra("myCalorie", 999);
+        intent.putExtra("myCalorie", getCalorie());
         intent.putExtra("myPoint", pins);
         intent.putExtra("myVoucher", 999);
-        intent.putExtra("myProgress",79);
+        intent.putExtra("myProgress",getProgress(goalDistance,goalSteps));
+        intent.putExtra("goalDistance",goalDistance);
+
+
         startActivity(intent);
     }
 
@@ -183,6 +187,7 @@ public class MyApplication extends Application {
         initialStepCount = 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void storeUserData() {
 
         String currentFirebaseUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -230,6 +235,15 @@ public class MyApplication extends Application {
 
     private int getPins(){
         return completedTargetLocations.size();
+    }
+
+    private int getProgress(Integer goalDistance, Integer goalSteps){
+
+        return (int) Math.round((distance/goalDistance + stepCount/goalSteps)/2);
+    }
+
+    private double getCalorie(){
+        return Math.round(stepCount/1000*40*100.0)/100.0;
     }
 
 }

@@ -26,11 +26,11 @@ public class summary extends AppCompatActivity {
 
        TextView steps = findViewById(R.id.steps);
         //steps.setText(mySteps+" Steps");
-        steps.setText(intent.getIntExtra("steps",0)+" Steps");
+        steps.setText(intent.getIntExtra("goalSteps",0)+" Steps");
 
         TextView mileage = findViewById(R.id.mileages);
         //mileage.setText(myMileage+" KMs");
-        mileage.setText(intent.getIntExtra("myMileage",0)+" KMs");
+        mileage.setText(intent.getIntExtra("goalDistance",0)+" KMs");
 
         TextView duration = findViewById(R.id.textView_duration);
         //duration.setText(myDuration+" Mins");
@@ -40,7 +40,7 @@ public class summary extends AppCompatActivity {
 
         TextView distance = findViewById(R.id.textView_distance);
        // distance.setText(myMileage+" KMs");
-        distance.setText(intent.getIntExtra("myMileage",0)+" Ms");
+        distance.setText(intent.getIntExtra("myDistance",0)+" Ms");
 
         TextView speed = findViewById(R.id.textView_speed);
         //speed.setText(mySpeed+" KM/H");
@@ -48,11 +48,11 @@ public class summary extends AppCompatActivity {
 
         TextView calorie = findViewById(R.id.textView_calorie);
         //calorie.setText(myCalorie+"");
-        calorie.setText(intent.getIntExtra("myCalorie",0)+"");
+        calorie.setText(intent.getDoubleExtra("myCalorie",0)+"");
 
         TextView point = findViewById(R.id.textView_points);
         //point.setText(myPoint+"");
-        point.setText(intent.getIntExtra("myPoint",0)+"");
+        point.setText(intent.getIntExtra("mySteps",0)+"");
 
         TextView voucher = findViewById(R.id.textView_vouchers);
         //voucher.setText(myVoucher+"");
