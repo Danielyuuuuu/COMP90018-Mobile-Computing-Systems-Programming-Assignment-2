@@ -3,6 +3,7 @@ package com.example.dansdistractor.utils;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -105,6 +106,7 @@ public class FetchUserData {
      * Fetch vouchers data
      */
     public void Vouchers() {
+        Log.d("Fetch", "Vouchers");
         SharedPreferences sharedPref = activity.getSharedPreferences(ALL_VOUCHERS, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         //reset cache
@@ -145,6 +147,7 @@ public class FetchUserData {
      * Fetch fitness data
      */
     public void Fitness() {
+        Log.d("Fetch", "Fitness");
         SharedPreferences sharedPref = activity.getSharedPreferences(ALL_HISTORY, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         LocalDateTime ldt = LocalDateTime.now();
@@ -203,8 +206,8 @@ public class FetchUserData {
                 .addOnSuccessListener(documentSnapshot -> {
                     UserSchema userProfile = documentSnapshot.toObject(UserSchema.class);
                     if (userProfile != null) {
-                        userVoucherIDs = userProfile.vouchers;
-                        userInValidVoucherIDs = userProfile.invalidVouchers;
+                        userVoucherIDs = userProfile.vouchers == null ? new ArrayList<>() : userProfile.vouchers;
+                        userInValidVoucherIDs = userProfile.invalidVouchers == null ? new ArrayList<>() : userProfile.invalidVouchers;
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(activity, "Unable to obtain user's vouchers", Toast.LENGTH_LONG).show());
