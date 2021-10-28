@@ -33,12 +33,12 @@ public class VoucherTabAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ActiveVoucher();
+                return new ValidVoucher();
             case 1:
-                return new InactiveVoucher();
+                return new INValidVoucher();
             default:
                 Toast.makeText(context.getApplicationContext(), "You've found a no man's land", Toast.LENGTH_SHORT).show();
-                return new ActiveVoucher();
+                return new ValidVoucher();
         }
     }
 
