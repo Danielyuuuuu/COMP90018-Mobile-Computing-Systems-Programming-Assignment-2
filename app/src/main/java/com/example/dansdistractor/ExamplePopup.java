@@ -2,6 +2,8 @@ package com.example.dansdistractor;
 
 import static android.content.ContentValues.TAG;
 
+import static com.example.dansdistractor.MainActivity.myVouchers;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -57,6 +59,7 @@ public class ExamplePopup extends AppCompatDialogFragment {
                             }
                             int randomNum = ThreadLocalRandom.current().nextInt(0, l.size());
                             docRefVoucher = db.collection("Vouchers").document(l.get(randomNum));
+                            myVouchers.add(String.valueOf(l.get(randomNum)));
                             docRefVoucher.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -65,11 +68,13 @@ public class ExamplePopup extends AppCompatDialogFragment {
                                         DocumentSnapshot document = task.getResult();
                                         if (document.exists()) {
                                             voucherName.setText(String.valueOf(document.getData().get("name")));
+
+                                            System.out.println("myvouchers: "+myVouchers);
                                             Picasso.get().load(String.valueOf(document.getData().get("imageURI"))).fit().centerCrop().into(voucherImage);
 
                                             db.collection("Users").document(userID)
                                                     .update(
-                                                            "vouchers", FieldValue.arrayUnion(String.valueOf(document.getData().get("name")))
+                                                            "vouchers", myVouchers
                                                     );
 
 
