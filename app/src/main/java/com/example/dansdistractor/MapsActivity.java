@@ -98,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
     private Button btn_end;
     private Button btn_leaveMessage;
+    private Button btn_test;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -157,6 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
+        btn_test = findViewById(R.id.btn_test);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -195,6 +197,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 ExampleDialog exampleDialog = new ExampleDialog(myApplication);
                 exampleDialog.show(getSupportFragmentManager(),"example dialog");
+            }
+        });
+
+        btn_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExamplePopup examplePopup = new ExamplePopup();
+                examplePopup.show(getSupportFragmentManager(),"Popup");
             }
         });
 
@@ -271,7 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-
+                Log.i("markerLocation", "Marker: " + marker.getPosition().toString());
                 if(marker.getTag() == MESSAGE_BOARD_TAG){
                     List<Location> myLocations = myApplication.getMyLocations();
 
