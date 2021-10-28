@@ -482,6 +482,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 itr.remove();
                 polylineDestination = null;
                 polyline.remove();
+
+                ExamplePopup examplePopup = new ExamplePopup();
+                examplePopup.show(getSupportFragmentManager(),"Popup");
+
+                break;
             }
         }
     }
