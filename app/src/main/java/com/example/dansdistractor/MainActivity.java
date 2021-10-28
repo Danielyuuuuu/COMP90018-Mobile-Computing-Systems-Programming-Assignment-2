@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button btn_summary;
     Button btn_leavemsg;
+    Button btn_popup;
     private Button btn_vouchers;
     private Button btn_fitness;
     MyApplication myApplication;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         btn_fitness = findViewById(R.id.button_fitness);
         btn_pushup = findViewById(R.id.button_pushup);
         btn_message = findViewById(R.id.button_message);
-
+        btn_popup = findViewById(R.id.button_popup);
 
 
         textview_setting = findViewById(R.id.setting);
@@ -126,6 +127,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openDialog();
+            }
+        });
+        btn_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopup();
             }
         });
 
@@ -203,6 +210,10 @@ public class MainActivity extends AppCompatActivity {
         MyApplication user = (MyApplication) getApplicationContext();
         ExampleDialog exampleDialog = new ExampleDialog(user);
         exampleDialog.show(getSupportFragmentManager(),"example dialog");
+    }
+    public void showPopup(){
+        ExamplePopup examplePopup = new ExamplePopup();
+        examplePopup.show(getSupportFragmentManager(),"example popup");
     }
 
     // Handle the request permission result
