@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.dansdistractor.message.Locator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textview_setting;
     Bundle b = new Bundle();
     private Button btn_profile;
-
+    public static List<String> myVouchers = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
