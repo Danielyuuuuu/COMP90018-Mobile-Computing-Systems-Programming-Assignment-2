@@ -1,5 +1,7 @@
 package com.example.dansdistractor.fitness;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.dansdistractor.R;
 import com.example.dansdistractor.utils.ChartStyle;
 import com.example.dansdistractor.utils.DemoData;
+import com.example.dansdistractor.utils.FetchUserData;
 import com.example.dansdistractor.utils.MonthData;
 import com.example.dansdistractor.utils.WeekData;
 import com.example.dansdistractor.utils.YearData;
@@ -159,11 +162,28 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
         BarDataSet dataSet = new BarDataSet(entries, "Label"); // add entries to dataset
         BarData barData = new BarData(dataSet);
         chart.setData(barData);
+        //Get goals from user's settings
+        SharedPreferences sharedPref = activity.getSharedPreferences(FetchUserData.ALL_HISTORY, Activity.MODE_PRIVATE);
+        int presetGoal;
+        //need to transform m to km
+        System.out.println("goalDistance: " + sharedPref.getInt("goalDistance", 0) + " goalSteps: " + sharedPref.getInt("goalSteps", 0));
+        double goalDistance = (presetGoal = sharedPref.getInt("goalDistance", 0)) == 0 ?
+                4.8 : (double) presetGoal / 1000;
+
+        int goalSteps = (presetGoal = sharedPref.getInt("goalSteps", 0)) == 0 ?
+                8000 : presetGoal;
+        System.out.println("Real goal distance + " + goalDistance + " real goal steps: " + goalSteps);
+
         // set style
-        if (category == STEPS) {
-            ChartStyle.defaultBarChart(chart, 10000, TYPE);
-        } else {
-            ChartStyle.defaultBarChart(chart, TYPE);
+        switch (category) {
+            case STEPS:
+                ChartStyle.defaultBarChart(chart, goalSteps, 0, TYPE);
+                break;
+            case DISTANCE:
+                ChartStyle.defaultBarChart(chart, 0, goalDistance, TYPE);
+                break;
+            default:
+                ChartStyle.defaultBarChart(chart, TYPE);
         }
 
         // refresh
