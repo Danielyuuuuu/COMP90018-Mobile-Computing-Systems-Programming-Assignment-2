@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
-    private static int GENERATED_RADIUS = 5000;
+    private static double GENERATED_RADIUS = 5000;
     private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
@@ -130,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         b = getIntent().getExtras();
         if (b != null) {
             NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
-            GENERATED_RADIUS = b.getInt("radius");
+            GENERATED_RADIUS = b.getDouble("radius");
             Log.i("MapsActivity", "onCreate: b != null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
             Log.i("MapsActivity", "onCreate: b != null: radius: " + GENERATED_RADIUS);
         }
@@ -371,7 +371,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Generate a list of random points
-    public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
+    public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, double radius) {
 
         List<LatLng> randomPoints = new ArrayList<>();
         Location myLocation = new Location("");
