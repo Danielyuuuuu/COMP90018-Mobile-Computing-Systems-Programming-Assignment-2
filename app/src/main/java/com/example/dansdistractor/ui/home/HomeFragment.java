@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment {
         FragmentActivity activity = this.requireActivity();
 
         // Set up initial value
-        b.putInt("radius", 5000);
+        b.putDouble("radius", 5000);
         b.putInt("dots", 5);
         b.putInt("goalDistance", 5000);
         b.putInt("goalSteps", 6000);
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
                 builder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        b.putInt("radius", Integer.parseInt(radius.getText().toString()) * 1000);
+                        b.putDouble("radius", Double.parseDouble(radius.getText().toString()) * 1000);
                         b.putInt("dots", Integer.parseInt(dots.getText().toString()));
                         b.putInt("goalDistance", Integer.parseInt(goalDistance.getText().toString()));
                         b.putInt("goalSteps", Integer.parseInt(goalSteps.getText().toString()));

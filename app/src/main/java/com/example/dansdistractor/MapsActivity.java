@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
-    private static int GENERATED_RADIUS = 5000;
+    private static double GENERATED_RADIUS = 5000;
     private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
@@ -98,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btn_pause;
     private Button btn_end;
     private Button btn_leaveMessage;
+    private Button btn_test;
 
     private GeoApiContext mGeoApiContext = null;
 
@@ -129,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         b = getIntent().getExtras();
         if (b != null) {
             NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
-            GENERATED_RADIUS = b.getInt("radius");
+            GENERATED_RADIUS = b.getDouble("radius");
             Log.i("MapsActivity", "onCreate: b != null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
             Log.i("MapsActivity", "onCreate: b != null: radius: " + GENERATED_RADIUS);
         }
@@ -157,6 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_pause = findViewById(R.id.btn_pause);
         btn_end = findViewById(R.id.btn_end);
         btn_leaveMessage = findViewById(R.id.btn_leaveMessage);
+        btn_test = findViewById(R.id.btn_test);
 
         targetLocationsMarker = new ArrayList<>();
 
@@ -195,6 +197,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 ExampleDialog exampleDialog = new ExampleDialog(myApplication);
                 exampleDialog.show(getSupportFragmentManager(),"example dialog");
+            }
+        });
+
+        btn_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExamplePopup examplePopup = new ExamplePopup();
+                examplePopup.show(getSupportFragmentManager(),"Popup");
             }
         });
 
@@ -271,7 +281,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-
+                Log.i("markerLocation", "Marker: " + marker.getPosition().toString());
                 if(marker.getTag() == MESSAGE_BOARD_TAG){
                     List<Location> myLocations = myApplication.getMyLocations();
 
@@ -361,7 +371,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Generate a list of random points
-    public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, int radius) {
+    public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, double radius) {
 
         List<LatLng> randomPoints = new ArrayList<>();
         Location myLocation = new Location("");
@@ -481,7 +491,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 targetMarker.remove();
                 itr.remove();
                 polylineDestination = null;
-                polyline.remove();
+                if (polyline != null){
+                    polyline.remove();
+                }
+
 
                 ExamplePopup examplePopup = new ExamplePopup();
                 examplePopup.show(getSupportFragmentManager(),"Popup");
