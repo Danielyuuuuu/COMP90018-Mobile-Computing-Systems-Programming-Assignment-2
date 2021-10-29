@@ -1,8 +1,10 @@
 package com.example.dansdistractor.ui.home;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,15 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.dansdistractor.MapsActivity;
 import com.example.dansdistractor.MyApplication;
 import com.example.dansdistractor.R;
 import com.example.dansdistractor.databinding.FragmentHomeBinding;
+import com.example.dansdistractor.utils.FetchUserData;
 
 public class HomeFragment extends Fragment {
 
@@ -42,6 +43,7 @@ public class HomeFragment extends Fragment {
         textview_setting = root.findViewById(R.id.setting);
         myApplication = (MyApplication)getContext().getApplicationContext();
 
+        FragmentActivity activity = this.requireActivity();
 
         // Set up initial value
         b.putInt("radius", 5000);
@@ -75,6 +77,13 @@ public class HomeFragment extends Fragment {
                         b.putInt("dots", Integer.parseInt(dots.getText().toString()));
                         b.putInt("goalDistance", Integer.parseInt(goalDistance.getText().toString()));
                         b.putInt("goalSteps", Integer.parseInt(goalSteps.getText().toString()));
+                        // pass goals to the charts in fitness activity
+                        SharedPreferences sharedPref = activity.getSharedPreferences(FetchUserData.ALL_HISTORY, Activity.MODE_PRIVATE);
+                        sharedPref
+                                .edit()
+                                .putInt("goalDistance", b.getInt("goalDistance"))
+                                .putInt("goalSteps", b.getInt("goalSteps"))
+                                .apply();
                         Toast.makeText(getContext(), "setting updated", Toast.LENGTH_LONG).show();
                     }
                 });

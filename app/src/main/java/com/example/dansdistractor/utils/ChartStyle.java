@@ -10,6 +10,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 /**
@@ -41,10 +42,16 @@ public class ChartStyle {
     }
 
     public static void defaultBarChart(BarChart chart, int TYPE) {
-        defaultBarChart(chart, 0, TYPE);
+        defaultBarChart(chart, 0, 0, TYPE);
     }
 
-    public static void defaultBarChart(BarChart chart, long goal, int TYPE) {
+    /**
+     * @param chart
+     * @param goalSteps    8000 by default
+     * @param goalDistance kilometers, 4.8km by default
+     * @param TYPE         Weekly, monthly and yearly have their own chart styles
+     */
+    public static void defaultBarChart(BarChart chart, long goalSteps, double goalDistance, int TYPE) {
         Description description = new Description();//描述信息
         description.setEnabled(false);//是否可用
         chart.setDescription(description);//不然会显示默认的 Description。
@@ -88,13 +95,37 @@ public class ChartStyle {
 
         //限制线
         //用户的goal，需要从预设中获取
-        if (goal > 0) {
-            LimitLine ll = new LimitLine(goal, "Goal: " + (int) goal);
+
+        // it means we are in STEPS chart
+        if (goalSteps > 0) {
+            LimitLine ll = new LimitLine(goalSteps, "Goal: " + new DecimalFormat("0,000").format(goalSteps));
             ll.setLineColor(Color.RED);
             ll.setLineWidth(1f);
             ll.setTextColor(Color.RED);
             ll.setTextSize(8f);
+            if (goalSteps > lyAxis.mAxisMaximum) {
+                lyAxis.setAxisMaximum((int) (goalSteps * 1.2));
+            }
             lyAxis.addLimitLine(ll);
+            if (TYPE == YEAR) {
+                lyAxis.removeLimitLine(ll);
+            }
+        }
+
+        // it means we are in DISTANCE chart
+        if (goalDistance > 0) {
+            LimitLine ll = new LimitLine((float) goalDistance, "Goal: " + new DecimalFormat("0.00").format(goalDistance));
+            ll.setLineColor(Color.RED);
+            ll.setLineWidth(1f);
+            ll.setTextColor(Color.RED);
+            ll.setTextSize(8f);
+            if (goalDistance > lyAxis.mAxisMaximum) {
+                lyAxis.setAxisMaximum((float) (goalDistance * 1.2));
+            }
+            lyAxis.addLimitLine(ll);
+            if (TYPE == YEAR) {
+                lyAxis.removeLimitLine(ll);
+            }
         }
 
 
