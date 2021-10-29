@@ -105,6 +105,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
 
         progressBar.setVisibility(View.VISIBLE);
 
+
         mAuth.signInWithEmailAndPassword(emailInput, passwordInput).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
