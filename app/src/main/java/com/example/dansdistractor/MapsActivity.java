@@ -78,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
+    private static final int TRIGGER_DISTANCE = 50;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -290,7 +291,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     float distanceBetweenMessage = myLocation.distanceTo(clickedMessageSchema.location);
 
-                    if (distanceBetweenMessage < 50){
+                    if (distanceBetweenMessage < TRIGGER_DISTANCE){
                         // Show the nearest message
                         openShowMessageDialog("From: " + clickedMessageSchema.author, "Message: " + clickedMessageSchema.content);
                     }
@@ -485,7 +486,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
 
             // Target location reached
-            if(distances[0] <= 50){
+            if(distances[0] <= TRIGGER_DISTANCE){
                 myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
                 Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_LONG).show();
                 targetMarker.remove();
