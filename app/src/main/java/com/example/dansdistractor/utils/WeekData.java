@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @ClassName: WeekData
  * @Author: wongchihaul
- * @CreateDate: 2021/10/2 12:14 上午
+ * @CreateDate: 2021/10/2 12:14 AM
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class WeekData implements DemoData {

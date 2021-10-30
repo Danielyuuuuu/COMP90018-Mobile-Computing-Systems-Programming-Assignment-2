@@ -17,9 +17,8 @@ import com.example.dansdistractor.utils.ChartStyle;
 
 /**
  * @ClassName: FitnessTab
-
  * @Author: wongchihaul
- * @CreateDate: 2021/9/22 7:00 下午
+ * @CreateDate: 2021/9/22 7:00 PM
  */
 public class FitnessTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private SwipeRefreshLayout mSwipeRefreshLayout;

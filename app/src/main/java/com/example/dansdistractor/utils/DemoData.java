@@ -13,7 +13,7 @@ import java.util.Random;
  * @ClassName: DemoData
  * @Description: This class provides static data for development
  * @Author: wongchihaul
- * @CreateDate: 2021/10/1 11:11 下午
+ * @CreateDate: 2021/10/1 11:11 PM
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 public interface DemoData {

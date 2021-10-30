@@ -15,9 +15,8 @@ import java.util.Calendar;
 
 /**
  * @ClassName: ChartStyle
-
  * @Author: wongchihaul
- * @CreateDate: 2021/9/25 10:11 下午
+ * @CreateDate: 2021/9/25 10:11 PM
  */
 public class ChartStyle {
 
@@ -52,20 +51,20 @@ public class ChartStyle {
      * @param TYPE         Weekly, monthly and yearly have their own chart styles
      */
     public static void defaultBarChart(BarChart chart, long goalSteps, double goalDistance, int TYPE) {
-        Description description = new Description();//描述信息
-        description.setEnabled(false);//是否可用
-        chart.setDescription(description);//不然会显示默认的 Description。
-        chart.setTouchEnabled(true); // 设置是否可以触摸
-        chart.setDragEnabled(true);// 是否可以拖拽
-        chart.setScaleEnabled(false);// 是否可以缩放
+        Description description = new Description();
+        description.setEnabled(false);
+        chart.setDescription(description);
+        chart.setTouchEnabled(true);
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(false);
 
-        //x轴配置
+
         XAxis xAxis = chart.getXAxis();
-        xAxis.setEnabled(true);//是否可用
-        xAxis.setDrawLabels(true);//是否显示数值
-        xAxis.setDrawAxisLine(true);//是否显示坐标线
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);//X轴文字显示位置
-        xAxis.setDrawGridLines(false);//不绘制网格线
+        xAxis.setEnabled(true);
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
 
         ValueFormatter formatter = new ValueFormatter() {
 
@@ -86,15 +85,15 @@ public class ChartStyle {
 
         xAxis.setValueFormatter(formatter);
 
-        //左y轴配置
+
         YAxis lyAxis = chart.getAxisLeft();
         lyAxis.setEnabled(true);//是否可用
         lyAxis.setDrawLabels(false);//是否显示数值
         lyAxis.setDrawAxisLine(false); // 不绘制坐标轴线
         lyAxis.setDrawGridLines(false); // 不绘制网格线
 
-        //限制线
-        //用户的goal，需要从预设中获取
+        //LimitLine represents user's goal, which could be obtained from settings in main page
+        // Or set it by default if user has not customized
 
         // it means we are in STEPS chart
         if (goalSteps > 0) {
@@ -129,14 +128,13 @@ public class ChartStyle {
         }
 
 
-        //右Y轴
+
         YAxis ryAxis = chart.getAxisRight();
         ryAxis.setEnabled(false);
 
 
-        //标签配置
         Legend legend = chart.getLegend();
-        legend.setEnabled(false);//是否可用
+        legend.setEnabled(false);
 
     }
 }

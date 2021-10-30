@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * @ClassName: Fitness
  * @Author: wongchihaul
- * @CreateDate: 2021/9/24 10:24 下午
+ * @CreateDate: 2021/9/24 10:24 PM
  */
 public class Fitness {
     //icons of fitness summary

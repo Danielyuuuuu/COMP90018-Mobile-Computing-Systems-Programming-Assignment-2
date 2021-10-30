@@ -32,7 +32,7 @@ import java.util.List;
  * @ClassName: FitnessRecycleAdapter
  * @Description: Bridge between Fitness Tab and User's data.
  * @Author: wongchihaul
- * @CreateDate: 2021/9/24 11:46 下午
+ * @CreateDate: 2021/9/24 11:46 PM
  */
 public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
 

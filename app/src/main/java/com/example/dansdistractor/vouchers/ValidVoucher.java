@@ -14,7 +14,7 @@ import com.example.dansdistractor.R;
  * @ClassName: Activate
  * @Description:
  * @Author: wongchihaul
- * @CreateDate: 2021/10/15 11:44 下午
+ * @CreateDate: 2021/10/15 11:44 PM
  */
 public class ValidVoucher extends VoucherTab {
     public ValidVoucher() {

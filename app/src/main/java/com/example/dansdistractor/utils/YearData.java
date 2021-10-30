@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @ClassName: YearData
  * @Author: wongchihaul
- * @CreateDate: 2021/10/2 12:17 上午
+ * @CreateDate: 2021/10/2 12:17 AM
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class YearData implements DemoData {

@@ -19,7 +19,7 @@ import com.example.dansdistractor.R;
 /**
  * @ClassName: VoucherTab
  * @Author: wongchihaul
- * @CreateDate: 2021/9/22 7:03 下午
+ * @CreateDate: 2021/9/22 7:03 PM
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class VoucherTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
