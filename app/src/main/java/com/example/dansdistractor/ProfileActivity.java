@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RelativeLayout logout;
+    private LinearLayout redeem;
+
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private String userID = user.getUid();
 
@@ -40,6 +43,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         logout = (RelativeLayout) findViewById(R.id.logout);
         logout.setOnClickListener(this);
+
+        redeem = (LinearLayout) findViewById(R.id.redeem);
+        redeem.setOnClickListener(this);
 
         closeProfile = findViewById(R.id.closeProfile);
         closeProfile.setOnClickListener(this);
@@ -87,6 +93,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.closeProfile:
                 startActivity(new Intent(ProfileActivity.this, NavigationActivity.class));
                 break;
+            case R.id.redeem:
+                startActivity(new Intent(ProfileActivity.this, VoucherActivity.class));
         }
 
     }
