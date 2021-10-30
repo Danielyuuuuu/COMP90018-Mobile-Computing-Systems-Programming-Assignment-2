@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.github.mikephil.charting.data.BarEntry;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -43,5 +44,7 @@ public interface DemoData {
     List<BarEntry> demoBarSpeed();
 
     List<BarEntry> demoBarDistance();
+
+    LocalDateTime ldt = LocalDateTime.now();
 
 }

@@ -40,6 +40,9 @@ public class ChartStyle {
         return oneMonth;
     }
 
+    /**
+     * This defaultBarChart is used for SPEED.
+     */
     public static void defaultBarChart(BarChart chart, int TYPE) {
         defaultBarChart(chart, 0, 0, TYPE);
     }
@@ -87,10 +90,10 @@ public class ChartStyle {
 
 
         YAxis lyAxis = chart.getAxisLeft();
-        lyAxis.setEnabled(true);//是否可用
-        lyAxis.setDrawLabels(false);//是否显示数值
-        lyAxis.setDrawAxisLine(false); // 不绘制坐标轴线
-        lyAxis.setDrawGridLines(false); // 不绘制网格线
+        lyAxis.setEnabled(true);
+        lyAxis.setDrawLabels(false);
+        lyAxis.setDrawAxisLine(false);
+        lyAxis.setDrawGridLines(false);
 
         //LimitLine represents user's goal, which could be obtained from settings in main page
         // Or set it by default if user has not customized

@@ -41,8 +41,10 @@ public class YearData implements DemoData {
             if (historyMap.get(i) != null) {
                 totalSteps = historyMap.get(i).stream().mapToInt(history -> history.steps).sum();
             } else {
-                // uncomment to use demo data to fill blank
-                // totalSteps = DemoData.nextRandomInt(20000, 500000);
+                // uncomment to use demo data to fill in the blank of past date
+//                if(i < ldt.getMonth().getValue()) {
+//                    totalSteps = DemoData.nextRandomInt(20000, 500000);
+//                }
             }
             entries.add(new BarEntry(i, totalSteps));
         }
@@ -70,8 +72,10 @@ public class YearData implements DemoData {
                         .sum() / (1000 * 3600);
                 avgSpeed = totalElapsedTime == 0 ? 0 : totalDistance / totalElapsedTime;
             } else {
-                // uncomment to use demo data to fill blank
-                // avgSpeed = DemoData.nextRandomFloat(4, 5);
+                // uncomment to use demo data to fill in the blank of past date
+//                if(i < ldt.getMonth().getValue()) {
+//                    avgSpeed = DemoData.nextRandomFloat(4, 5);
+//                }
             }
 
             entries.add(new BarEntry(i, (float) avgSpeed));
@@ -92,8 +96,10 @@ public class YearData implements DemoData {
                         .mapToDouble(history -> history.distance)
                         .sum() / 1000;
             } else {
-                // uncomment to use demo data to fill blank
-                // totalDistance = DemoData.nextRandomFloat(110, 450);
+                // uncomment to use demo data to fill in the blank of past date
+//                if(i < ldt.getMonth().getValue()) {
+//                    totalDistance = DemoData.nextRandomFloat(110, 450);
+//                }
             }
             entries.add(new BarEntry(i, (float) totalDistance));
         }
