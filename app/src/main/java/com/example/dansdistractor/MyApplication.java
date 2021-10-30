@@ -173,11 +173,11 @@ public class MyApplication extends Application {
         intent.putExtra("mySpeed", speed);
         intent.putExtra("myCalorie", getCalorie());
         intent.putExtra("myPoint", pins);
-        intent.putExtra("myVoucher", 999);
+        intent.putExtra("myVoucher", MainActivity.myVouchers.size());
         intent.putExtra("myProgress",getProgress(goalDistance,goalSteps));
         intent.putExtra("goalDistance",goalDistance);
 
-
+        MainActivity.myVouchers.clear();
         startActivity(intent);
     }
 

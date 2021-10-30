@@ -112,6 +112,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener{
                 if(task.isSuccessful()){
                     //redirect to user profile
                     progressBar.setVisibility(View.GONE);
+                    MainActivity.myVouchers.clear();
                     startActivity(new Intent(Login.this, NavigationActivity.class));
                 }else{
                     progressBar.setVisibility(View.GONE);
