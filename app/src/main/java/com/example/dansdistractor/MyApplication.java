@@ -58,7 +58,8 @@ public class MyApplication extends Application {
     private Double distance;
     private Double speed;
     private int pins;
-    private int goal;
+    private int goalDistance;
+    private int goalSteps;
 
 
 
@@ -136,7 +137,7 @@ public class MyApplication extends Application {
         return singleton;
     }
 
-    protected void startSession(){
+    protected void startSession(int goalDistance, int goalSteps){
         myLocations = new ArrayList<>();
         targetLocations = new ArrayList<>();
         sessionStarted = true;
@@ -145,11 +146,13 @@ public class MyApplication extends Application {
         hasInitialStepCount = false;
         initialStepCount = 0;
         startDate = new java.util.Date();
+        this.goalDistance = goalDistance;
+        this.goalSteps = goalSteps;
         Log.i("datetime", "startdate: " + startDate.toString());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    protected void endSession(Integer goalDistance, Integer goalSteps){
+    protected void endSession(){
         sessionStarted = false;
         hasInitialStepCount = false;
         endDate = new java.util.Date();

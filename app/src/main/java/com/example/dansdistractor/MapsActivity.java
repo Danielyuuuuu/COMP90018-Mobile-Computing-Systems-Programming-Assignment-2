@@ -430,7 +430,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // Run this when starting a new workout session
                     if (!sessionStarted){
-                        myApplication.startSession();
+                        myApplication.startSession(b.getInt("goalDistance"), b.getInt("goalSteps"));
                         List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), GENERATED_RADIUS);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
@@ -530,7 +530,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-                myApplication.endSession(b.getInt("goalDistance"), b.getInt("goalSteps"));
+                myApplication.endSession();
                 finish();
             }
         });
