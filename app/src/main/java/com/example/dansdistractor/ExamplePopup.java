@@ -14,11 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.example.dansdistractor.databaseSchema.UserSchema;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -63,7 +66,8 @@ public class ExamplePopup extends AppCompatDialogFragment {
                                 docRefVoucher = db.collection("Vouchers").document(l.get(randomNum));
 
                                 myApplication = (MyApplication) getActivity().getApplicationContext();
-                                myApplication.getMyVouchers().add(String.valueOf(l.get(randomNum)));
+                                String newVoucher = l.get(randomNum);
+                                myApplication.getMyVouchers().add(String.valueOf(newVoucher));
 
                                 docRefVoucher.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
@@ -78,9 +82,23 @@ public class ExamplePopup extends AppCompatDialogFragment {
                                                 Picasso.get().load(String.valueOf(document.getData().get("imageURI"))).fit().centerCrop().into(voucherImage);
 
                                                 db.collection("Users").document(userID)
-                                                        .update(
-                                                                "vouchers", myApplication.getMyVouchers()
-                                                        );
+                                                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                                                        UserSchema userProfile = documentSnapshot.toObject(UserSchema.class);
+
+                                                        if (userProfile != null) {
+                                                            ArrayList<String> userVouchers = userProfile.vouchers;
+
+                                                            userVouchers.add(newVoucher);
+
+                                                            db.collection("Users").document(userID)
+                                                                    .update("vouchers", userVouchers);
+                                                        }
+
+                                                    }
+                                                });
+
                                             }
                                         }
                                     }
