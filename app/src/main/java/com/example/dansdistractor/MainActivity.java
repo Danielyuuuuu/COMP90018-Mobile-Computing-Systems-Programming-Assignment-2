@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textview_setting;
     Bundle b = new Bundle();
     private Button btn_profile;
-    public static List<String> myVouchers = new ArrayList<>();
+//    public static List<String> myVouchers = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -100,7 +100,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void userLogout() {
-        MainActivity.myVouchers.clear();
+//        MainActivity.myVouchers.clear();
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(ProfileActivity.this, Login.class));
     }

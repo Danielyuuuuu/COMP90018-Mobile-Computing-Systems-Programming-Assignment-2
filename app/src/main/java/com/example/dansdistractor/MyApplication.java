@@ -61,7 +61,7 @@ public class MyApplication extends Application {
     private int goalDistance;
     private int goalSteps;
 
-
+    private List<String> myVouchers;
 
 
 
@@ -148,6 +148,7 @@ public class MyApplication extends Application {
         startDate = new java.util.Date();
         this.goalDistance = goalDistance;
         this.goalSteps = goalSteps;
+        myVouchers = new ArrayList<>();
         Log.i("datetime", "startdate: " + startDate.toString());
     }
 
@@ -176,11 +177,11 @@ public class MyApplication extends Application {
         intent.putExtra("mySpeed", speed);
         intent.putExtra("myCalorie", getCalorie());
         intent.putExtra("myPoint", pins);
-        intent.putExtra("myVoucher", MainActivity.myVouchers.size());
+//        intent.putExtra("myVoucher", MainActivity.myVouchers.size());
         intent.putExtra("myProgress",getProgress(goalDistance,goalSteps));
         intent.putExtra("goalDistance",goalDistance);
 
-        MainActivity.myVouchers.clear();
+//        MainActivity.myVouchers.clear();
         startActivity(intent);
     }
 
@@ -264,6 +265,10 @@ public class MyApplication extends Application {
 
     private double getCalorie(){
         return Math.round(stepCount/1000*40*100.0)/100.0;
+    }
+
+    public List<String> getMyVouchers(){
+        return myVouchers;
     }
 
 }
