@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 
 /**
@@ -157,6 +158,7 @@ public class ValidVoucherAdaptor extends RecyclerView.Adapter {
                     if (verifiedVoucher != null) {
                         invalidVoucherList.add(verifiedVoucher);
                     }
+                    invalidVoucherList.sort(Comparator.comparing(iv -> iv.name));
                     editor.remove(FetchUserData.LOCAL_VERIFIED_VOUCHERS).apply();
                     editor.putString(FetchUserData.LOCAL_VERIFIED_VOUCHERS, gson.toJson(invalidVoucherList)).apply();
 

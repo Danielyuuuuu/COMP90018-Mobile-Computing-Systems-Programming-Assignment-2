@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -116,12 +117,8 @@ public class FetchUserData {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         HashMap<String, Voucher> allVouchers = new HashMap<>();
                         task.getResult().forEach(document -> allVouchers.put(document.getId(), document.toObject(Voucher.class)));
-                        for (String id : userVoucherIDs) {
-                            userVouchers.add(allVouchers.get(id));
-                        }
-                        for (String id : userInValidVoucherIDs) {
-                            userInvalidVouchers.add(allVouchers.get(id));
-                        }
+                        userVoucherIDs.forEach(id -> userVouchers.add(allVouchers.get(id)));
+                        userInValidVoucherIDs.forEach(id -> userInvalidVouchers.add(allVouchers.get(id)));
                         Gson gson = new Gson();
 
                         if (!sharedPref.contains(REMOTE_ACTIVE_VOUCHERS)) {
@@ -203,6 +200,8 @@ public class FetchUserData {
                     if (userProfile != null) {
                         userVoucherIDs = userProfile.vouchers == null ? new ArrayList<>() : userProfile.vouchers;
                         userInValidVoucherIDs = userProfile.invalidVouchers == null ? new ArrayList<>() : userProfile.invalidVouchers;
+                        userVoucherIDs.sort(Comparator.naturalOrder());
+                        userInValidVoucherIDs.sort(Comparator.naturalOrder());
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(activity, "Unable to obtain user's vouchers", Toast.LENGTH_LONG).show());
