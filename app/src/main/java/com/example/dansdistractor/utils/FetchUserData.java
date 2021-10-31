@@ -3,7 +3,6 @@ package com.example.dansdistractor.utils;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
@@ -106,7 +104,6 @@ public class FetchUserData {
      * Fetch vouchers data
      */
     public void Vouchers() {
-        Log.d("Fetch", "Vouchers");
         SharedPreferences sharedPref = activity.getSharedPreferences(ALL_VOUCHERS, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         //reset cache
@@ -117,14 +114,13 @@ public class FetchUserData {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            String voucherID = document.getId();
-                            if (userVoucherIDs.contains(voucherID)) {
-                                userVouchers.add(document.toObject(Voucher.class));
-                            }
-                            if (userInValidVoucherIDs.contains(voucherID)) {
-                                userInvalidVouchers.add(document.toObject(Voucher.class));
-                            }
+                        HashMap<String, Voucher> allVouchers = new HashMap<>();
+                        task.getResult().forEach(document -> allVouchers.put(document.getId(), document.toObject(Voucher.class)));
+                        for (String id : userVoucherIDs) {
+                            userVouchers.add(allVouchers.get(id));
+                        }
+                        for (String id : userInValidVoucherIDs) {
+                            userInvalidVouchers.add(allVouchers.get(id));
                         }
                         Gson gson = new Gson();
 
@@ -147,7 +143,6 @@ public class FetchUserData {
      * Fetch fitness data
      */
     public void Fitness() {
-        Log.d("Fetch", "Fitness");
         SharedPreferences sharedPref = activity.getSharedPreferences(ALL_HISTORY, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         LocalDateTime ldt = LocalDateTime.now();
