@@ -3,7 +3,6 @@ package com.example.dansdistractor;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -19,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -67,7 +65,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import io.opencensus.tags.Tag;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, SensorEventListener {
     public static int NUMBER_OF_TARGET_LOCATIONS = 5;
@@ -75,9 +72,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final int FAST_UPDATE_INTERVAL = 2;
     private static final int PERMISSION_FINE_LOCATION = 10;
     private static double GENERATED_RADIUS = 5000;
-    private static final double DEFAULT_LAT_LON_DEGREES = 0.2;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
+    private static final int TRIGGER_DISTANCE = 50;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -111,9 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SensorManager sensorManager;
     private Sensor mStepCounter;
     private boolean isStepCounterSensorPresent;
-//    private int stepCount = 0;
-//    private boolean hasInitialStepCount = false;
-//    private int initialStepCount = 0;
 
     // Access to Google Firestore
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -131,11 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (b != null) {
             NUMBER_OF_TARGET_LOCATIONS = b.getInt("dots");
             GENERATED_RADIUS = b.getDouble("radius");
-            Log.i("MapsActivity", "onCreate: b != null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
-            Log.i("MapsActivity", "onCreate: b != null: radius: " + GENERATED_RADIUS);
         }
-        Log.i("MapsActivity", "onCreate: b == null: dots: " + NUMBER_OF_TARGET_LOCATIONS);
-        Log.i("MapsActivity", "onCreate: b == null: radius: " + GENERATED_RADIUS);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -290,7 +280,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     float distanceBetweenMessage = myLocation.distanceTo(clickedMessageSchema.location);
 
-                    if (distanceBetweenMessage < 50){
+                    if (distanceBetweenMessage < TRIGGER_DISTANCE){
                         // Show the nearest message
                         openShowMessageDialog("From: " + clickedMessageSchema.author, "Message: " + clickedMessageSchema.content);
                     }
@@ -429,7 +419,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // Run this when starting a new workout session
                     if (!sessionStarted){
-                        myApplication.startSession();
+                        myApplication.startSession(b.getInt("goalDistance"), b.getInt("goalSteps"));
                         List<LatLng> targetLocations = getRandomLocation(NUMBER_OF_TARGET_LOCATIONS, new LatLng(location.getLatitude(), location.getLongitude()), GENERATED_RADIUS);
                         myApplication.setTargetLocations(targetLocations);
                         for(LatLng targetLocation: targetLocations){
@@ -485,7 +475,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
 
             // Target location reached
-            if(distances[0] <= 50){
+            if(distances[0] <= TRIGGER_DISTANCE){
                 myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
                 Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_LONG).show();
                 targetMarker.remove();
@@ -494,7 +484,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (polyline != null){
                     polyline.remove();
                 }
-
 
                 ExamplePopup examplePopup = new ExamplePopup();
                 examplePopup.show(getSupportFragmentManager(),"Popup");
@@ -529,7 +518,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 fusedLocationProviderClient.removeLocationUpdates(locationCallBack);
-                myApplication.endSession(b.getInt("goalDistance"), b.getInt("goalSteps"));
+                myApplication.endSession();
                 finish();
             }
         });
@@ -558,7 +547,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             myApplication.setStepCount((int) event.values[0] - myApplication.getInitialStepCount());
             txt_stepCounter.setText("Step: " + myApplication.getStepCount());
         }
-
     }
 
     @Override
@@ -668,10 +656,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Marker newMarker = mMap.addMarker(markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
             newMarker.setTag(MESSAGE_BOARD_TAG);
             messagesHashMap.put(newMarker, message);
-            Log.i("abc", "Message: " + messageLocation.toString());
         }
-        Log.i("abc", "After message");
-
     }
 
     // To show the message dialog

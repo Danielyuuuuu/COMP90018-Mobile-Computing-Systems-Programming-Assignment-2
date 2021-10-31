@@ -23,6 +23,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -67,10 +69,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     int userpointsUserProfile = userProfile.points;
                     int usertotaldistanceUserProfile = userProfile.totaldistance;
                     int usertotalpinsUserProfile = userProfile.usertotalpins;
+                    ArrayList<String> vouchersUserProfile = userProfile.vouchers;
 
                     username.setText(nameUserProfile);
                     useremail.setText(emailUserProfile);
-                    userpoints.setText(String.valueOf(userpointsUserProfile));
+                    userpoints.setText(String.valueOf(vouchersUserProfile.size()));
                     usertotaldistance.setText(String.valueOf(usertotaldistanceUserProfile));
                     usertotalpins.setText(String.valueOf(usertotalpinsUserProfile));
                 }
@@ -100,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void userLogout() {
-        MainActivity.myVouchers.clear();
+//        MainActivity.myVouchers.clear();
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(ProfileActivity.this, Login.class));
     }
