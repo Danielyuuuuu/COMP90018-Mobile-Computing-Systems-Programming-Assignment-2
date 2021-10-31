@@ -48,11 +48,6 @@ public class MyApplication extends Application {
     private boolean hasInitialStepCount = false;
     private int initialStepCount = 0;
 
-//    private LocalDate startDate;
-//    private LocalTime startTime;
-//    private LocalDate endDate;
-//    private LocalTime endTime;
-
     private Date startDate;
     private Date endDate;
     private Double distance;
@@ -62,8 +57,6 @@ public class MyApplication extends Application {
     private int goalSteps;
 
     private List<String> myVouchers;
-
-
 
 
     // Access to Google Firestore
@@ -97,10 +90,6 @@ public class MyApplication extends Application {
         return completedTargetLocations;
     }
 
-    public void setCompletedTargetLocations(List<LatLng> completedTargetLocations) {
-        this.completedTargetLocations = completedTargetLocations;
-    }
-
     protected Boolean getSessionPaused(){
         return sessionPaused;
     }
@@ -113,10 +102,6 @@ public class MyApplication extends Application {
         return sessionStarted;
     }
 
-    protected void setSessionStarted(Boolean sessionStarted){
-        this.sessionStarted = sessionStarted;
-    }
-
     protected List<LatLng> getTargetLocations() {
         return targetLocations;
     }
@@ -127,10 +112,6 @@ public class MyApplication extends Application {
 
     protected List<Location> getMyLocations() {
         return myLocations;
-    }
-
-    protected void setMyLocations(List<Location> myLocations) {
-        this.myLocations = myLocations;
     }
 
     protected MyApplication getInstance(){
