@@ -10,13 +10,13 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 /**
  * @ClassName: ChartStyle
-
  * @Author: wongchihaul
- * @CreateDate: 2021/9/25 10:11 下午
+ * @CreateDate: 2021/9/25 10:11 PM
  */
 public class ChartStyle {
 
@@ -40,25 +40,34 @@ public class ChartStyle {
         return oneMonth;
     }
 
+    /**
+     * This defaultBarChart is used for SPEED.
+     */
     public static void defaultBarChart(BarChart chart, int TYPE) {
-        defaultBarChart(chart, 0, TYPE);
+        defaultBarChart(chart, 0, 0, TYPE);
     }
 
-    public static void defaultBarChart(BarChart chart, long goal, int TYPE) {
-        Description description = new Description();//描述信息
-        description.setEnabled(false);//是否可用
-        chart.setDescription(description);//不然会显示默认的 Description。
-        chart.setTouchEnabled(true); // 设置是否可以触摸
-        chart.setDragEnabled(true);// 是否可以拖拽
-        chart.setScaleEnabled(false);// 是否可以缩放
+    /**
+     * @param chart
+     * @param goalSteps    8000 by default
+     * @param goalDistance kilometers, 4.8km by default
+     * @param TYPE         Weekly, monthly and yearly have their own chart styles
+     */
+    public static void defaultBarChart(BarChart chart, long goalSteps, double goalDistance, int TYPE) {
+        Description description = new Description();
+        description.setEnabled(false);
+        chart.setDescription(description);
+        chart.setTouchEnabled(true);
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(false);
 
-        //x轴配置
+
         XAxis xAxis = chart.getXAxis();
-        xAxis.setEnabled(true);//是否可用
-        xAxis.setDrawLabels(true);//是否显示数值
-        xAxis.setDrawAxisLine(true);//是否显示坐标线
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);//X轴文字显示位置
-        xAxis.setDrawGridLines(false);//不绘制网格线
+        xAxis.setEnabled(true);
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
 
         ValueFormatter formatter = new ValueFormatter() {
 
@@ -79,33 +88,56 @@ public class ChartStyle {
 
         xAxis.setValueFormatter(formatter);
 
-        //左y轴配置
-        YAxis lyAxis = chart.getAxisLeft();
-        lyAxis.setEnabled(true);//是否可用
-        lyAxis.setDrawLabels(false);//是否显示数值
-        lyAxis.setDrawAxisLine(false); // 不绘制坐标轴线
-        lyAxis.setDrawGridLines(false); // 不绘制网格线
 
-        //限制线
-        //用户的goal，需要从预设中获取
-        if (goal > 0) {
-            LimitLine ll = new LimitLine(goal, "Goal: " + (int) goal);
+        YAxis lyAxis = chart.getAxisLeft();
+        lyAxis.setEnabled(true);
+        lyAxis.setDrawLabels(false);
+        lyAxis.setDrawAxisLine(false);
+        lyAxis.setDrawGridLines(false);
+
+        //LimitLine represents user's goal, which could be obtained from settings in main page
+        // Or set it by default if user has not customized
+
+        // it means we are in STEPS chart
+        if (goalSteps > 0) {
+            LimitLine ll = new LimitLine(goalSteps, "Goal: " + new DecimalFormat("0,000").format(goalSteps));
             ll.setLineColor(Color.RED);
             ll.setLineWidth(1f);
             ll.setTextColor(Color.RED);
             ll.setTextSize(8f);
+            if (goalSteps > lyAxis.mAxisMaximum) {
+                lyAxis.setAxisMaximum((int) (goalSteps * 1.2));
+            }
             lyAxis.addLimitLine(ll);
+            if (TYPE == YEAR) {
+                lyAxis.removeLimitLine(ll);
+            }
+        }
+
+        // it means we are in DISTANCE chart
+        if (goalDistance > 0) {
+            LimitLine ll = new LimitLine((float) goalDistance, "Goal: " + new DecimalFormat("0.00").format(goalDistance));
+            ll.setLineColor(Color.RED);
+            ll.setLineWidth(1f);
+            ll.setTextColor(Color.RED);
+            ll.setTextSize(8f);
+            if (goalDistance > lyAxis.mAxisMaximum) {
+                lyAxis.setAxisMaximum((float) (goalDistance * 1.2));
+            }
+            lyAxis.addLimitLine(ll);
+            if (TYPE == YEAR) {
+                lyAxis.removeLimitLine(ll);
+            }
         }
 
 
-        //右Y轴
+
         YAxis ryAxis = chart.getAxisRight();
         ryAxis.setEnabled(false);
 
 
-        //标签配置
         Legend legend = chart.getLegend();
-        legend.setEnabled(false);//是否可用
+        legend.setEnabled(false);
 
     }
 }

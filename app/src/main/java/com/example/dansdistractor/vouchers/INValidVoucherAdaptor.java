@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * @ClassName: INValidVoucherAdaptor
  * @Description:
  * @Author: wongchihaul
- * @CreateDate: 2021/10/27 8:22 下午
+ * @CreateDate: 2021/10/27 8:22 PM
  */
 public class INValidVoucherAdaptor extends RecyclerView.Adapter {
 

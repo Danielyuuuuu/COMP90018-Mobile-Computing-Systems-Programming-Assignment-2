@@ -6,7 +6,7 @@ import android.location.Location;
  * @ClassName: MyLocation
  * @Description: Adaptor of android.location.Location class
  * @Author: wongchihaul
- * @CreateDate: 2021/10/26 11:48 下午
+ * @CreateDate: 2021/10/26 11:48 PM
  */
 public class MyLocation {
     private Location l;

@@ -247,6 +247,7 @@
             android:background="@color/greyLine"/>
 
         <LinearLayout
+            android:id="@+id/redeem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

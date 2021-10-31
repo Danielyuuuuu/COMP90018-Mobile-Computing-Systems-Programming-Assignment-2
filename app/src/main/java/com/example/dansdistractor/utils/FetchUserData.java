@@ -36,7 +36,7 @@ import java.util.Locale;
  * @ClassName: FetchUserDataFromFirebase
  * @Description: Fetch user's data from firebase to avoid data missing caused by asynchronous data fetching.
  * @Author: wongchihaul
- * @CreateDate: 2021/10/26 6:08 下午
+ * @CreateDate: 2021/10/26 6:08 PM
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class FetchUserData {

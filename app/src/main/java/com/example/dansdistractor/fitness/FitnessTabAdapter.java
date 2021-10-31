@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @ClassName: TabAdapter
  * @Author: wongchihaul
- * @CreateDate: 2021/9/22 6:58 下午
+ * @CreateDate: 2021/9/22 6:58 PM
  */
 public class FitnessTabAdapter extends FragmentPagerAdapter {
     Context context;

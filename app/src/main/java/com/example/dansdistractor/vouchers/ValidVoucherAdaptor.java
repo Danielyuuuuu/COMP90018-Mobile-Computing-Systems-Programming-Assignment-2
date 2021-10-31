@@ -32,7 +32,7 @@ import java.util.Iterator;
 /**
  * @ClassName: VoucherRecycleAdaptor
  * @Author: wongchihaul
- * @CreateDate: 2021/9/25 6:47 下午
+ * @CreateDate: 2021/9/25 6:47 PM
  */
 public class ValidVoucherAdaptor extends RecyclerView.Adapter {
 
