@@ -1,9 +1,5 @@
 package com.example.dansdistractor;
 
-import static android.content.ContentValues.TAG;
-
-import static com.example.dansdistractor.MainActivity.myVouchers;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.example.dansdistractor.databaseSchema.UserSchema;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,6 +43,7 @@ public class ExamplePopup extends AppCompatDialogFragment {
     private List<String> l = new ArrayList<>();
     TextView desc;
 
+    private MyApplication myApplication;
 
     @NonNull
     @Override
@@ -65,7 +64,11 @@ public class ExamplePopup extends AppCompatDialogFragment {
                                 }
                                 int randomNum = ThreadLocalRandom.current().nextInt(0, l.size());
                                 docRefVoucher = db.collection("Vouchers").document(l.get(randomNum));
-                                myVouchers.add(String.valueOf(l.get(randomNum)));
+
+                                myApplication = (MyApplication) getActivity().getApplicationContext();
+                                String newVoucher = l.get(randomNum);
+                                myApplication.getMyVouchers().add(String.valueOf(newVoucher));
+
                                 docRefVoucher.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -75,25 +78,31 @@ public class ExamplePopup extends AppCompatDialogFragment {
                                             if (document.exists()) {
                                                 voucherName.setText(String.valueOf(document.getData().get("name")));
 
-                                                System.out.println("myvouchers: "+myVouchers);
+                                                Log.i("myvouchers", myApplication.getMyVouchers().toString());
                                                 Picasso.get().load(String.valueOf(document.getData().get("imageURI"))).fit().centerCrop().into(voucherImage);
 
                                                 db.collection("Users").document(userID)
-                                                        .update(
-                                                                "vouchers", myVouchers
-                                                        );
+                                                        .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(@NonNull DocumentSnapshot documentSnapshot) {
+                                                        UserSchema userProfile = documentSnapshot.toObject(UserSchema.class);
 
+                                                        if (userProfile != null) {
+                                                            ArrayList<String> userVouchers = userProfile.vouchers;
 
-                                            } else {
-                                                Log.d(TAG, "No such document");
+                                                            userVouchers.add(newVoucher);
+
+                                                            db.collection("Users").document(userID)
+                                                                    .update("vouchers", userVouchers);
+                                                        }
+
+                                                    }
+                                                });
+
                                             }
-                                        } else {
-                                            Log.d(TAG, "get failed with ", task.getException());
                                         }
                                     }
                                 });
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
                             }
                         }
                     });
