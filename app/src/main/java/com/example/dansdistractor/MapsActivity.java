@@ -350,7 +350,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    // Generate a list of random points
+    /*
+     * Generate a list of random points
+     * This method was copied from the internet, with some slight modification.
+     * Author: Abhishek
+     * Web Address: https://stackoverflow.com/questions/33976732/generate-random-latlng-given-device-location-and-radius
+     */
     public List<LatLng> getRandomLocation(int numOfPoints, LatLng point, double radius) {
 
         List<LatLng> randomPoints = new ArrayList<>();
