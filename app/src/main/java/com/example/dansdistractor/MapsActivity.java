@@ -277,8 +277,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     else{
                         Toast.makeText(MapsActivity.this, "Need to move closer to see the message", Toast.LENGTH_LONG).show();
                     }
-
-
                 }
                 else{
                     // Generate a direction when the user clicks onto one of the target locations
@@ -301,16 +299,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         directionsApiRequest.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
             public void onResult(DirectionsResult result) {
-                Log.i("MapsActivity", "generateDirection: routes: " + result.routes[0].toString());
                 drawPolylineOnMap(result, marker);
             }
 
             @Override
             public void onFailure(Throwable e) {
-                Log.i("MapsActivity", "generateDirection: Failed: " + e.toString());
+                Log.d("MapsActivity", "generateDirection: Failed: " + e.toString());
             }
         });
-        Log.i("MapsActivity", "generateDirection: after the request");
     }
 
     // To draw the direction polyline on to the map
@@ -318,16 +314,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                DirectionsRoute route = result.routes[0];
-                Log.i("MapsActivity", "drawPolylineOnMap: route: " + route.legs[0].toString());
-                List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
+                DirectionsRoute directionsRoute = result.routes[0];
+                List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(directionsRoute.overviewPolyline.getEncodedPath());
                 List<LatLng> newDecodedPath = new ArrayList<>();
 
-                // To loop through the LatLng coordinates of the polyline
+                // Change from the google LatLng to LatLng
                 for(com.google.maps.model.LatLng latLng: decodedPath){
-                    Log.i("MapsActivity", "drawPolylineOnMap: LatLng: " + latLng.toString());
-
                     newDecodedPath.add(new LatLng(latLng.lat, latLng.lng));
                 }
 
@@ -352,7 +344,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*
      * Generate a list of random points
-     * This method was copied from the internet, with some slight modification.
+     * This method was copied from the internet, with some slight modifications.
      * Author: Abhishek
      * Web Address: https://stackoverflow.com/questions/33976732/generate-random-latlng-given-device-location-and-radius
      */
@@ -394,7 +386,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return randomPoints;
     }
 
-    // To update the location and the UI
+    // To update the current location and the UI
     private void updateGPS(Boolean sessionStarted){
 
         // When the user grants the location permission
