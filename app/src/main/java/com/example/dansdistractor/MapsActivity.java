@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static double GENERATED_RADIUS = 5000;
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
-    private static final int TRIGGER_DISTANCE = 50;
+    private static final int TRIGGER_DISTANCE = 20;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
