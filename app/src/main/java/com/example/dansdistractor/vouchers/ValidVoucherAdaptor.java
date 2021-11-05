@@ -167,7 +167,7 @@ public class ValidVoucherAdaptor extends RecyclerView.Adapter {
                     userRef.update(
                             "invalidVouchers", invalidVoucherIDs
                     );
-                    Toast.makeText(verifyButton.getContext(), "Verifying " + title.getText() + ". Please reload this page to take effect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(verifyButton.getContext(), "Verifying " + title.getText() + ". Please exit and re-enter this page to take effect", Toast.LENGTH_SHORT).show();
                 }
             });
 
