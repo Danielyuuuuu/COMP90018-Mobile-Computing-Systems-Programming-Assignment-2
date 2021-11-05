@@ -42,7 +42,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
     private List<String> l = new ArrayList<>();
     TextView desc;
 
-    private int currentVoucherNum;
+//    private int currentVoucherNum;
 
     private MyApplication myApplication;
 
@@ -50,9 +50,6 @@ public class VoucherPopup extends AppCompatDialogFragment {
 
     }
 
-    public VoucherPopup(int _currentVoucherNum) {
-        currentVoucherNum = _currentVoucherNum;
-    }
 
     @NonNull
     @Override
@@ -61,7 +58,6 @@ public class VoucherPopup extends AppCompatDialogFragment {
         Random rand = new Random();
         int x = rand.nextInt(3);
         if (x == 1) {
-            currentVoucherNum++;
             db.collection("Vouchers")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -153,9 +149,5 @@ public class VoucherPopup extends AppCompatDialogFragment {
         }
 
 
-    }
-
-    public int getCurrentVoucherNum() {
-        return currentVoucherNum;
     }
 }

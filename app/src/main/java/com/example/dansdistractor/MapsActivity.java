@@ -76,7 +76,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final Integer MESSAGE_BOARD_TAG = 1;
     private static final int TRIGGER_DISTANCE = 20;
     private static final int MAX_VOUCHER_DOTS = 10;
-    private int currentVoucherNum = 0;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -474,13 +473,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     polyline.remove();
                 }
 
-                // the number of user's current vouchers is set to 0
-                // and update it if user gets a new voucher
-                if (currentVoucherNum < MAX_VOUCHER_DOTS) {
-                    VoucherPopup voucherPopup = new VoucherPopup(currentVoucherNum);
-                    voucherPopup.show(getSupportFragmentManager(), "Popup");
-                    currentVoucherNum = voucherPopup.getCurrentVoucherNum();
-                }
+                VoucherPopup voucherPopup = new VoucherPopup();
+                voucherPopup.show(getSupportFragmentManager(), "Popup");
 
                 break;
             }

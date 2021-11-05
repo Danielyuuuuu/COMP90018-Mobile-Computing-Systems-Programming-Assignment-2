@@ -25,6 +25,10 @@ import com.example.dansdistractor.databinding.FragmentHomeBinding;
 import com.example.dansdistractor.utils.FetchUserData;
 
 public class HomeFragment extends Fragment {
+    private static int MIN_NUM_OF_DOTS = 1;
+    private static int MAX_NUM_OF_DOTS = 10;
+    private static double MIN_RADIUS = 5000.0;
+    private static double MAX_RADIUS = 15000.0;
 
     private FragmentHomeBinding binding;
     Bundle b = new Bundle();
@@ -62,10 +66,10 @@ public class HomeFragment extends Fragment {
                 EditText goalSteps = settings.findViewById(R.id.goalSteps);
 
 
-                dots.setText("5");
-                radius.setText("5");
-                goalDistance.setText("5000");
-                goalSteps.setText("6000");
+                dots.setText(Integer.toString(b.getInt("dots")));
+                radius.setText(Double.toString(b.getDouble("radius")/1000));
+                goalDistance.setText(Integer.toString(b.getInt("goalDistance")));
+                goalSteps.setText(Integer.toString(b.getInt("goalSteps")));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Settings for Workout Session");
@@ -73,8 +77,34 @@ public class HomeFragment extends Fragment {
                 builder.setPositiveButton("Set", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        b.putDouble("radius", Double.parseDouble(radius.getText().toString()) * 1000);
-                        b.putInt("dots", Integer.parseInt(dots.getText().toString()));
+                        boolean settingNotCorrect = false;
+
+                        int enteredDots = Integer.parseInt(dots.getText().toString());
+                        if (enteredDots > MAX_NUM_OF_DOTS){
+                            b.putInt("dots", MAX_NUM_OF_DOTS);
+                            settingNotCorrect = true;
+                        }
+                        else if (enteredDots < MIN_NUM_OF_DOTS){
+                            b.putInt("dots", MIN_NUM_OF_DOTS);
+                            settingNotCorrect = true;
+                        }
+                        else{
+                            b.putInt("dots", enteredDots);
+                        }
+
+                        double enteredRadius = Double.parseDouble(radius.getText().toString()) * 1000;
+                        if (enteredRadius > MAX_RADIUS){
+                            b.putDouble("radius", MAX_RADIUS);
+                            settingNotCorrect = true;
+                        }
+                        else if (enteredRadius < MIN_RADIUS){
+                            b.putDouble("radius", MIN_RADIUS);
+                            settingNotCorrect = true;
+                        }
+                        else{
+                            b.putDouble("radius", enteredRadius);
+                        }
+
                         b.putInt("goalDistance", Integer.parseInt(goalDistance.getText().toString()));
                         b.putInt("goalSteps", Integer.parseInt(goalSteps.getText().toString()));
                         // pass goals to the charts in fitness activity
@@ -84,7 +114,13 @@ public class HomeFragment extends Fragment {
                                 .putInt("goalDistance", b.getInt("goalDistance"))
                                 .putInt("goalSteps", b.getInt("goalSteps"))
                                 .apply();
-                        Toast.makeText(getContext(), "setting updated", Toast.LENGTH_LONG).show();
+                        if(settingNotCorrect){
+                            Toast.makeText(getContext(), "Setting not correct, please refer to the note underneath the setting dialog", Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            Toast.makeText(getContext(), "Setting updated", Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 });
                 builder.create();
