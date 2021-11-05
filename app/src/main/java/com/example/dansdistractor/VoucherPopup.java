@@ -54,7 +54,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
+        //user will have 33.33% chance to get a voucher
         Random rand = new Random();
         int x = rand.nextInt(3);
         if (x == 1) {
@@ -64,7 +64,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-
+                                //randomly pick voucher for user
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     l.add(document.getId());
                                 }
@@ -86,7 +86,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
 
                                                 Log.i("myvouchers", myApplication.getMyVouchers().toString());
                                                 Picasso.get().load(String.valueOf(document.getData().get("imageURI"))).fit().centerCrop().into(voucherImage);
-
+                                                //update user's voucher in firebase
                                                 db.collection("Users").document(userID)
                                                         .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                     @Override
@@ -105,6 +105,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
                                                     }
                                                 });
 
+
                                             }
                                         }
                                     }
@@ -118,7 +119,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
             voucherName = view.findViewById(R.id.textView_vouchergot);
             voucherImage = view.findViewById(R.id.voucher_image);
 
-
+            //set views
             builder.setView(view)
                     .setTitle("Congratulations!")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -129,6 +130,7 @@ public class VoucherPopup extends AppCompatDialogFragment {
                     });
             return builder.create();
         }else{
+            //if user doesn't get a voucher
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View view = inflater.inflate(R.layout.layout_popup,null);
