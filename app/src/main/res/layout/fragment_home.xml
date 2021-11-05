@@ -19,7 +19,6 @@
         android:id="@+id/setting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
         android:layout_marginBottom="12dp"
         android:background="@drawable/round_btn_nofill"
         android:text="@string/setting"
@@ -27,6 +26,7 @@
         android:textSize="12sp"
         app:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/btn_map"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
