@@ -1,5 +1,14 @@
 # COMP90018-Mobile-Computing-Systems-Programming-Assignment-2
-COMP90018 Mobile Computing Systems Programming Assignment 2
+
+
+## Team Members
+
+Ray Chen  
+Zhenhao Chen  
+Ziqi Hao  
+Zhihao Huang   
+He Yang  
+Yifei Yu
 
 ## Prerequiste
 
