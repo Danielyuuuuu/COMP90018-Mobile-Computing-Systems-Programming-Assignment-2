@@ -22,5 +22,5 @@ Yifei Yu
 1. Use `git clone` (or download this repo as ZIP folder and then unzip) to download our project, import folder as a project into Android Studio and awaiting completion of building.
 2. Connect your Android device with your computer. You may want to check how to run Android apps on a hardware device from [here](https://developer.android.com/studio/run/device).
 3. On Android Studio tool window, `` Run > Run `app` `` to run the app, it should install the app on your Android device.
-4. Congrats! You have successfully taken the first step. Now, please watch our video to see how to use our app.
+4. Congrats! You have successfully taken the first step. Now, please watch our [video](https://www.youtube.com/watch?v=mDSbKiRaC0E) to see how to use our app.
 
