@@ -1,10 +1,5 @@
 package com.example.dansdistractor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,7 +19,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import com.example.dansdistractor.databaseSchema.MessageSchema;
+import com.example.dansdistractor.databinding.ActivityMapsBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -38,7 +39,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.dansdistractor.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -75,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int MAX_NUMBER_MESSAGE_RETURNED = 30;
     private static final Integer MESSAGE_BOARD_TAG = 1;
     private static final int TRIGGER_DISTANCE = 20;
+    private static final int MAX_VOUCHER_DOTS = 10;
+    private int currentVoucherNum = 0;
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -462,18 +464,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("In checkIfReachedTargetLocation", "Distance: " + distances[0]);
 
             // Target location reached
-            if(distances[0] <= TRIGGER_DISTANCE){
+            if (distances[0] <= TRIGGER_DISTANCE) {
                 myApplication.getCompletedTargetLocations().add(targetMarker.getPosition());
                 Toast.makeText(MapsActivity.this, "Target location reached", Toast.LENGTH_LONG).show();
                 targetMarker.remove();
                 itr.remove();
                 polylineDestination = null;
-                if (polyline != null){
+                if (polyline != null) {
                     polyline.remove();
                 }
 
-                ExamplePopup examplePopup = new ExamplePopup();
-                examplePopup.show(getSupportFragmentManager(),"Popup");
+                // the number of user's current vouchers is set to 0
+                // and update it if user gets a new voucher
+                if (currentVoucherNum < MAX_VOUCHER_DOTS) {
+                    ExamplePopup examplePopup = new ExamplePopup();
+                    examplePopup.show(getSupportFragmentManager(), "Popup");
+                    currentVoucherNum = examplePopup.getCurrentVoucherNum();
+                }
 
                 break;
             }

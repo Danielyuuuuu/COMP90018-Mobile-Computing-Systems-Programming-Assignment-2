@@ -19,11 +19,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
@@ -43,7 +42,17 @@ public class ExamplePopup extends AppCompatDialogFragment {
     private List<String> l = new ArrayList<>();
     TextView desc;
 
+    private int currentVoucherNum;
+
     private MyApplication myApplication;
+
+    public ExamplePopup() {
+
+    }
+
+    public ExamplePopup(int _currentVoucherNum) {
+        currentVoucherNum = _currentVoucherNum;
+    }
 
     @NonNull
     @Override
@@ -51,7 +60,8 @@ public class ExamplePopup extends AppCompatDialogFragment {
 
         Random rand = new Random();
         int x = rand.nextInt(3);
-        if(x == 1){
+        if (x == 1) {
+            currentVoucherNum++;
             db.collection("Vouchers")
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -143,5 +153,9 @@ public class ExamplePopup extends AppCompatDialogFragment {
         }
 
 
+    }
+
+    public int getCurrentVoucherNum() {
+        return currentVoucherNum;
     }
 }
