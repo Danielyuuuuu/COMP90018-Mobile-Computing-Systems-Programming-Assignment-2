@@ -6,7 +6,6 @@ import android.app.Application;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -14,22 +13,14 @@ import androidx.annotation.RequiresApi;
 import com.example.dansdistractor.databaseSchema.UserHistorySchema;
 import com.example.dansdistractor.utils.MyLocation;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -139,7 +130,7 @@ public class MyApplication extends Application {
 
         storeUserData();
 
-        Intent intent = new Intent(MyApplication.this,summary.class);
+        Intent intent = new Intent(MyApplication.this, Summary.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("goalSteps", goalSteps);
         intent.putExtra("mySteps", stepCount);

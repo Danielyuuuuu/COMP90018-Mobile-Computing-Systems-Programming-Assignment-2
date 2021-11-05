@@ -7,7 +7,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -19,23 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.example.dansdistractor.databaseSchema.MessageSchema;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class ExampleDialog extends AppCompatDialogFragment {
+public class LeaveMessageDialog extends AppCompatDialogFragment {
 
     private EditText message_input;
     private TextView textView_location;
@@ -53,12 +44,12 @@ public class ExampleDialog extends AppCompatDialogFragment {
     private List<Location> myLocations;
     private Location myLocation;
 
-    public ExampleDialog(MyApplication user){
+    public LeaveMessageDialog(MyApplication user) {
         super();
         this.user = user;
         myLocations = user.getMyLocations();
-        myLocation = myLocations.get(myLocations.size()-1);
-        this.author =  getRandomAuthorName();
+        myLocation = myLocations.get(myLocations.size() - 1);
+        this.author = getRandomAuthorName();
         this.lat = myLocation.getLatitude();
         this.lon = myLocation.getLongitude();
     }

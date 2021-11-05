@@ -1,16 +1,16 @@
 package com.example.dansdistractor;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class summary extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class Summary extends AppCompatActivity {
     private RingProgressView ringProgressView;
-    int myProgress=0;
+    int myProgress = 0;
 
 //    int mySteps=210;
 //    double myMileage=1.2;
@@ -69,7 +69,7 @@ public class summary extends AppCompatActivity {
         buttonSummaryReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(summary.this, NavigationActivity.class));
+                startActivity(new Intent(Summary.this, NavigationActivity.class));
             }
         });
         ringProgressView = (RingProgressView) findViewById(R.id.ringProgress);

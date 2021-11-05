@@ -185,8 +185,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btn_leaveMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ExampleDialog exampleDialog = new ExampleDialog(myApplication);
-                exampleDialog.show(getSupportFragmentManager(),"example dialog");
+                LeaveMessageDialog leaveMessageDialog = new LeaveMessageDialog(myApplication);
+                leaveMessageDialog.show(getSupportFragmentManager(), "example dialog");
             }
         });
 
@@ -477,9 +477,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // the number of user's current vouchers is set to 0
                 // and update it if user gets a new voucher
                 if (currentVoucherNum < MAX_VOUCHER_DOTS) {
-                    ExamplePopup examplePopup = new ExamplePopup();
-                    examplePopup.show(getSupportFragmentManager(), "Popup");
-                    currentVoucherNum = examplePopup.getCurrentVoucherNum();
+                    VoucherPopup voucherPopup = new VoucherPopup(currentVoucherNum);
+                    voucherPopup.show(getSupportFragmentManager(), "Popup");
+                    currentVoucherNum = voucherPopup.getCurrentVoucherNum();
                 }
 
                 break;

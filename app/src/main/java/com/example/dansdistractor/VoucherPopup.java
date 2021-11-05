@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ExamplePopup extends AppCompatDialogFragment {
+public class VoucherPopup extends AppCompatDialogFragment {
     TextView voucherName;
     ImageView voucherImage;
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -46,11 +46,11 @@ public class ExamplePopup extends AppCompatDialogFragment {
 
     private MyApplication myApplication;
 
-    public ExamplePopup() {
+    public VoucherPopup() {
 
     }
 
-    public ExamplePopup(int _currentVoucherNum) {
+    public VoucherPopup(int _currentVoucherNum) {
         currentVoucherNum = _currentVoucherNum;
     }
 
