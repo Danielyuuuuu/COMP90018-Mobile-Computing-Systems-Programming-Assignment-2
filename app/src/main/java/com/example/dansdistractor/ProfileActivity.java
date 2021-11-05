@@ -74,7 +74,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     username.setText(nameUserProfile);
                     useremail.setText(emailUserProfile);
                     userpoints.setText(String.valueOf(vouchersUserProfile.size()));
-                    usertotaldistance.setText(String.valueOf(usertotaldistanceUserProfile));
+                    usertotaldistance.setText(String.valueOf(usertotaldistanceUserProfile/1000.0));
                     usertotalpins.setText(String.valueOf(usertotalpinsUserProfile));
                 }
 
