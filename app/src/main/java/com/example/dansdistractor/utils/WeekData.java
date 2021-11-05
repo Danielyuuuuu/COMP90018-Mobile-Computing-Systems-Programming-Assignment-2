@@ -32,7 +32,6 @@ public class WeekData implements DemoData {
         Gson gson = new Gson();
         historyMap = gson.fromJson(weeklyHistory, new TypeToken<HashMap<Integer, ArrayList<UserHistorySchema>>>() {
         }.getType());
-        historyMap.entrySet().forEach(e -> System.out.println("key: " + e.getKey() + " value : " + e.getValue()));
     }
 
     // Fitness Steps

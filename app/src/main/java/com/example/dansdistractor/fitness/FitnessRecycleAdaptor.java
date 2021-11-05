@@ -166,13 +166,11 @@ public class FitnessRecycleAdaptor extends RecyclerView.Adapter {
         SharedPreferences sharedPref = activity.getSharedPreferences(FetchUserData.ALL_HISTORY, Activity.MODE_PRIVATE);
         int presetGoal;
         //need to transform m to km
-        System.out.println("goalDistance: " + sharedPref.getInt("goalDistance", 0) + " goalSteps: " + sharedPref.getInt("goalSteps", 0));
         double goalDistance = (presetGoal = sharedPref.getInt("goalDistance", 0)) == 0 ?
                 4.8 : (double) presetGoal / 1000;
 
         int goalSteps = (presetGoal = sharedPref.getInt("goalSteps", 0)) == 0 ?
                 8000 : presetGoal;
-        System.out.println("Real goal distance + " + goalDistance + " real goal steps: " + goalSteps);
 
         // set style
         switch (category) {
